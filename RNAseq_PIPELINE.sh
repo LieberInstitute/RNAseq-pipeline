@@ -6,9 +6,9 @@
 #$ -t 1-3
 #
 ##############
-FQ_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/test_runthroughAZ/fq
-EXP_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/test_runthroughAZ
-FILELIST=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/test_runthroughAZ/SAMPLE_IDs.txt
+FQ_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
+EXP_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ
+FILELIST=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/SAMPLE_IDs.txt
 #"hg19" or "hg38"
 hgXX="hg38"
 #"yes" or "no"
@@ -17,16 +17,16 @@ ERCC="yes"
 ##############
 
 ID=$(awk "NR==$SGE_TASK_ID" $FILELIST )
-SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Software
+SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 
 if [ $hgXX == "hg38" ] ; then 
-GTF=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf
-HISATIDX=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/GENCODE/GRCh38_hg38/hisat2_GRCh38primary
-CHRALIAS=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/chrAliases_GRCh38_gencode2UCSC.csv
+GTF=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf
+HISATIDX=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh38_hg38/hisat2_GRCh38primary
+CHRALIAS=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/chrAliases_GRCh38_gencode2UCSC.csv
 elif [ $hgXX == "hg19" ] ; then 
-GTF=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf
-HISATIDX=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/GENCODE/GRCh37_hg19/hisat2_GRCh37primary
-CHRALIAS=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/chrAliases_GRCh37_gencode2UCSC.csv
+GTF=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf
+HISATIDX=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh37_hg19/hisat2_GRCh37primary
+CHRALIAS=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/chrAliases_GRCh37_gencode2UCSC.csv
 else 
 	echo "Enter hg19 or hg38 for hgXX variable." >&2
 	exit 1
@@ -37,7 +37,7 @@ fi
 if [ $ERCC == "yes" ] ; then
 	mkdir -p ${EXP_FOLDER}/Ercc/${ID}
 	${SOFTWARE}/kallisto quant \
-	-i /dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/ERCC/ERCC92.idx \
+	-i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
 	-o ${EXP_FOLDER}/Ercc/${ID} -t 8 ${FQ_FOLDER}/${ID}_R1.fastq.gz ${FQ_FOLDER}/${ID}_R2.fastq.gz
 
 	#R CMD BATCH ./sh/plot_ercc_spikein_results.R
@@ -150,7 +150,7 @@ mkdir -p ${EXP_FOLDER}/Coverage
 BG=${EXP_FOLDER}/Coverage/${ID}.bedGraph
 BGS=${EXP_FOLDER}/Coverage/${ID}.sorted.bedGraph
 BW=${EXP_FOLDER}/Coverage/${ID}.bw
-CHRSIZE=/dcl01/lieber/ajaffe/Emily/RNAseq_pipeline/Annotation/${hgXX}.chrom.sizes.gencode
+CHRSIZE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/${hgXX}.chrom.sizes.gencode
 
 ${SOFTWARE}/bedtools-2.26.0/bin/bedtools genomecov -ibam $BAM -bga -split > $BG
 ${SOFTWARE}/bedtools-2.26.0/bin/sortBed -i $BG > $BGS
