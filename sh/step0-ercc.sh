@@ -1,0 +1,57 @@
+#!/bin/sh
+
+## Usage
+# ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT}
+
+# Define variables
+EXPERIMENT=$1
+PREFIX=$2
+PE=$3
+FQ_FOLDER=$4
+EXT=$5
+
+SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
+MAINDIR=${PWD}
+SHORT="ercc-${EXPERIMENT}"
+sname="${SHORT}.${PREFIX}"
+
+# Construct shell files
+FILELIST=${MAINDIR}/SAMPLE_IDs.txt
+NUM=$(cat $FILELIST | wc -l)
+echo "Creating script ${sname}"
+
+cat > ${MAINDIR}/.${sname}.sh <<EOF
+#!/bin/bash
+#$ -cwd
+#$ -l mem_free=3G,h_vmem=5G,h_fsize=10G
+#$ -N ${sname}
+#$ -pe local 8
+#$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
+#$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
+#$ -t 1-${NUM}
+#$ -tc 20
+echo "**** Job starts ****"
+date
+ID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+mkdir -p ${MAINDIR}/Ercc/\${ID}
+
+if [ $PE == "TRUE" ] ; then 
+${SOFTWARE}/kallisto quant \
+-i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
+-o ${MAINDIR}/Ercc/\${ID} -t 8 --rf-stranded \
+${FQ_FOLDER}/\${ID}_R1_001.${EXT} ${FQ_FOLDER}/\${ID}_R2_001.${EXT}
+else
+${SOFTWARE}/kallisto quant \
+-i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
+-o ${MAINDIR}/Ercc/\${ID} -t 8 --single ${FQ_FOLDER}/\${ID}.${EXT}
+
+fi
+
+echo "**** Job ends ****"
+date
+EOF
+
+call="qsub .${sname}.sh"
+echo $call
+$call
+
