@@ -22,6 +22,7 @@ else SPEC="human";
 fi
 
 cp ${SH_FOLDER}/create_count_objects-${SPEC}.R ${MAINDIR}/.create_count_objects-${SPEC}.R
+cp ${SH_FOLDER}/create_fullCov_object.R ${MAINDIR}/.create_fullCov_object.R
 
 # Construct shell files
 echo "Creating script ${sname}"
@@ -30,7 +31,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -pe local 12
-#$ -l mem_free=3G,h_vmem=5G
+#$ -l mem_free=3G,h_vmem=5G,h_fsize=30G
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
@@ -41,6 +42,7 @@ date
 rm -rf ${MAINDIR}/Counts/junction/tmpdir
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R $hgXX $MAINDIR $EXPERIMENT $PREFIX $PE $ERCC
+Rscript ${MAINDIR}/.create_fullCov_object.R $hgXX $MAINDIR $EXPERIMENT $PREFIX
 
 echo "**** Job ends ****"
 date

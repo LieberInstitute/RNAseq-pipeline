@@ -79,13 +79,31 @@ hisatStats = function(logFile) {
 	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
-	o = c(numReads = as.numeric(ss(y[1], " "))*2,
-		numMapped = as.numeric(ss(y[1], " "))*2 - as.numeric(ss(y[12], " ")),
-		numUnmapped = as.numeric(ss(y[12], " ")),
+		
+	if (as.numeric(ss(ss(y[2], "\\(",2), "%")) == 100) {
+	## 100% of reads paired
+	reads = as.numeric(ss(y[1], " "))*2
+	unaligned = as.numeric(ss(y[12], " "))
+	o = c(trimmed="FALSE",
+		numReads = reads,
+		numMapped = reads - unaligned,
+		numUnmapped = unaligned,
 		overallMapRate = as.numeric(ss(y[15], "\\%"))/100,
-		concordMapRate = (as.numeric(ss(ss(y[4],"\\(",2),"%"))+as.numeric(ss(ss(y[5],"\\(",2),"%")))/100)
+		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)
+	} else {
+	## Combo of paired and unpaired (from trimming)
+	reads = as.numeric(ss(y[2], " "))*2 + as.numeric(ss(y[15], " "))
+	unaligned = as.numeric(ss(y[12], " ")) + as.numeric(ss(y[16], " "))
+	o = c(trimmed="TRUE",
+		numReads = reads,
+		numMapped = reads - unaligned,
+		numUnmapped = unaligned,
+		overallMapRate = as.numeric(ss(y[19], "\\%"))/100,
+		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)	
 	}
+}
 } else {
+## all reads unpaired
 hisatStats = function(logFile) {
 	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
@@ -304,7 +322,7 @@ names(jMap) = paste0(as.character(seqnames(jMap)),":",
 rownames(jCounts) = names(jMap)
 
 # MAPPED PER 10 MILLION
-mappedPer10M = colSums(geneStats)/10e6
+mappedPer10M = sapply(jCounts, sum)/10e6
 countsM = DataFrame(mapply(function(x,d) x/d, jCounts , mappedPer10M))
 rownames(jCounts) = rownames(countsM) = names(jMap)
 jRpkm = as.data.frame(countsM)

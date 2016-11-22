@@ -73,13 +73,31 @@ hisatStats = function(logFile) {
 	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
-	o = c(numReads = as.numeric(ss(y[1], " "))*2,
-		numMapped = as.numeric(ss(y[1], " "))*2 - as.numeric(ss(y[12], " ")),
-		numUnmapped = as.numeric(ss(y[12], " ")),
+		
+	if (as.numeric(ss(ss(y[2], "\\(",2), "%")) == 100) {
+	## 100% of reads paired
+	reads = as.numeric(ss(y[1], " "))*2
+	unaligned = as.numeric(ss(y[12], " "))
+	o = c(trimmed="FALSE",
+		numReads = reads,
+		numMapped = reads - unaligned,
+		numUnmapped = unaligned,
 		overallMapRate = as.numeric(ss(y[15], "\\%"))/100,
 		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)
+	} else {
+	## Combo of paired and unpaired (from trimming)
+	reads = as.numeric(ss(y[2], " "))*2 + as.numeric(ss(y[15], " "))
+	unaligned = as.numeric(ss(y[12], " ")) + as.numeric(ss(y[16], " "))
+	o = c(trimmed="TRUE",
+		numReads = reads,
+		numMapped = reads - unaligned,
+		numUnmapped = unaligned,
+		overallMapRate = as.numeric(ss(y[19], "\\%"))/100,
+		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)	
 	}
+}
 } else {
+## all reads unpaired
 hisatStats = function(logFile) {
 	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
@@ -132,14 +150,10 @@ geneMap$Start = as.numeric(ss(geneMap$Start, ";"))
 tmp = strsplit(geneMap$End, ";")
 geneMap$End = as.numeric(sapply(tmp, function(x) x[length(x)]))
 geneMap$Strand = ss(geneMap$Strand, ";")
-#remove genecode vers num from end of Geneid, e.g. ENSG00000223972.5
-geneMap$tempend = ""
-geneMap$gencodeID = geneMap$Geneid
-geneMap$tempend[grep("_PAR_Y",geneMap$Geneid)] = "_PAR_Y"
-geneMap$Geneid = paste0(ss(geneMap$Geneid, "\\."),geneMap$tempend)
 rownames(geneMap) = geneMap$Geneid
+geneMap$gencodeID = geneMap$Geneid
+geneMap$ensemblID = ss(geneMap$Geneid, "\\.")
 geneMap$Geneid = NULL
-geneMap$tempend = NULL
 
 ######### biomart 
 if (hgXX=="hg19") {
@@ -147,18 +161,18 @@ if (hgXX=="hg19") {
 	ensembl = useMart("ENSEMBL_MART_ENSEMBL", 
 		dataset="hsapiens_gene_ensembl", host="feb2014.archive.ensembl.org")
 	sym = getBM(attributes = c("ensembl_gene_id","hgnc_symbol","entrezgene"), 
-		values=rownames(geneMap), mart=ensembl)
+		values=geneMap$ensemblID, mart=ensembl)
 } else if (hgXX=="hg38") {
 	# VERSION 85, GRCh38.p7
 	ensembl = useMart("ENSEMBL_MART_ENSEMBL",  
 		dataset="hsapiens_gene_ensembl", host="jul2016.archive.ensembl.org")
 	sym = getBM(attributes = c("ensembl_gene_id","hgnc_symbol","entrezgene"), 
-			values=rownames(geneMap), mart=ensembl)
+			values=geneMap$ensemblID, mart=ensembl)
 }
 #########
 
-geneMap$Symbol = sym$hgnc_symbol[match(rownames(geneMap), sym$ensembl_gene_id)]
-geneMap$EntrezID = sym$entrezgene[match(rownames(geneMap), sym$ensembl_gene_id)]
+geneMap$Symbol = sym$hgnc_symbol[match(geneMap$ensemblID, sym$ensembl_gene_id)]
+geneMap$EntrezID = sym$entrezgene[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 
 ## counts
 geneCountList = mclapply(geneFn, function(x) {
@@ -195,17 +209,13 @@ all(file.exists(exonFn))
 
 ### read in annotation ##
 exonMap = read.delim(exonFn[1], skip=1, as.is=TRUE)[,1:6]
+exonMap$gencodeID = exonMap$Geneid
+exonMap$ensemblID = ss(exonMap$Geneid, "\\.")
 rownames(exonMap) = paste0("e", rownames(exonMap))
+exonMap$Geneid = NULL
 
-#remove genecode vers num from end of Geneid, e.g. ENSG00000223972.5
-exonMap$tempend = ""
-exonMap$tempend[grep("_PAR_Y",exonMap$Geneid)] = "_PAR_Y"
-exonMap$Geneid = paste0(ss(exonMap$Geneid, "\\."),exonMap$tempend)
-exonMap$tempend = NULL
-#  exonMap[1178084:1178092,]
-
-exonMap$Symbol = sym$hgnc_symbol[match(exonMap$Geneid, sym$ensembl_gene_id)]
-exonMap$EntrezID = sym$entrezgene[match(exonMap$Geneid, sym$ensembl_gene_id)]
+exonMap$Symbol = sym$hgnc_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
+exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 
 ## counts
 exonCountList = mclapply(exonFn, function(x) {
@@ -222,17 +232,31 @@ keepIndex= which(!duplicated(eMap))
 exonCounts = exonCounts[keepIndex,]
 exonMap = exonMap[keepIndex,]
 
+# number of reads assigned
+exonStatList = lapply(paste0(exonFn, ".summary"), 
+                      read.delim,row.names=1)
+exonStats = do.call("cbind", exonStatList)
+colnames(exonStats) = pd$SAMPLE_ID
+
 ## make RPKM
-bgE = matrix(rep(colSums(geneStats)), nc = nrow(pd), 
+bgE = matrix(rep(colSums(exonStats)), nc = nrow(pd), 
 	nr = nrow(exonCounts),	byrow=TRUE)
 widE = matrix(rep(exonMap$Length), nr = nrow(exonCounts), 
 	nc = nrow(pd),	byrow=FALSE)
 exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
 
-
 #############
 ##### junctions
+
+## import theJunctions annotation
+if (hgXX == "hg19") { 
+	#load(paste0(RDIR,"/junction_annotation_hg19_ensembl_v75.rda"))
+	load(paste0(RDIR,"/junction_annotation_hg19_gencode_v25lift37.rda"))
+} else if (hgXX == "hg38") { 
+	#load(paste0(RDIR,"/junction_annotation_hg38_ensembl_v85.rda"))
+	load(paste0(RDIR,"/junction_annotation_hg38_gencode_v25.rda"))
+}
 
 ## via primary alignments only
 junctionFiles = paste0(MAINDIR,"/Counts/junction/",pd$SAMPLE_ID,"_junctions_primaryOnly_regtools.count")
@@ -242,45 +266,39 @@ if (PE == TRUE) {
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=TRUE)
 } else { 
-	source("/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/se_junc_functions.R")
+	source("/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_functions.R")
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=FALSE)
 }
-
-## annotate junctions
-if (hgXX == "hg19") { 
-	load(paste0(RDIR,"/junction_annotation_hg19_ensembl_v75.rda"))
-} else if (hgXX == "hg38") { 
-	load(paste0(RDIR,"/junction_annotation_hg38_ensembl_v85.rda"))
-}
-
 anno = juncCounts$anno
-anno = anno[seqnames(anno) %in% paste0("chr", c(1:22,"X","Y","M"))]
-seqlevels(anno) = paste0("chr", c(1:22,"X","Y","M"))
+seqlevels(anno, force=TRUE) = paste0("chr", c(1:22,"X","Y","M"))
+#anno = anno[seqnames(anno) %in% paste0("chr", c(1:22,"X","Y","M"))]
+#seqlevels(anno) = paste0("chr", c(1:22,"X","Y","M"))
 
 ## add additional annotation
-anno$inEnsembl = countOverlaps(anno, theJunctions, type="equal") > 0
-anno$inEnsemblStart = countOverlaps(anno, theJunctions, type="start") > 0
-anno$inEnsemblEnd = countOverlaps(anno, theJunctions, type="end") > 0
+anno$inGencode = countOverlaps(anno, theJunctions, type="equal") > 0
+anno$inGencodeStart = countOverlaps(anno, theJunctions, type="start") > 0
+anno$inGencodeEnd = countOverlaps(anno, theJunctions, type="end") > 0
 
 oo = findOverlaps(anno, theJunctions, type="equal")
-anno$ensemblGeneID = NA
-anno$ensemblGeneID[queryHits(oo)] = as.character(theJunctions$ensemblID[subjectHits(oo)])
-anno$ensemblSymbol = NA
-anno$ensemblSymbol[queryHits(oo)] = theJunctions$symbol[subjectHits(oo)]
-anno$ensemblStrand = NA
-anno$ensemblStrand[queryHits(oo)] = as.character(strand(theJunctions)[subjectHits(oo)])
-anno$ensemblTx = CharacterList(vector("list", length(anno)))
-anno$ensemblTx[queryHits(oo)] = theJunctions$tx[subjectHits(oo)]
-anno$numTx = elementNROWS(anno$ensemblTx)
+anno$gencodeGeneID = NA
+anno$gencodeGeneID[queryHits(oo)] = as.character(theJunctions$gencodeID[subjectHits(oo)])
+anno$ensemblID = ss(anno$gencodeGeneID, "\\.")
+anno$Symbol = NA
+anno$Symbol[queryHits(oo)] = theJunctions$symbol[subjectHits(oo)]
+anno$gencodeStrand = NA
+anno$gencodeStrand[queryHits(oo)] = as.character(strand(theJunctions)[subjectHits(oo)])
+anno$gencodeTx = CharacterList(vector("list", length(anno)))
+anno$gencodeTx[queryHits(oo)] = theJunctions$tx[subjectHits(oo)]
+anno$numTx = elementNROWS(anno$gencodeTx)
 
 # clean up
-anno$ensemblSymbol = geneMap$Symbol[match(anno$ensemblGeneID, rownames(geneMap))]
+#anno$Symbol = geneMap$Symbol[match(anno$gencodeGeneID, rownames(geneMap))]
 
 ## junction code
-anno$code = ifelse(anno$inEnsembl, "InEns", 
-	ifelse(anno$inEnsemblStart & anno$inEnsemblEnd, "ExonSkip",
-	ifelse(anno$inEnsemblStart | anno$inEnsemblEnd, "AltStartEnd", "Novel")))
+anno$code = ifelse(anno$inGencode, "InGen", 
+	ifelse(anno$inGencodeStart & anno$inGencodeEnd, "ExonSkip",
+	ifelse(anno$inGencodeStart | anno$inGencodeEnd, "AltStartEnd", "Novel")))
 
 ## b/w exons and junctions
 exonGR = GRanges( exonMap$Chr,	IRanges(exonMap$Start, exonMap$End))
@@ -288,8 +306,8 @@ anno$startExon = match(paste0(seqnames(anno),":",start(anno)-1),
 	paste0(seqnames(exonGR), ":", end(exonGR)))
 anno$endExon = match(paste0(seqnames(anno),":",end(anno)+1),
 	paste0(seqnames(exonGR), ":", start(exonGR)))
-g = data.frame(leftGene = exonMap$Geneid[anno$startExon],
-	rightGene = exonMap$Geneid[anno$endExon],
+g = data.frame(leftGene = exonMap$gencodeID[anno$startExon],
+	rightGene = exonMap$gencodeID[anno$endExon],
 	leftGeneSym = exonMap$Symbol[anno$startExon],
 	rightGeneSym = exonMap$Symbol[anno$endExon],
 	stringsAsFactors=FALSE)
@@ -317,13 +335,15 @@ anno$newGeneID = g$newGene
 anno$newGeneSymbol = g$newGeneSym
 anno$isFusion = grepl("-", anno$newGeneID)
 
+anno$newGeneSymbol[anno$code =="InGen"] = anno$Symbol[anno$code =="InGen"]
+anno$newGeneID[anno$code =="InGen"] = anno$gencodeGeneID[anno$code =="InGen"]
 ## extract out
 jMap = anno
 jCounts = juncCounts$countDF
 jCounts = jCounts[names(jMap),gsub("-",".",pd$SAMPLE_ID)]
 
-mappedPer80M = colSums(geneStats)/80e6
-countsM = DataFrame(mapply(function(x,d) x/d, jCounts , mappedPer80M))
+mappedPer10M = sapply(jCounts, sum)/10e6
+countsM = DataFrame(mapply(function(x,d) x/d, jCounts , mappedPer10M))
 rownames(jCounts) = rownames(countsM) = names(jMap)
 jRpkm = as.data.frame(countsM)
 rownames(jRpkm) = names(jMap)
@@ -346,34 +366,35 @@ jMap$rightSeq = getSeq(Hsapiens, right)
 ############################
 ### add transcript maps ####
 if (hgXX == "hg19") { 
-	load(paste0(RDIR,"/feature_to_Tx_ensembl_v75.rda"))
+	load(paste0(RDIR,"/feature_to_Tx_hg19_gencode_v25lift37.rda"))
 } else if (hgXX == "hg38") { 
-	load(paste0(RDIR,"/feature_to_Tx_ensembl_v85.rda")) 
+	load(paste0(RDIR,"/feature_to_Tx_hg38_gencode_v25.rda")) 
 }
 
 ## gene annotation
-geneMap$Class = "InEns"
+geneMap$Class = "InGen"
 geneMap$meanExprs = rowMeans(geneRpkm)
-geneMap$EnsemblGeneID = rownames(geneMap)
-mmTx = match(geneMap$EnsemblGeneID, names(allTx))
+mmTx = match(geneMap$gencodeID, names(allTx))
 tx = CharacterList(vector("list", nrow(geneMap)))
 tx[!is.na(mmTx)] = allTx[mmTx[!is.na(mmTx)]]
 geneMap$NumTx = elementNROWS(tx)
-geneMap$ensemblTx = sapply(tx,paste0,collapse=";")
+geneMap$gencodeTx = sapply(tx,paste0,collapse=";")
 
 ## exon annotation
-colnames(exonMap)[1] = "EnsemblGeneID"
-exonMap$Class = "InEns"
+exonMap$Class = "InGen"
 exonMap$meanExprs = rowMeans(exonRpkm)
 mmTx = match(rownames(exonMap), names(allTx))
 tx = CharacterList(vector("list", nrow(exonMap)))
 tx[!is.na(mmTx)] = allTx[mmTx[!is.na(mmTx)]]
 exonMap$NumTx = elementNROWS(tx)
-exonMap$ensemblTx = sapply(tx,paste0,collapse=";")
+exonMap$gencodeTx = sapply(tx,paste0,collapse=";")
 
 ## junctions
 jMap$meanExprs= rowMeans(jRpkm)
-colnames(mcols(jMap))[c(8,11,12)] = c("Class", "EnsemblGeneID", "Symbol")
+#jMap$gencodeGeneID=NULL
+#jMap$Symbol=NULL
+#colnames(mcols(jMap))[c(8,11,12)] = c("Class", "gencodeID", "Symbol")
+colnames(mcols(jMap))[10] = "Class"
 
 ### save counts
 
