@@ -50,6 +50,10 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -hold_jid hisat2-${EXPERIMENT}.${PREFIX}
 echo "**** Job starts ****"
 date
+
+echo "**** Pipeline version: latest GitHub sha ****"
+git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+
 ID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
 BAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam
 

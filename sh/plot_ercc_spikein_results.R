@@ -4,7 +4,7 @@ MAINDIR = args[1]
 
 ###
 source("/users/ajaffe/Lieber/lieber_functions_aj.R")
-library(Biostrings)
+library('Biostrings')
 DF = read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"))
 sampIDs = as.vector(DF[,1])
 
@@ -34,3 +34,15 @@ for(i in 1:ncol(erccTPM)) {
 	abline(0, 1, lty=2)
 }
 dev.off()
+
+## Reproducibility information
+print('Reproducibility information:')
+Sys.time()
+proc.time()
+options(width = 120)
+gotDevtools <- requireNamespace('devtools', quietly = TRUE)
+if(gotDevtools) {
+    devtools::session_info()
+} else {
+    sessionInfo()
+}

@@ -37,6 +37,10 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -hold_jid trim-${EXPERIMENT}.${PREFIX}
 echo "**** Job starts ****"
 date
+
+echo "**** Pipeline version: latest GitHub sha ****"
+git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+
 ID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
 
 if [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
