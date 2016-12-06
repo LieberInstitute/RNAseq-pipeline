@@ -1,3 +1,12 @@
+## Required libraries
+library('derfinder')
+library('BiocParallel')
+library('Biostrings')
+library('GenomicRanges')
+library('GenomicFeatures')
+library('org.Hs.eg.db')
+library('biomaRt')
+
 ##
 args = commandArgs(TRUE)
 hgXX = args[1]
@@ -6,6 +15,12 @@ EXPERIMENT = args[3]
 PREFIX = args[4]
 PE = args[5]
 ERCC = args[6]
+
+if (hgXX == "hg19") { 
+	library('BSgenome.Hsapiens.UCSC.hg19')
+} else if (hgXX == "hg38") { 
+	library('BSgenome.Hsapiens.UCSC.hg38')
+}
 
 #hgXX="hg19"
 #MAINDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/tests/lake"
@@ -29,7 +44,6 @@ N = length(pd$SAMPLE_ID)
 ############################################################ 
 ###### ercc plots
 if (ERCC == TRUE ){
-	library(Biostrings)
 	sampIDs = as.vector(pd$SAMPLE_ID)
 
 	##observed kallisto tpm
@@ -116,18 +130,15 @@ hiStats = t(sapply(logFiles, hisatStats))
 pd = cbind(pd,hiStats)	
 
 ### confirm total mapping
-libSize = getTotalMapped(pd$bamFile,mc.cores=8)
-pd$totalMapped = libSize$totalMapped
-pd$mitoMapped = libSize$mitoMapped
-pd$mitoRate = pd$mitoMapped / (pd$mitoMapped +  libSize$totalMapped)
+pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+    chrs = paste0("chr", c(1:22, 'X', 'Y')), 
+    BPPARAM = MulticoreParam(8)))
+pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'chrM', 
+    BPPARAM = MulticoreParam(8)))
+pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 
 ###################################################################
-
-library(GenomicRanges)
-library(GenomicFeatures)
-library(org.Hs.eg.db)
-library(biomaRt)
 
 if (hgXX == "hg19") {
 	filename = "_Gencode.v25lift37.hg19"
@@ -350,11 +361,6 @@ rownames(jRpkm) = names(jMap)
 colnames(jRpkm)  = colnames(geneRpkm)
 
 ## sequence of acceptor/donor sites
-if (hgXX == "hg19") { 
-	library(BSgenome.Hsapiens.UCSC.hg19)
-} else if (hgXX == "hg38") { 
-	library(BSgenome.Hsapiens.UCSC.hg38)
-}
 left = right = jMap
 end(left) = start(left) +1
 start(right) = end(right) -1

@@ -3,25 +3,6 @@
 # wrapper for string split and sapply
 ss = function(x, pattern, slot=1,...) sapply(strsplit(x,pattern,...), "[", slot)
 
-
-## get total mapped
-getTotalMapped = function(bamFile, mc.cores=1, returnM = TRUE) {
-	thecall = paste("samtools idxstats",bamFile)
-	tmp = parallel::mclapply(thecall, function(x) {
-		cat(".")
-		xx = system(x,intern=TRUE)
-		xx = do.call("rbind", strsplit(xx, "\t"))
-		d = data.frame(chr=xx[,1], L=xx[,2], mapped = xx[,3],
-			stringsAsFactors=FALSE)
-		d
-	},mc.cores=mc.cores)
-	
-	out = list(totalMapped = sapply(tmp, function(x) sum(as.numeric(x$mapped[x$chr %in% paste0("chr", c(1:22,"X","Y"))]))),
-		mitoMapped = sapply(tmp, function(x) as.numeric(x$mapped[x$chr=="chrM"])))
-	return(out)
-}
-
-
 ########### for single-end. leo: make work for both
 junctionCount = function(junctionFiles, sampleNames=names(junctionFiles), 
 	output = c("Count", "Rail"), minOverhang=0, 
@@ -118,6 +99,7 @@ junctionCount = function(junctionFiles, sampleNames=names(junctionFiles),
 
 ### annotate junctions
 annotateJunctions = function(juncCounts, build="hg19") {
+    library('bumphunter')
 	if(build == "hg19") {
 		load("/users/ajaffe/Lieber/Projects/RNAseq/ensembl_v75_junction_annotation.rda")
 	} else stop("Only supports hg19 for now.\n")
@@ -138,7 +120,6 @@ annotateJunctions = function(juncCounts, build="hg19") {
 	anno$ensemblTx = CharacterList(vector("list", length(anno)))
 	anno$ensemblTx[queryHits(oo)] = theJunctions$tx[subjectHits(oo)]
 
-	library(bumphunter)
 	an = annotateNearest(anno, theJunctions)
 	anno$nearestSymbol = as.character(theJunctions$symbol[an$matchIndex])
 	anno$nearestDist = an$dist

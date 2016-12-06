@@ -1,3 +1,7 @@
+## Required libraries
+library('derfinder')
+library('BiocParallel')
+
 ##
 args = commandArgs(TRUE)
 hgXX = args[1]
@@ -67,15 +71,15 @@ hiStats = t(sapply(logFiles, hisatStats))
 pd = cbind(pd,hiStats)
 
 ### confirm total mapping
-libSize = getTotalMapped(pd$bamFile,mc.cores=8)
-pd$totalMapped = libSize$totalMapped
-pd$mitoMapped = libSize$mitoMapped
-pd$mitoRate = pd$mitoMapped / (pd$mitoMapped +  libSize$totalMapped)
+pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+    chrs = paste0("chr", c(1:22, 'X', 'Y')), 
+    BPPARAM = MulticoreParam(8)))
+pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'chrM', 
+    BPPARAM = MulticoreParam(8)))
+pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 
-###################################################################
-## derfinder
-library(derfinder)
+###################################################################arg
 
 if (hgXX == "rn6") { CHR = c(1:20,"X","Y","MT")
 } else if (hgXX == "mm10") { CHR = paste0("chr",c(1:19,"X","Y","M"))

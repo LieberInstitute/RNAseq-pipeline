@@ -1,3 +1,13 @@
+## Required libraries
+library('derfinder')
+library('BiocParallel')
+library('Biostrings')
+library('GenomicRanges')
+library('GenomicFeatures')
+library('org.Rn.eg.db')
+library('biomaRt')
+library('BSgenome.Rnorvegicus.UCSC.rn6')
+
 ##
 args = commandArgs(TRUE)
 hgXX = args[1]
@@ -12,23 +22,6 @@ source("/users/ajaffe/Lieber/Projects/RNAseq/firstRnaSeqPaper/eqtl_functions.R")
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
-## change ensembl chr names from default function
-getTotalMapped = function(bamFile, mc.cores=1, returnM = TRUE) {
-	thecall = paste("samtools idxstats",bamFile)
-	tmp = parallel::mclapply(thecall, function(x) {
-		cat(".")
-		xx = system(x,intern=TRUE)
-		xx = do.call("rbind", strsplit(xx, "\t"))
-		d = data.frame(chr=xx[,1], L=xx[,2], mapped = xx[,3],
-			stringsAsFactors=FALSE)
-		d
-	},mc.cores=mc.cores)
-	
-	out = list(totalMapped = sapply(tmp, function(x) sum(as.numeric(x$mapped[x$chr %in% c(1:22,"X","Y")]))),
-		mitoMapped = sapply(tmp, function(x) as.numeric(x$mapped[x$chr=="MT"])))
-	return(out)
-}
-
 ## read in pheno	
 pd = data.frame(read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"), as.is=TRUE, header=F))
 names(pd)[1] = "SAMPLE_ID"
@@ -37,7 +30,6 @@ N = length(pd$SAMPLE_ID)
 ############################################################ 
 ###### ercc plots
 if (ERCC == TRUE ){
-	library(Biostrings)
 	sampIDs = as.vector(pd$SAMPLE_ID)
 
 	##observed kallisto tpm
@@ -122,18 +114,13 @@ hiStats = t(sapply(logFiles, hisatStats))
 pd = cbind(pd,hiStats)	
 
 ### confirm total mapping
-libSize = getTotalMapped(pd$bamFile,mc.cores=12)
-pd$totalMapped = libSize$totalMapped
-pd$mitoMapped = libSize$mitoMapped
-pd$mitoRate = pd$mitoMapped / (pd$mitoMapped +  libSize$totalMapped)
+pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+    chrs = c(1:22, 'X', 'Y'), BPPARAM = MulticoreParam(12)))
+pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'MT', 
+    BPPARAM = MulticoreParam(12)))
+pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 ###################################################################
-library(GenomicRanges)
-library(GenomicFeatures)
-#library(org.Mm.eg.db)
-library(org.Rn.eg.db)
-library(biomaRt)
-
 
 ###############
 ### gene counts
@@ -328,7 +315,6 @@ rownames(jCounts) = rownames(countsM) = names(jMap)
 jRpkm = as.data.frame(countsM)
 
 ## sequence of acceptor/donor sites
-library(BSgenome.Rnorvegicus.UCSC.rn6)
 left = right = anno
 end(left) = start(left) +1
 start(right) = end(right) -1

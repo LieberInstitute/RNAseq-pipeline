@@ -1,3 +1,12 @@
+## Required libraries
+library('derfinder')
+library('BiocParallel')
+library('GenomicRanges')
+library('GenomicFeatures')
+library('org.Mm.eg.db')
+library('biomaRt')
+library('BSgenome.Mmusculus.UCSC.mm10')
+
 ##
 args = commandArgs(TRUE)
 hgXX = args[1]
@@ -68,17 +77,14 @@ hiStats = t(sapply(logFiles, hisatStats))
 pd = cbind(pd,hiStats)	
 
 ### confirm total mapping
-libSize = getTotalMapped(pd$bamFile,mc.cores=12)
-pd$totalMapped = libSize$totalMapped
-pd$mitoMapped = libSize$mitoMapped
-pd$mitoRate = pd$mitoMapped / (pd$mitoMapped +  libSize$totalMapped)
+pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+    chrs = paste0("chr", c(1:22, 'X', 'Y')), 
+    BPPARAM = MulticoreParam(12)))
+pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'chrM', 
+    BPPARAM = MulticoreParam(12)))
+pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 ###################################################################
-library(GenomicRanges)
-library(GenomicFeatures)
-library(org.Mm.eg.db)
-library(biomaRt)
-
 
 ###############
 ### gene counts
@@ -280,7 +286,6 @@ rownames(jCounts) = rownames(countsM) = names(jMap)
 jRpkm = as.data.frame(countsM)
 
 ## sequence of acceptor/donor sites
-library(BSgenome.Mmusculus.UCSC.mm10)
 left = right = anno
 end(left) = start(left) +1
 start(right) = end(right) -1
