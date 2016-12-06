@@ -1,6 +1,8 @@
 ## Required libraries
 library('derfinder')
 library('BiocParallel')
+library('stringr')
+library('jaffelab')
 
 ##
 args = commandArgs(TRUE)
@@ -25,7 +27,6 @@ pd$bwFile = paste0(MAINDIR, "/Coverage/", pd$SAMPLE_ID, ".bw")
 ### get alignment metrics
 if (PE == TRUE) {
 hisatStats = function(logFile) {
-	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
 		
@@ -54,7 +55,6 @@ hisatStats = function(logFile) {
 } else {
 ## all reads unpaired
 hisatStats = function(logFile) {
-	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
 	o = c(numReads = as.numeric(ss(y[1], " ")),

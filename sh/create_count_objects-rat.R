@@ -7,6 +7,8 @@ library('GenomicFeatures')
 library('org.Rn.eg.db')
 library('biomaRt')
 library('BSgenome.Rnorvegicus.UCSC.rn6')
+library('stringr')
+library('jaffelab')
 
 ##
 args = commandArgs(TRUE)
@@ -68,7 +70,6 @@ pd$bamFile = paste0(MAINDIR, "/HISAT2_out/", pd$SAMPLE_ID, "_accepted_hits.sorte
 ### get alignment metrics
 if (PE == TRUE) {
 hisatStats = function(logFile) {
-	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
 		
@@ -97,7 +98,6 @@ hisatStats = function(logFile) {
 } else {
 ## all reads unpaired
 hisatStats = function(logFile) {
-	require(stringr)
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
 	o = c(numReads = as.numeric(ss(y[1], " ")),

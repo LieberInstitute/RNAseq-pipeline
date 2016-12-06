@@ -1,16 +1,11 @@
-##
-
-# wrapper for string split and sapply
-ss = function(x, pattern, slot=1,...) sapply(strsplit(x,pattern,...), "[", slot)
-
 ########### for single-end. leo: make work for both
 junctionCount = function(junctionFiles, sampleNames=names(junctionFiles), 
 	output = c("Count", "Rail"), minOverhang=0, 
 	strandSpecific = FALSE, illuminaStranded=FALSE,
 	minCount = 1, maxCores=NULL) {
 	
-	require(GenomicRanges,quietly=TRUE)
-	require(parallel,quietly=TRUE)
+	require('GenomicRanges', quietly=TRUE)
+	require('parallel', quietly=TRUE)
 
 	if(is.null(maxCores)) {
 		maxCores=1
@@ -134,7 +129,7 @@ annotateJunctions = function(juncCounts, build="hg19") {
 junctionStats = function(jRpkm, jMap, 
 	cuts = c(0,0.5,1,5,10,20,50,100), output="percent") {
 
-	require(GenomicRanges,quietly = TRUE)
+	require('GenomicRanges', quietly = TRUE)
 	## junction means
 	junctionMeans = rowMeans(jRpkm)
 	numAboveCut = sapply(cuts, function(x) sum(junctionMeans >= x))
