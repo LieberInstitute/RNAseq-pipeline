@@ -6,7 +6,6 @@ library('GenomicRanges')
 library('GenomicFeatures')
 library('org.Hs.eg.db')
 library('biomaRt')
-library('stringr')
 library('jaffelab')
 
 ##

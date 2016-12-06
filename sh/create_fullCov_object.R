@@ -1,7 +1,6 @@
 ## Required libraries
 library('derfinder')
 library('BiocParallel')
-library('stringr')
 library('jaffelab')
 
 ##

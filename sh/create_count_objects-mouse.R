@@ -6,7 +6,6 @@ library('GenomicFeatures')
 library('org.Mm.eg.db')
 library('biomaRt')
 library('BSgenome.Mmusculus.UCSC.mm10')
-library('stringr')
 library('jaffelab')
 
 ##

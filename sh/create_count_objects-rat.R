@@ -7,7 +7,6 @@ library('GenomicFeatures')
 library('org.Rn.eg.db')
 library('biomaRt')
 library('BSgenome.Rnorvegicus.UCSC.rn6')
-library('stringr')
 library('jaffelab')
 
 ##
