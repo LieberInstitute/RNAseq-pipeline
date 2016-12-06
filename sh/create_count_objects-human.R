@@ -8,6 +8,7 @@ library('org.Hs.eg.db')
 library('biomaRt')
 library('jaffelab')
 library('getopt')
+library('rafalib')
 
 ## Specify parameters
 spec <- matrix(c(

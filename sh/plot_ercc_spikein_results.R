@@ -1,6 +1,7 @@
 ## Load required libraries
 library('Biostrings')
 library('getopt')
+library('rafalib')
 
 ## Specify parameters
 spec <- matrix(c(
@@ -19,7 +20,6 @@ if (!is.null(opt$help)) {
 MAINDIR <- opt$maindir
 
 ###
-source("/users/ajaffe/Lieber/lieber_functions_aj.R")
 DF = read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"))
 sampIDs = as.vector(DF[,1])
 

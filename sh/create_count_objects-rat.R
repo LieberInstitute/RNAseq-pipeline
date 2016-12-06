@@ -9,6 +9,7 @@ library('biomaRt')
 library('BSgenome.Rnorvegicus.UCSC.rn6')
 library('jaffelab')
 library('getopt')
+library('rafalib')
 
 ## Specify parameters
 spec <- matrix(c(
