@@ -290,12 +290,10 @@ junctionFiles = paste0(MAINDIR,"/Counts/junction/",pd$SAMPLE_ID,"_junctions_prim
 all(file.exists(junctionFiles)) #  TRUE
 
 if (PE == TRUE) {
-    ## For junctionCount()
-    source("/users/ajaffe/Lieber/Projects/RNAseq/firstRnaSeqPaper/eqtl_functions.R")
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=TRUE)
 } else {
-    ## For junctionCount()
+    ## For junctionCount() that works in this scenario
 	source("/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_functions.R")
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=FALSE)
