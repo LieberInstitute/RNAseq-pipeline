@@ -70,23 +70,23 @@ hiStats = t(sapply(logFiles, hisatStats))
 
 pd = cbind(pd,hiStats)
 
+## Chrs to use, mitocondrial chromosome has to be the last one for the code
+## to work later on
+if (hgXX == "rn6") { CHR = c(1:20,"X","Y","MT")
+} else if (hgXX == "mm10") { CHR = paste0("chr",c(1:19,"X","Y","M"))
+} else { CHR = paste0("chr",c(1:22,"X","Y","M")) }
+stopifnot(grepl('M', CHR[length(CHR)]))
+
 ### confirm total mapping
 pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-    chrs = paste0("chr", c(1:22, 'X', 'Y')), 
-    BPPARAM = MulticoreParam(8)))
-pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'chrM', 
-    BPPARAM = MulticoreParam(8)))
+    chrs = CHR[-length(CHR)], BPPARAM = MulticoreParam(8)))
+pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+    chrs = CHR[length(CHR)], BPPARAM = MulticoreParam(8)))
 pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 
 ###################################################################arg
-
-if (hgXX == "rn6") { CHR = c(1:20,"X","Y","MT")
-} else if (hgXX == "mm10") { CHR = paste0("chr",c(1:19,"X","Y","M"))
-} else { CHR = paste0("chr",c(1:22,"X","Y","M")) } 
-
-fullCov =  fullCoverage(files=pd$bamFile, 
-				chrs = CHR, mc.cores=12)
+fullCov <- fullCoverage(files=pd$bamFile, chrs = CHR, mc.cores=12)
 
 save(pd, fullCov, compress=TRUE, file=paste0(MAINDIR,"/fullCoverage_",EXPNAME,"_n",N,".rda"))
 

@@ -78,7 +78,7 @@ pd = cbind(pd,hiStats)
 
 ### confirm total mapping
 pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-    chrs = paste0("chr", c(1:22, 'X', 'Y')), 
+    chrs = paste0("chr", c(1:19, 'X', 'Y')), 
     BPPARAM = MulticoreParam(12)))
 pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'chrM', 
     BPPARAM = MulticoreParam(12)))
