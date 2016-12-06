@@ -18,6 +18,9 @@ FQ_FOLDER=$7
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
+echo "**** You can install the required R packages by running ****"
+echo "**** qsub pipeline_setup.sh ****"
+
 SH_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh
 ANNO_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation
 
