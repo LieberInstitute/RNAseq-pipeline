@@ -293,8 +293,6 @@ if (PE == TRUE) {
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=TRUE)
 } else {
-    ## For junctionCount() that works in this scenario
-	source("/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_functions.R")
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=FALSE)
 }
