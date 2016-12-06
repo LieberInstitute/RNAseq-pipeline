@@ -11,8 +11,6 @@ MAINDIR = args[2]
 EXPERIMENT = args[3]
 PREFIX = args[4]
 
-source("/users/ajaffe/Lieber/lieber_functions_aj.R")
-source("/users/ajaffe/Lieber/Projects/RNAseq/firstRnaSeqPaper/eqtl_functions.R")
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
 ## read in pheno	

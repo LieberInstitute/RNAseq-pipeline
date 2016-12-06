@@ -31,8 +31,6 @@ if (hgXX == "hg19") {
 #PE="FALSE"
 #ERCC="FALSE"
 
-source("/users/ajaffe/Lieber/lieber_functions_aj.R")
-source("/users/ajaffe/Lieber/Projects/RNAseq/firstRnaSeqPaper/eqtl_functions.R")
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
@@ -273,10 +271,13 @@ if (hgXX == "hg19") {
 junctionFiles = paste0(MAINDIR,"/Counts/junction/",pd$SAMPLE_ID,"_junctions_primaryOnly_regtools.count")
 all(file.exists(junctionFiles)) #  TRUE
 
-if (PE == TRUE) { 
+if (PE == TRUE) {
+    ## For junctionCount()
+    source("/users/ajaffe/Lieber/Projects/RNAseq/firstRnaSeqPaper/eqtl_functions.R")
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=TRUE)
-} else { 
+} else {
+    ## For junctionCount()
 	source("/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_functions.R")
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
 		output = "Count", maxCores=8,strandSpecific=FALSE)

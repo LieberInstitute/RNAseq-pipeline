@@ -19,8 +19,6 @@ PREFIX = args[4]
 PE = args[5]
 ERCC = args[6]
 
-source("/users/ajaffe/Lieber/lieber_functions_aj.R")
-source("/users/ajaffe/Lieber/Projects/RNAseq/firstRnaSeqPaper/eqtl_functions.R")
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
@@ -229,6 +227,8 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 junctionFiles = paste0(MAINDIR,"/Counts/junction/",pd$SAMPLE_ID,"_junctions_primaryOnly_regtools.count")
 all(file.exists(junctionFiles)) #  TRUE
 
+## For junctionCount()
+source("/users/ajaffe/Lieber/Projects/RNAseq/firstRnaSeqPaper/eqtl_functions.R")
 juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
  	output = "Count", maxCores=12,strandSpecific=TRUE)
 	
