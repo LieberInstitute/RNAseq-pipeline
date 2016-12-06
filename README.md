@@ -1,6 +1,12 @@
 RNAseq-pipeline
 ===============
 
+This pipeline requires several R packages. You can install them by running:
+
+```
+qsub pipeline_setup.sh
+```
+
 1. Make a directory to deposit subfolders and processed files. `$DIR`
 
 2. Often, `$DIR/FASTQ` contains the fastq files for this experiment.
