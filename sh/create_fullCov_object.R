@@ -2,13 +2,29 @@
 library('derfinder')
 library('BiocParallel')
 library('jaffelab')
+library('getopt')
 
-##
-args = commandArgs(TRUE)
-hgXX = args[1]
-MAINDIR = args[2]
-EXPERIMENT = args[3]
-PREFIX = args[4]
+## Specify parameters
+spec <- matrix(c(
+	'organism', 'o', 1, 'character', 'Either rn6, mm10 or human',
+	'maindir', 'm', 1, 'character', 'Main directory',
+	'experiment', 'e', 1, 'character', 'Experiment',
+	'prefix', 'p', 1, 'character', 'Prefix',
+	'help' , 'h', 0, 'logical', 'Display help'
+), byrow=TRUE, ncol=5)
+opt <- getopt(spec)
+
+## if help was asked for print a friendly message
+## and exit with a non-zero error code
+if (!is.null(opt$help)) {
+	cat(getopt(spec, usage=TRUE))
+	q(status=1)
+}
+
+hgXX <- opt$organism
+MAINDIR <- opt$maindir
+EXPERIMENT <- opt$experiment
+PREFIX <- opt$prefix
 
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 

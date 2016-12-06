@@ -1,10 +1,25 @@
-###
-args = commandArgs(TRUE)
-MAINDIR = args[1]
+## Load required libraries
+library('Biostrings')
+library('getopt')
+
+## Specify parameters
+spec <- matrix(c(
+	'maindir', 'm', 1, 'character', 'Main directory',
+	'help' , 'h', 0, 'logical', 'Display help'
+), byrow=TRUE, ncol=5)
+opt <- getopt(spec)
+
+## if help was asked for print a friendly message
+## and exit with a non-zero error code
+if (!is.null(opt$help)) {
+	cat(getopt(spec, usage=TRUE))
+	q(status=1)
+}
+
+MAINDIR <- opt$maindir
 
 ###
 source("/users/ajaffe/Lieber/lieber_functions_aj.R")
-library('Biostrings')
 DF = read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"))
 sampIDs = as.vector(DF[,1])
 

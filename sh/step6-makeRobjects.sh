@@ -44,8 +44,8 @@ git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/m
 
 rm -rf ${MAINDIR}/Counts/junction/tmpdir
 
-Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R $hgXX $MAINDIR $EXPERIMENT $PREFIX $PE $ERCC
-Rscript ${MAINDIR}/.create_fullCov_object.R $hgXX $MAINDIR $EXPERIMENT $PREFIX
+Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o $hgXX -m $MAINDIR -e $EXPERIMENT -p $PREFIX -l $PE -c $ERCC
+Rscript ${MAINDIR}/.create_fullCov_object.R -o $hgXX -m $MAINDIR -e $EXPERIMENT -p $PREFIX
 
 echo "**** Job ends ****"
 date
