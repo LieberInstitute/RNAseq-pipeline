@@ -348,3 +348,14 @@ write.table(pd[,c("SAMPLE_ID", "bamFile")],
 	paste0(MAINDIR,"/samples_with_bams.txt"),
 	row.names=FALSE, quote=FALSE, sep="\t")
 
+## Reproducibility information
+print('Reproducibility information:')
+Sys.time()
+proc.time()
+options(width = 120)
+gotDevtools <- requireNamespace('devtools', quietly = TRUE)
+if(gotDevtools) {
+    devtools::session_info()
+} else {
+    sessionInfo()
+}

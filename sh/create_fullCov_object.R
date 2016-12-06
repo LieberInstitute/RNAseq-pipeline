@@ -86,4 +86,15 @@ fullCov =  fullCoverage(files=pd$bamFile,
 
 save(pd, fullCov, compress=TRUE, file=paste0(MAINDIR,"/fullCoverage_",EXPNAME,"_n",N,".rda"))
 
+## Reproducibility information
+print('Reproducibility information:')
+Sys.time()
+proc.time()
+options(width = 120)
+gotDevtools <- requireNamespace('devtools', quietly = TRUE)
+if(gotDevtools) {
+    devtools::session_info()
+} else {
+    sessionInfo()
+}
 

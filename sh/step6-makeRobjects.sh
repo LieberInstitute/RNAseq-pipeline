@@ -39,6 +39,9 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
+echo "**** Pipeline version: latest GitHub sha ****"
+git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+
 rm -rf ${MAINDIR}/Counts/junction/tmpdir
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R $hgXX $MAINDIR $EXPERIMENT $PREFIX $PE $ERCC

@@ -14,6 +14,10 @@ STRANDED=$5
 ERCC=$6
 FQ_FOLDER=$7
 
+
+echo "**** Pipeline version: latest GitHub sha ****"
+git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+
 SH_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh
 ANNO_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation
 
