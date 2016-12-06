@@ -17,13 +17,13 @@ qsub pipeline_setup.sh
   
   Paired-end files: `SAMPLE_R1_001.fastq.gz` and `SAMPLE_R2_001.fastq.gz`
  
-  Singe-end files : `SAMPLE.fastq.gz`
+  Single-end files : `SAMPLE.fastq.gz`
   
   *fq.gz files also supported*
 
 3. Run pipeline with following call in `$DIR`:
 
-  `/DIR/TO/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $PE_Bool $Stranded_Bool $ERCC_Bool $DIR/FASTQ`
+  `/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $PE_Bool $Stranded_Bool $ERCC_Bool $DIR/FASTQ`
 
   ExprName: main identifier, experiment name
   
