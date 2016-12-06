@@ -355,7 +355,6 @@ if (hgXX == "hg19") {
 } else if (hgXX == "hg38") { 
 	library(BSgenome.Hsapiens.UCSC.hg38)
 }
-library(GenomicRanges)
 left = right = jMap
 end(left) = start(left) +1
 start(right) = end(right) -1
