@@ -1,7 +1,6 @@
 #!/bin/bash
 #$ -cwd
 #$ -N pipeline_setup
-#$ -pe local 8
 #$ -o ./logs/pipeline_setup.o.txt
 #$ -e ./logs/pipeline_setup.e.txt
 echo "**** Job starts ****"
