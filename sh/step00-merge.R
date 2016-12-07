@@ -6,9 +6,9 @@ library('qualV')
 ## Specify parameters
 spec <- matrix(c(
     'sampleids', 's', 1, 'character', 'Path to the SAMPLE_IDs.txt file',
-	'maindir', 'm', 1, 'character', 'Main directory',
+	'outdir', 'o', 1, 'character', 'Full path to directory where the merged fastq files will be saved to',
     'paired', 'p', 1, 'logical', 'Whether the reads are paired-end or not',
-    'extenstion', 'e', 1, 'character', 'The file extension',
+    'extension', 'e', 1, 'character', 'The file extension',
     'cores', 'c', 1, 'integer', 'Number of cores to use'
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
@@ -25,15 +25,14 @@ if (!is.null(opt$help)) {
 if(FALSE) {
     opt <- list(
         sampleids = '/users/lcollado/SAMPLE_IDs.txt',
-        maindir = '/users/lcollado',
         paired = TRUE,
-        extension = 'fastq.gz'
+        extension = 'fastq.gz',
+        outdir = '/users/lcollado/merged_fastq'
     )
 }
 
 samples <- read.table(opt$sampleids, stringsAsFactors = FALSE)
-outdir <- file.path(opt$maindir, 'merged_fastq')
-dir.create(outdir, showWarnings = FALSE)
+dir.create(opt$outdir, showWarnings = FALSE)
 
 file_list <- split(samples$V1, samples$V2)
 
@@ -62,12 +61,12 @@ res <- bpmapply(function(common, new_name) {
     if(opt$paired) {
         for(read in paste0(c('_R1_001.', '_R2_001.'), opt$extension)) {
             merge_files(paste0(common, read),
-                file.path(outdir, paste0(new_name, read)))
+                file.path(opt$outdir, paste0(new_name, read)))
         }
     } else {
         read <- paste0('.', opt$extension)
         merge_files(paste0(common, read),
-            file.path(outdir, paste0(new_name, read)))
+            file.path(opt$outdir, paste0(new_name, read)))
     }
 }, file_list, new_names, BPPRAM = MulticoreParam(opt$cores))
 
@@ -76,7 +75,8 @@ system(paste('mv', opt$sampleids,
     paste0('.', gsub('.txt', '_backup.txt', opt$sampleids))))
 
 message(paste(Sys.time(), 'creating the new SAMPLE_IDs.txt file with the merged samples'))
-write.table(new_names, file = opt$sampleids, row.names = FALSE, col.names = FALSE, quote = FALSE)
+write.table(file.path(opt$outdir, new_names), file = opt$sampleids,
+    row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 ## Reproducibility information
 print('Reproducibility information:')

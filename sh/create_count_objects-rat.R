@@ -130,9 +130,9 @@ pd = cbind(pd,hiStats)
 
 ### confirm total mapping
 pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-    chrs = c(1:20, 'X', 'Y'), BPPARAM = MulticoreParam(12)))
+    chrs = c(1:20, 'X', 'Y'), BPPARAM = MulticoreParam(8)))
 pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'MT', 
-    BPPARAM = MulticoreParam(12)))
+    BPPARAM = MulticoreParam(8)))
 pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 ###################################################################

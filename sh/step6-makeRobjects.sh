@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC}
+# ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
@@ -10,11 +10,19 @@ hgXX=$3
 SH_FOLDER=$4
 PE=$5
 ERCC=$6
+LARGE=${7-"FALSE"}
 
 SHORT="Rcounts-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
+
+if [[ $LARGE == "TRUE" ]]
+then
+    MEM="mem_free=20G,h_vmem=24G,h_fsize=200G"
+else
+    MEM="mem_free=5G,h_vmem=6G,h_fsize=200G"
+fi
 
 if [ $hgXX == "mm10" ]; then SPEC="mouse";
 elif [ $hgXX == "rn6" ]; then SPEC="rat";
@@ -30,8 +38,8 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -pe local 12
-#$ -l mem_free=3G,h_vmem=5G,h_fsize=200G
+#$ -pe local 8
+#$ -l ${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt

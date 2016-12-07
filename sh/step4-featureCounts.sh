@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX}  ${PE}
+# ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
@@ -10,11 +10,19 @@ STRANDED=$3
 GTF=$4
 hgXX=$5
 PE=$6
+LARGE=${7-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="featCounts-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
+
+if [[ $LARGE == "TRUE" ]]
+then
+    MEM="mem_free=20G,h_vmem=24G,h_fsize=100G"
+else
+    MEM="mem_free=10G,h_vmem=12G,h_fsize=100G"
+fi
 
 # Directories
 mkdir -p ${MAINDIR}/Counts/gene
@@ -40,7 +48,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l mem_free=10G,h_vmem=12G,h_fsize=100G
+#$ -l ${MEM}
 #$ -N ${sname}
 #$ -pe local 8
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt

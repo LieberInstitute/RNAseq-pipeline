@@ -1,17 +1,25 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES}
+# ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 CHRSIZES=$3
+LARGE=${4-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="coverage-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
+
+if [[ $LARGE == "TRUE" ]]
+then
+    MEM="mem_free=20G,h_vmem=40G,h_fsize=100G"
+else
+    MEM="mem_free=10G,h_vmem=20G,h_fsize=100G"
+fi
 
 # Directories
 mkdir -p ${MAINDIR}/Coverage
@@ -24,7 +32,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l mem_free=10G,h_vmem=20G,h_fsize=100G
+#$ -l ${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt

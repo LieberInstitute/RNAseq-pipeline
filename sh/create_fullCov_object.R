@@ -98,10 +98,10 @@ pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
 pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 
-###################################################################arg
-fullCov <- fullCoverage(files=pd$bamFile, chrs = CHR, mc.cores=12)
+###################################################################
+fullCov <- fullCoverage(files=pd$bamFile, chrs = CHR, mc.cores = 8)
 
-save(pd, fullCov, compress=TRUE, file = file.path(MAINDIR, paste0('/fullCoverage_', EXPNAME, '_n', N, '.rda')))
+save(pd, fullCov, compress=TRUE, file = file.path(MAINDIR, paste0('fullCoverage_', EXPNAME, '_n', N, '.rda')))
 
 ## Reproducibility information
 print('Reproducibility information:')

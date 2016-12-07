@@ -1,12 +1,13 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE}
+# ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
+LARGE=${4-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -21,6 +22,13 @@ else
     exit 1
 fi
 
+if [[ $LARGE == "TRUE" ]]
+then
+    MEM="mem_free=20G,h_vmem=30G,h_fsize=100G"
+else
+    MEM="mem_free=10G,h_vmem=15G,h_fsize=100G"
+fi
+
 # Construct shell files
 FILELIST=${MAINDIR}/SAMPLE_IDs.txt
 NUM=$(cat $FILELIST | wc -l)
@@ -29,7 +37,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l mem_free=10G,h_vmem=15G,h_fsize=100G
+#$ -l ${MEM}
 #$ -N ${sname}
 #$ -pe local 8
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt

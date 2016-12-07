@@ -1,13 +1,14 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${SH_FOLDER}
+# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${SH_FOLDER} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
 SH_FOLDER=$4
+LARGE=${5-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -22,13 +23,20 @@ else
     exit 1
 fi
 
+if [[ $LARGE == "TRUE" ]]
+then
+    MEM="mem_free=6G,h_vmem=10G,h_fsize=150G"
+else
+    MEM="mem_free=3G,h_vmem=5G,h_fsize=150G"
+fi
+
 # Construct shell files
 echo "Creating script ${sname}"
 
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l mem_free=3G,h_vmem=5G,h_fsize=150G
+#$ -l ${MEM}
 #$ -N ${sname}
 #$ -pe local 8
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
@@ -40,7 +48,7 @@ date
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -m ${MAINDIR} -p ${PE} -e ${EXT} -c 8
+Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -m ${MAINDIR} -p ${PE} -e ${EXT} -c 8 -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq
 
 echo "**** Job ends ****"
 date

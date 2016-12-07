@@ -1,13 +1,14 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX}
+# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
 HISATIDX=$4
+LARGE=${5-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -22,6 +23,13 @@ else
     exit 1
 fi
 
+if [[ $LARGE == "TRUE" ]]
+then
+    MEM="mem_free=10G,h_vmem=14G,h_fsize=100G"
+else
+    MEM="mem_free=5G,h_vmem=7G,h_fsize=100G"
+fi
+
 # Directories
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
 
@@ -33,7 +41,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l mem_free=5G,h_vmem=7G,h_fsize=100G
+#$ -l ${MEM}
 #$ -N ${sname}
 #$ -pe local 8
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
