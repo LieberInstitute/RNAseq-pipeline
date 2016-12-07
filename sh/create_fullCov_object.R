@@ -29,13 +29,13 @@ PREFIX <- opt$prefix
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
 ## read in pheno	
-pd = data.frame(read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"), as.is=TRUE, header = FALSE))
+pd = data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE, header = FALSE))
 names(pd)[1] = "SAMPLE_ID"
 N = length(pd$SAMPLE_ID)
 
 ### add bam file
-pd$bamFile = paste0(MAINDIR, "/HISAT2_out/", pd$SAMPLE_ID, "_accepted_hits.sorted.bam")
-pd$bwFile = paste0(MAINDIR, "/Coverage/", pd$SAMPLE_ID, ".bw")
+pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID, '_accepted_hits.sorted.bam'))
+pd$bwFile <- file.path(MAINDIR, 'Coverage', paste0(pd$SAMPLE_ID, '.bw'))
 
 ### get alignment metrics
 if (PE == TRUE) {
@@ -77,7 +77,7 @@ hisatStats = function(logFile) {
 }
 }
 
-logFiles = paste0(MAINDIR, "/HISAT2_out/align_summaries/", pd$SAMPLE_ID, "_summary.txt")
+logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(pd$SAMPLE_ID, '_summary.txt'))
 names(logFiles)  = pd$SAMPLE_ID
 hiStats = t(sapply(logFiles, hisatStats))
 
@@ -101,7 +101,7 @@ pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 ###################################################################arg
 fullCov <- fullCoverage(files=pd$bamFile, chrs = CHR, mc.cores=12)
 
-save(pd, fullCov, compress=TRUE, file=paste0(MAINDIR,"/fullCoverage_",EXPNAME,"_n",N,".rda"))
+save(pd, fullCov, compress=TRUE, file = file.path(MAINDIR, paste0('/fullCoverage_', EXPNAME, '_n', N, '.rda')))
 
 ## Reproducibility information
 print('Reproducibility information:')

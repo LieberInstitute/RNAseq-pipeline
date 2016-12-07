@@ -54,7 +54,8 @@ date
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-ID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+FILEID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+ID=\$(basename "\${FILEID}")
 BAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam
 
 if [ $PE == "TRUE" ] ; then 

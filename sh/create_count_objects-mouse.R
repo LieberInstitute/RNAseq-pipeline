@@ -38,12 +38,12 @@ EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
 
 ## read in pheno	
-pd = data.frame(read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"), as.is=TRUE, header = FALSE))
+pd = data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE, header = FALSE))
 names(pd)[1] = "SAMPLE_ID"
 N = length(pd$SAMPLE_ID)
 
 ### add bam file
-pd$bamFile = paste0(MAINDIR, "/HISAT2_out/", pd$SAMPLE_ID, "_accepted_hits.sorted.bam")
+pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID, '_accepted_hits.sorted.bam'))
 
 ### get alignment metrics
 if (PE == TRUE) {
@@ -85,7 +85,7 @@ hisatStats = function(logFile) {
 }
 }
 
-logFiles = paste0(MAINDIR, "/HISAT2_out/align_summaries/", pd$SAMPLE_ID, "_summary.txt")
+logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(pd$SAMPLE_ID, '_summary.txt'))
 names(logFiles)  = pd$SAMPLE_ID
 hiStats = t(sapply(logFiles, hisatStats))
 
@@ -103,7 +103,7 @@ pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 ###############
 ### gene counts
-geneFn = paste0(MAINDIR,"/Counts/gene/",pd$SAMPLE_ID,"_Gencode.M11.mm10_Genes.counts")
+geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(pd$SAMPLE_ID, '_Gencode.M11.mm10_Genes.counts'))
 names(geneFn) = pd$SAMPLE_ID
 all(file.exists(geneFn))
 
@@ -161,12 +161,12 @@ widG = matrix(rep(geneMap$Length), nr = nrow(geneCounts),
 geneRpkm = geneCounts/(widG/1000)/(bg/1e6)
 
 ## save pd
-write.csv(pd, file=paste0(MAINDIR,"/annotated_pd.csv"))
+write.csv(pd, file = file.path(MAINDIR, 'annotated_pd.csv'))
 
 
 ###############
 ### exon counts
-exonFn = paste0(MAINDIR,"/Counts/exon/",pd$SAMPLE_ID,"_Gencode.M11.mm10_Exons.counts")
+exonFn <- file.path(MAINDIR, 'Counts', 'exon', paste0(pd$SAMPLE_ID, '_Gencode.M11.mm10_Exons.counts'))
 names(exonFn) = pd$SAMPLE_ID
 all(file.exists(exonFn))
 
@@ -217,7 +217,7 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 ##### junctions
 
 ## via primary alignments only
-junctionFiles = paste0(MAINDIR,"/Counts/junction/",pd$SAMPLE_ID,"_junctions_primaryOnly_regtools.count")
+junctionFiles <- file.path(MAINDIR, 'Counts', 'junction', paste0(pd$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 all(file.exists(junctionFiles)) #  TRUE
 
 juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
@@ -311,13 +311,13 @@ jMap$rightSeq = getSeq(Mmusculus, right)
 ### save counts
 
 save(pd, jMap, jCounts, geneCounts, geneMap, exonCounts, exonMap, compress=TRUE,
-	file=paste0(MAINDIR,"/rawCounts_",EXPNAME,"_n",N,".rda"))
+	file= file.path(MAINDIR, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
 save(pd, jMap, jRpkm, geneRpkm,	geneMap, exonRpkm, exonMap, compress=TRUE,
-	file=paste0(MAINDIR,"/rpkmCounts_",EXPNAME,"_n",N,".rda"))
+	file= file.path(MAINDIR, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
 ## write out for coverage
 write.table(pd[,c("SAMPLE_ID", "bamFile")], 
-	paste0(MAINDIR,"/samples_with_bams.txt"),
+	file.path(MAINDIR, 'samples_with_bams.txt'),
 	row.names=FALSE, quote=FALSE, sep="\t")
 
 ## Reproducibility information

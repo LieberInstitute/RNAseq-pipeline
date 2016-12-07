@@ -20,15 +20,15 @@ if (!is.null(opt$help)) {
 MAINDIR <- opt$maindir
 
 ###
-DF = read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"))
+DF = read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'))
 sampIDs = as.vector(DF[,1])
 
 
 ##observed kallisto tpm
 erccTPM = sapply(sampIDs, function(x) {
-  read.table(paste0(MAINDIR,"/Ercc/",x,"/abundance.tsv"), header = TRUE)$tpm
+  read.table(file.path(MAINDIR, "Ercc", x, "abundance.tsv"), header = TRUE)$tpm
 })
-rownames(erccTPM) = read.table(paste0(MAINDIR,"/Ercc/",sampIDs[1],"/abundance.tsv"),
+rownames(erccTPM) = read.table(file.path(MAINDIR, "Ercc", sampIDs[1], "abundance.tsv"),
 						header = TRUE)$target_id
 
 #expected concentration
@@ -39,7 +39,7 @@ spikeIns = read.delim("/users/ajaffe/Lieber/Projects/RNAseq/Ribozero_Compare/erc
 spikeIns = spikeIns[match(rownames(erccTPM),rownames(spikeIns)),]
 
 
-pdf(paste0(MAINDIR,"/Ercc/ercc_spikein_check_mix1.pdf"),h=12,w=18)
+pdf(file.path(MAINDIR, 'Ercc', 'ercc_spikein_check_mix1.pdf'),h=12,w=18)
 mypar(4,6)
 for(i in 1:ncol(erccTPM)) {
 	plot(log2(spikeIns[,"concentration.in.Mix.1..attomoles.ul."]) ~ log2(erccTPM[,i]+1),
