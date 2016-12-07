@@ -1,18 +1,25 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
+# ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-EXT=$4
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="fastqc-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
+
+if [ -e "${MAINDIR}/.FILE_extension.txt" ]
+then
+    EXT=$(cat ${MAINDIR}/.FILE_extension.txt)
+else
+    echo "Error: could not find ${MAINDIR}/.FILE_extension.txt"
+    exit 1
+fi
 
 # Directories
 mkdir -p ${MAINDIR}/FastQC/Untrimmed

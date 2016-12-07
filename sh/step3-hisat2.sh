@@ -1,19 +1,26 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${HISATIDX}
+# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-EXT=$4
-HISATIDX=$5
+HISATIDX=$4
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="hisat2-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
+
+if [ -e "${MAINDIR}/.FILE_extension.txt" ]
+then
+    EXT=$(cat ${MAINDIR}/.FILE_extension.txt)
+else
+    echo "Error: could not find ${MAINDIR}/.FILE_extension.txt"
+    exit 1
+fi
 
 # Directories
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries

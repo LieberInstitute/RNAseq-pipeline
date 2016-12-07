@@ -1,19 +1,26 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${SH_FOLDER}
+# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${SH_FOLDER}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-EXT=$4
-SH_FOLDER=$5
+SH_FOLDER=$4
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="merge-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
+
+if [ -e "${MAINDIR}/.FILE_extension.txt" ]
+then
+    EXT=$(cat ${MAINDIR}/.FILE_extension.txt)
+else
+    echo "Error: could not find ${MAINDIR}/.FILE_extension.txt"
+    exit 1
+fi
 
 # Construct shell files
 echo "Creating script ${sname}"
@@ -21,7 +28,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l mem_free=3G,h_vmem=5G,h_fsize=100G
+#$ -l mem_free=3G,h_vmem=5G,h_fsize=150G
 #$ -N ${sname}
 #$ -pe local 8
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt

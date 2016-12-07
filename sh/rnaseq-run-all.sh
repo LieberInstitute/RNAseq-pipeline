@@ -26,19 +26,23 @@ SH_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh
 ANNO_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation
 
 # Set variables for desired genome version
-if [ $hgXX == "hg38" ] ; then 
+if [ $hgXX == "hg38" ]
+then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/hisat2_GRCh38primary
 	CHRSIZES=${ANNO_FOLDER}/hg38.chrom.sizes.gencode
-elif [ $hgXX == "hg19" ] ; then 
+elif [ $hgXX == "hg19" ]
+then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/hisat2_GRCh37primary
 	CHRSIZES=${ANNO_FOLDER}/hg19.chrom.sizes.gencode
-elif [ $hgXX == "mm10" ] ; then 
+elif [ $hgXX == "mm10" ]
+then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/hisat2_GRCm38primary
 	CHRSIZES=${ANNO_FOLDER}/mm10.chrom.sizes.gencode
-elif [ $hgXX == "rn6" ] ; then 
+elif [ $hgXX == "rn6" ]
+then 
 	GTF=${ANNO_FOLDER}/ensembl/Rnor_6.0/Rattus_norvegicus.Rnor_6.0.86.gtf
 	HISATIDX=${ANNO_FOLDER}/ensembl/Rnor_6.0/hisat2_Rnor6.0toplevel
 	CHRSIZES=${ANNO_FOLDER}/rn6.chrom.sizes.ensembl
@@ -48,7 +52,8 @@ else
 fi
 
 ## Add full paths to SAMPLE_IDs.txt if necessary
-if [ ${FQ_FOLDER} != "" ] ; then
+if [ ${FQ_FOLDER} != "" ]
+then
     echo "Adding ${FQ_FOLDER} to SAMPLE_IDs.txt"
     mv SAMPLE_IDs.txt .SAMPLE_IDs_original.txt
     awk -v fold=${FQ_FOLDER} '{print fold"/" $0;}' .SAMPLE_IDs_original.txt > SAMPLE_IDs.txt
@@ -58,7 +63,8 @@ fi
 FILEID=$(head -n 1 SAMPLE_IDs.txt | cut -f 1 -d " ")
 Rscript ${SH_FOLDER}/file_extension.R -f ${FILEID}
 
-if [ -e .FILE_extension.txt ] then
+if [ -e ".FILE_extension.txt" ]
+then
     EXT=$(cat .FILE_extension.txt)
 else
     exit 1
@@ -66,17 +72,19 @@ fi
 
 ## create and submit all scripts
 
-if [ ${MERGE} == "TRUE" ] ; then
-sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${SH_FOLDER}
+if [ ${MERGE} == "TRUE" ]
+then
+    sh ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${SH_FOLDER}
 fi
 
-if [ ${ERCC} == "TRUE" ] ; then
-sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
+if [ ${ERCC} == "TRUE" ]
+then
+    sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE}
 fi
 
-sh ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
-sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
-sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${HISATIDX}
+sh ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE}
+sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE}
+sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX}
 sh ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE}
 sh ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES}
 sh ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC}
