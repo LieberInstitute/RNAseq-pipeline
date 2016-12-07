@@ -13,6 +13,7 @@ PE=$4
 STRANDED=$5
 ERCC=$6
 FQ_FOLDER=$7
+MERGE=${8-"FALSE"}
 
 
 echo "**** Pipeline version: latest GitHub sha ****"
@@ -60,7 +61,12 @@ fi
 
 ## create and submit all scripts
 
-if [ $ERCC == "TRUE" ] ; then
+if [ ${MERGE} == "TRUE" ] ; then
+sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT} ${SH_FOLDER}
+FQ_FOLDER=${PWD}/merged_fastq
+fi
+
+if [ ${ERCC} == "TRUE" ] ; then
 sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT}
 fi
 
