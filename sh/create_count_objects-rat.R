@@ -40,7 +40,7 @@ RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
 ## read in pheno	
-pd = data.frame(read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"), as.is=TRUE, header=F))
+pd = data.frame(read.table(paste0(MAINDIR,"/SAMPLE_IDs.txt"), as.is=TRUE, header = FALSE))
 names(pd)[1] = "SAMPLE_ID"
 N = length(pd$SAMPLE_ID)
 
@@ -51,10 +51,10 @@ if (ERCC == TRUE ){
 
 	##observed kallisto tpm
 	erccTPM = sapply(sampIDs, function(x) {
-	  read.table(paste0(MAINDIR,"/Ercc/",x,"/abundance.tsv"),header=T)$tpm
+	  read.table(paste0(MAINDIR,"/Ercc/",x,"/abundance.tsv"),header = TRUE)$tpm
 	})
 	rownames(erccTPM) = read.table(paste0(MAINDIR,"/Ercc/",sampIDs[1],"/abundance.tsv"),
-							header=T)$target_id
+							header = TRUE)$target_id
 	#expected concentration
 	spikeIns = read.delim("/users/ajaffe/Lieber/Projects/RNAseq/Ribozero_Compare/ercc_actual_conc.txt",
 								as.is=TRUE,row.names=2)

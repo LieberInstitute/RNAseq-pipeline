@@ -26,10 +26,10 @@ sampIDs = as.vector(DF[,1])
 
 ##observed kallisto tpm
 erccTPM = sapply(sampIDs, function(x) {
-  read.table(paste0(MAINDIR,"/Ercc/",x,"/abundance.tsv"),header=T)$tpm
+  read.table(paste0(MAINDIR,"/Ercc/",x,"/abundance.tsv"), header = TRUE)$tpm
 })
 rownames(erccTPM) = read.table(paste0(MAINDIR,"/Ercc/",sampIDs[1],"/abundance.tsv"),
-						header=T)$target_id
+						header = TRUE)$target_id
 
 #expected concentration
 spikeIns = read.delim("/users/ajaffe/Lieber/Projects/RNAseq/Ribozero_Compare/ercc_actual_conc.txt",
