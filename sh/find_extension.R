@@ -22,7 +22,6 @@ if(FALSE) {
     )
 }
 
-
 files <- system(paste0('ls ', opt$file, '*'), intern = TRUE)
 
 extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')

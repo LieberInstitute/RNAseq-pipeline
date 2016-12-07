@@ -57,4 +57,3 @@ EOF
 call="qsub .${sname}.sh"
 echo $call
 $call
-

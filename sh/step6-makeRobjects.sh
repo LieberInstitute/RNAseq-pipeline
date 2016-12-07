@@ -31,7 +31,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -pe local 12
-#$ -l mem_free=3G,h_vmem=5G,h_fsize=130G
+#$ -l mem_free=3G,h_vmem=5G,h_fsize=200G
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
@@ -54,4 +54,3 @@ EOF
 call="qsub .${sname}.sh"
 echo $call
 $call
-

@@ -114,4 +114,3 @@ if(gotDevtools) {
 } else {
     sessionInfo()
 }
-

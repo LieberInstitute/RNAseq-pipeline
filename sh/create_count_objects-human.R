@@ -440,4 +440,3 @@ if(gotDevtools) {
 } else {
     sessionInfo()
 }
-
