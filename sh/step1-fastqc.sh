@@ -33,7 +33,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l mem_free=5G,h_vmem=7G,h_fsize=10G
+#$ -l mem_free=5G,h_vmem=7G,h_fsize=100G
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt

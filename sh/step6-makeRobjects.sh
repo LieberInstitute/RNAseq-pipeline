@@ -31,7 +31,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -pe local 12
-#$ -l mem_free=3G,h_vmem=5G,h_fsize=30G
+#$ -l mem_free=3G,h_vmem=5G,h_fsize=130G
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
