@@ -21,19 +21,37 @@ qsub pipeline_setup.sh
   
   *fq.gz files also supported*
   
+  For example, a `SAMPLE_IDs.txt` file can look like this (these are paired-end samples):
+
+```
+R10126_C1BP4ACXX_GAGATTCC_L005
+R10126_C1BP4ACXX_GAGATTCC_L006
+R10126_C1BP4ACXX_GAGATTCC_L007
+R10126_C1BP4ACXX_GAGATTCC_L008
+```
+
+  You can alternatively add the path to the files, which can be useful if you have the FASTQ files in different directories:
+
+```
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006
+```
+  
   If you reads are split in multiple files and you want to merge them specify in `SAMPLE_IDs.txt` a second column with the group identifiers and the boolean ${MERGE} in the next section. An example of such a `SAMPLE_IDs.txt` file would be
   
 ```
-R10126_C1BP4ACXX_GAGATTCC_L005  1
-R10126_C1BP4ACXX_GAGATTCC_L006  1
-R10126_C1BP4ACXX_GAGATTCC_L007  2
-R10126_C1BP4ACXX_GAGATTCC_L008  3
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005   1
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006   1
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005   2
+/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006   2
 ```
 
 3. Run pipeline with following call in `$DIR`:
 
 ```
-sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $PE_Bool $Stranded_Bool $ERCC_Bool $DIR/FASTQ $MERGE
+sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $PE_Bool $Stranded_Bool $ERCC_Bool $FASTQ_DIR $MERGE
 ```
 
   ExprName: main identifier, experiment name
@@ -47,6 +65,8 @@ sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $So
   Stranded_Bool: `TRUE` If samples are reverse-stranded (forward-stranded not compatible yet)
   
   ERCC_Bool: `TRUE` If ERCC mix 1 was added
+  
+  FASTQ_DIR: The path of the directory containing the FASTQ files. Do not specify it if `SAMPLE_IDs.txt` already contains full paths.
   
   MERGE: `TRUE` if you want to merge the files. The will be saved in a directory called `merged_fastq`. `FALSE` by default and doesn't need to be specified.
 

@@ -12,7 +12,7 @@ hgXX=$3
 PE=$4
 STRANDED=$5
 ERCC=$6
-FQ_FOLDER=$7
+FQ_FOLDER=${7-""}
 MERGE=${8-"FALSE"}
 
 
@@ -47,32 +47,36 @@ else
 	exit 1
 fi
 
-## Find extension of fastq file names
-FILENAME=$(ls $FQ_FOLDER | head -1)
-if [ $(printf $FILENAME | tail -c 8) == "fastq.gz" ] ; then EXT="fastq.gz"
-elif [ $(printf $FILENAME | tail -c 5) == "fq.gz" ] ; then EXT="fq.gz"
-elif [ $(printf $FILENAME | tail -c 5) == "fastq" ] ; then EXT="fastq"
-elif [ $(printf $FILENAME | tail -c 2) == "fq" ] ; then EXT="fq"
-else 
-	echo "Unrecognized fastq filename extension." >&2
-	exit 1
+## Add full paths to SAMPLE_IDs.txt if necessary
+if [ ${FQ_FOLDER} != "" ] ; then
+    echo "Adding ${FQ_FOLDER} to SAMPLE_IDs.txt"
+    mv SAMPLE_IDs.txt .SAMPLE_IDs_original.txt
+    awk -v fold=${FQ_FOLDER} '{print fold"/" $0;}' .SAMPLE_IDs_original.txt > SAMPLE_IDs.txt
 fi
 
+## Find extension of fastq file names
+FILEID=$(head -n 1 SAMPLE_IDs.txt | cut -f 1 -d " ")
+Rscript ${SH_FOLDER}/file_extension.R -f ${FILEID}
+
+if [ -e .FILE_extension.txt ] then
+    EXT=$(cat .FILE_extension.txt)
+else
+    exit 1
+fi
 
 ## create and submit all scripts
 
 if [ ${MERGE} == "TRUE" ] ; then
-sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT} ${SH_FOLDER}
-FQ_FOLDER=${PWD}/merged_fastq
+sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${SH_FOLDER}
 fi
 
 if [ ${ERCC} == "TRUE" ] ; then
-sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT}
+sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
 fi
 
-sh ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT}
-sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT}
-sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT} ${HISATIDX}
+sh ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
+sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
+sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${HISATIDX}
 sh ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE}
 sh ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES}
 sh ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC}

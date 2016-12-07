@@ -1,15 +1,14 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT} ${SH_FOLDER}
+# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${SH_FOLDER}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-FQ_FOLDER=$4
-EXT=$5
-SH_FOLDER=$6
+EXT=$4
+SH_FOLDER=$5
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -34,7 +33,7 @@ date
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -f ${FQ_FOLDER} -m ${MAINDIR} -p ${PE} -e ${EXT} -c 8
+Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -m ${MAINDIR} -p ${PE} -e ${EXT} -c 8
 
 echo "**** Job ends ****"
 date

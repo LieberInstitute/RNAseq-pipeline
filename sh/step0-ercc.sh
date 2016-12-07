@@ -1,14 +1,13 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT}
+# ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-FQ_FOLDER=$4
-EXT=$5
+EXT=$4
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -37,18 +36,19 @@ echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
 
-ID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+FILEID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+ID=\$(basename "\${FILEID}")
 mkdir -p ${MAINDIR}/Ercc/\${ID}
 
 if [ $PE == "TRUE" ] ; then 
 ${SOFTWARE}/kallisto quant \
 -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
 -o ${MAINDIR}/Ercc/\${ID} -t 8 --rf-stranded \
-${FQ_FOLDER}/\${ID}_R1_001.${EXT} ${FQ_FOLDER}/\${ID}_R2_001.${EXT}
+\${FILEID}_R1_001.${EXT} \${FILEID}_R2_001.${EXT}
 else
 ${SOFTWARE}/kallisto quant \
 -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
--o ${MAINDIR}/Ercc/\${ID} -t 8 --single ${FQ_FOLDER}/\${ID}.${EXT}
+-o ${MAINDIR}/Ercc/\${ID} -t 8 --single \${FILEID}.${EXT}
 
 fi
 

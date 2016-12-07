@@ -6,7 +6,6 @@ library('qualV')
 ## Specify parameters
 spec <- matrix(c(
     'sampleids', 's', 1, 'character', 'Path to the SAMPLE_IDs.txt file',
-	'fastadir', 'f', 1, 'character', 'Path to the fasta files',
 	'maindir', 'm', 1, 'character', 'Main directory',
     'paired', 'p', 1, 'logical', 'Whether the reads are paired-end or not',
     'extenstion', 'e', 1, 'character', 'The file extension',
@@ -26,7 +25,6 @@ if (!is.null(opt$help)) {
 if(FALSE) {
     opt <- list(
         sampleids = '/users/lcollado/SAMPLE_IDs.txt',
-        fastadir = '/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX',
         maindir = '/users/lcollado',
         paired = TRUE,
         extension = 'fastq.gz'
@@ -63,18 +61,19 @@ merge_files <- function(file_names, new_file) {
 res <- bpmapply(function(common, new_name) {
     if(opt$paired) {
         for(read in paste0(c('_R1_001.', '_R2_001.'), opt$extension)) {
-            file_names <- file.path(opt$fastadir, paste0(common, read))
-            merge_files(file_names, file.path(outdir, paste0(new_name, read)))
+            merge_files(paste0(common, read),
+                file.path(outdir, paste0(new_name, read)))
         }
     } else {
         read <- paste0('.', opt$extension)
-        file_names <- file.path(opt$fastadir, paste0(common, read))
-        merge_files(file_names, file.path(outdir, paste0(new_name, read)))
+        merge_files(paste0(common, read),
+            file.path(outdir, paste0(new_name, read)))
     }
 }, file_list, new_names, BPPRAM = MulticoreParam(opt$cores))
 
-message(paste(Sys.time(), 'creating SAMPLE_IDs_backup.txt'))
-system(paste('mv', opt$sampleids, gsub('.txt', '_backup.txt', opt$sampleids)))
+message(paste(Sys.time(), 'creating .SAMPLE_IDs_backup.txt'))
+system(paste('mv', opt$sampleids,
+    paste0('.', gsub('.txt', '_backup.txt', opt$sampleids))))
 
 message(paste(Sys.time(), 'creating the new SAMPLE_IDs.txt file with the merged samples'))
 write.table(new_names, file = opt$sampleids, row.names = FALSE, col.names = FALSE, quote = FALSE)

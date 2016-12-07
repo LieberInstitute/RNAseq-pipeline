@@ -1,15 +1,14 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${FQ_FOLDER} ${EXT} ${HISATIDX}
+# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${EXT} ${HISATIDX}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-FQ_FOLDER=$4
-EXT=$5
-HISATIDX=$6
+EXT=$4
+HISATIDX=$5
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -40,7 +39,8 @@ date
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-ID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+FILEID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+ID=\$(basename "\${FILEID}")
 
 if [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
 	## Trimmed, paired-end
@@ -67,7 +67,7 @@ elif [ $PE == "TRUE" ] ; then
 	## Untrimmed, pair-end
 	echo "HISAT2 alignment run on original untrimmed paired-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p 8 \
-	-x $HISATIDX -1 ${FQ_FOLDER}/\${ID}_R1.${EXT} -2 ${FQ_FOLDER}/\${ID}_R2.${EXT} \
+	-x $HISATIDX -1 \${FILEID}_R1.${EXT} -2 \${FILEID}_R2.${EXT} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 
@@ -75,7 +75,7 @@ else
 	## Untrimmed, single-end
 	echo "HISAT2 alignment run on original untrimmed single-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p 8 \
-	-x $HISATIDX -U ${FQ_FOLDER}/\${ID}.${EXT} \
+	-x $HISATIDX -U \${FILEID}.${EXT} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 fi
