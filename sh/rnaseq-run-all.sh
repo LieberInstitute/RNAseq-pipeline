@@ -62,7 +62,7 @@ fi
 
 ## Find extension of fastq file names
 FILEID=$(head -n 1 SAMPLE_IDs.txt | cut -f 1 -d " ")
-Rscript ${SH_FOLDER}/file_extension.R -f ${FILEID}
+Rscript ${SH_FOLDER}/find_extension.R -f ${FILEID}
 
 if [ -e ".FILE_extension.txt" ]
 then
