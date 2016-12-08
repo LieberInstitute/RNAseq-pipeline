@@ -13,13 +13,13 @@ qsub pipeline_setup.sh
 
 2. In `$DIR`, make text file called `SAMPLE_IDs.txt` with FASTQ file prefixes delimited with newline.
   
-  Sample file possibilities for prefix `SAMPLE`: 
+  Sample file possibilities for prefix _SAMPLE_: 
   
-  Paired-end files: __SAMPLE__`_R1_001.fastq.gz` and __SAMPLE__`_R2_001.fastq.gz`
+  Paired-end files: _SAMPLE_`_R1_001.fastq.gz` and _SAMPLE_`_R2_001.fastq.gz`
  
-  Single-end files : __SAMPLE__`.fastq.gz`
+  Single-end files : _SAMPLE_`.fastq.gz`
   
-  *fq.gz files also supported*
+  The following extensions are supported: `fastq.gz`, `fq.gz`, `fastq`, `fq`.
   
   For example, a `SAMPLE_IDs.txt` file can look like this (these are paired-end samples):
 
@@ -32,17 +32,15 @@ qsub pipeline_setup.sh
 
   You can alternatively add the path to the files, which can be useful if you have the FASTQ files in different directories:
 
-  ```
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005
+  ``` /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006
   ```
   
-  If you reads are split in multiple files and you want to merge them specify in `SAMPLE_IDs.txt` a second column with the group identifiers and the boolean ${MERGE} in the next section. An example of such a `SAMPLE_IDs.txt` file would be
+  If you reads are split in multiple files and you want to merge them specify in `SAMPLE_IDs.txt` a second column with the group identifiers and the boolean `${MERGE}` in the next section. An example of such a `SAMPLE_IDs.txt` file would be
   
-  ```
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005   1
+  ``` /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005   1
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006   1
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005   2
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006   2
@@ -66,4 +64,8 @@ qsub pipeline_setup.sh
 
 4. Hidden run files will be created with all calls needed to run the pipeline. Each step is submitted to SGE cluster and queued to run sequentially. Steps that can be parallelized are submitted as array jobs.
 
-5. Completion emails: by default you will only get an email if a job failed. If you want to get completion emails add the empty file `${DIR}/.send_emails`.
+5. Completion emails: by default you will only get an email if a job failed. If you want to get completion emails add the empty file `${DIR}/.send_emails`. You can create it with:
+
+  ```
+  touch ${DIR}/.send_emails
+  ```
