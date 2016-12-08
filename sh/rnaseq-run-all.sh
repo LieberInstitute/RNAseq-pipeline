@@ -53,7 +53,7 @@ else
 fi
 
 ## Add full paths to SAMPLE_IDs.txt if necessary
-if [ ${FQ_FOLDER} != "" ]
+if [ "${FQ_FOLDER}" != "" ]
 then
     echo "Adding ${FQ_FOLDER} to SAMPLE_IDs.txt"
     mv SAMPLE_IDs.txt .SAMPLE_IDs_original.txt
