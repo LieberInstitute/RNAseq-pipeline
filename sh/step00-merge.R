@@ -72,8 +72,10 @@ res <- bpmapply(function(common, new_name) {
 }, file_list, new_names, BPPARAM = MulticoreParam(opt$cores))
 
 message(paste(Sys.time(), 'creating .SAMPLE_IDs_backup.txt'))
-system(paste('mv', opt$sampleids,
-    paste0('.', gsub('.txt', '_backup.txt', opt$sampleids))))
+system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
+    paste0('.', gsub('.txt', paste0('_backup_', Sys.Date(), '.txt'),
+    basename(opt$sampleids))))
+))
 
 message(paste(Sys.time(), 'creating the new SAMPLE_IDs.txt file with the merged samples'))
 write.table(file.path(opt$outdir, new_names), file = opt$sampleids,
