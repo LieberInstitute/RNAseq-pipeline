@@ -24,6 +24,13 @@ else
     MEM="mem_free=10G,h_vmem=12G,h_fsize=100G"
 fi
 
+if [ -e ".send_emails" ]
+then
+    EMAIL="e"
+else
+    EMAIL="a"
+fi
+
 # Directories
 mkdir -p ${MAINDIR}/Counts/gene
 mkdir -p ${MAINDIR}/Counts/exon
@@ -56,7 +63,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -t 1-${NUM}
 #$ -tc 10
 #$ -hold_jid pipeline_setup,hisat2-${EXPERIMENT}.${PREFIX}
-#$ -m a
+#$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 

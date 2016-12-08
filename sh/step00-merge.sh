@@ -30,6 +30,13 @@ else
     MEM="mem_free=3G,h_vmem=5G,h_fsize=150G"
 fi
 
+if [ -e ".send_emails" ]
+then
+    EMAIL="e"
+else
+    EMAIL="a"
+fi
+
 # Construct shell files
 echo "Creating script ${sname}"
 
@@ -42,7 +49,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
 #$ -hold_jid pipeline_setup
-#$ -m a
+#$ -m ${EMAIL}
 
 echo "**** Job starts ****"
 date

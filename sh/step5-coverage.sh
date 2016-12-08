@@ -21,6 +21,13 @@ else
     MEM="mem_free=10G,h_vmem=20G,h_fsize=100G"
 fi
 
+if [ -e ".send_emails" ]
+then
+    EMAIL="e"
+else
+    EMAIL="a"
+fi
+
 # Directories
 mkdir -p ${MAINDIR}/Coverage
 
@@ -39,7 +46,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -t 1-${NUM}
 #$ -tc 40
 #$ -hold_jid pipeline_setup,featCounts-${EXPERIMENT}.${PREFIX}
-#$ -m a
+#$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 

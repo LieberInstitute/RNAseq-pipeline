@@ -30,6 +30,13 @@ else
     MEM="mem_free=5G,h_vmem=7G,h_fsize=100G"
 fi
 
+if [ -e ".send_emails" ]
+then
+    EMAIL="e"
+else
+    EMAIL="a"
+fi
+
 # Directories
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
 
@@ -49,7 +56,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -t 1-${NUM}
 #$ -tc 15
 #$ -hold_jid pipeline_setup,trim-${EXPERIMENT}.${PREFIX}
-#$ -m a
+#$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 

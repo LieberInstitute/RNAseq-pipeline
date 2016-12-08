@@ -73,3 +73,5 @@ sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $So
   LARGE: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
 
 4. Hidden run files will be created with all calls needed to run the pipeline. Each step is submitted to SGE cluster and queued to run sequentially. Steps that can be parallelized are submitted as array jobs.
+
+5. Completion emails: by default you will only get an email if a job failed. If you want to get completion emails add the empty file ${DIR}/.send_emails

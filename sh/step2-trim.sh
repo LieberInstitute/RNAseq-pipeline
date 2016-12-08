@@ -29,6 +29,13 @@ else
     MEM="mem_free=10G,h_vmem=15G,h_fsize=100G"
 fi
 
+if [ -e ".send_emails" ]
+then
+    EMAIL="e"
+else
+    EMAIL="a"
+fi
+
 # Construct shell files
 FILELIST=${MAINDIR}/SAMPLE_IDs.txt
 NUM=$(cat $FILELIST | wc -l)
@@ -45,7 +52,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -t 1-${NUM}
 #$ -tc 8
 #$ -hold_jid pipeline_setup,fastqc-${EXPERIMENT}.${PREFIX}
-#$ -m a
+#$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 

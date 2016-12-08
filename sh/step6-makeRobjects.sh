@@ -24,6 +24,13 @@ else
     MEM="mem_free=5G,h_vmem=6G,h_fsize=200G"
 fi
 
+if [ -e ".send_emails" ]
+then
+    EMAIL="e"
+else
+    EMAIL="a"
+fi
+
 if [ $hgXX == "mm10" ]; then SPEC="mouse";
 elif [ $hgXX == "rn6" ]; then SPEC="rat";
 else SPEC="human";
@@ -44,7 +51,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
 #$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
-#$ -m a
+#$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 
