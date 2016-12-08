@@ -49,7 +49,7 @@ date
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -m ${MAINDIR} -p ${PE} -e ${EXT} -c 8 -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq
+Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -p ${PE} -e ${EXT} -c 8
 
 echo "**** Job ends ****"
 date
