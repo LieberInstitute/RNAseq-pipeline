@@ -48,14 +48,14 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 15
-#$ -hold_jid trim-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,trim-${EXPERIMENT}.${PREFIX}
 echo "**** Job starts ****"
 date
 
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-FILEID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
 
 if [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then

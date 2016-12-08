@@ -47,22 +47,24 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 100
+#$ -hold_jid pipeline_setup,merge-${EXPERIMENT}.${PREFIX}
 echo "**** Job starts ****"
 date
 
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-FILEID=\$(awk "NR==\$SGE_TASK_ID" $FILELIST )
+FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
 mkdir -p ${MAINDIR}/FastQC/Untrimmed/\${ID}
 
-if [ $PE == "TRUE" ] ; then 
-${SOFTWARE}/FastQC_v0.11.5/fastqc \
+if [ $PE == "TRUE" ]
+then 
+    ${SOFTWARE}/FastQC_v0.11.5/fastqc \
 \${FILEID}_R1_001.${EXT} \${FILEID}_R2_001.${EXT} \
 --outdir=${MAINDIR}/FastQC/Untrimmed/\${ID} --extract
 else
-${SOFTWARE}/FastQC_v0.11.5/fastqc \${FILEID}.${EXT} \
+    ${SOFTWARE}/FastQC_v0.11.5/fastqc \${FILEID}.${EXT} \
 --outdir=${MAINDIR}/FastQC/Untrimmed/\${ID} --extract
 fi
 

@@ -39,8 +39,9 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -l ${MEM}
 #$ -N ${sname}
 #$ -pe local 8
-#$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
-#$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
+#$ -o ./logs/${SHORT}.o.txt
+#$ -e ./logs/${SHORT}.e.txt
+#$ -hold_jid pipeline_setup
 
 echo "**** Job starts ****"
 date

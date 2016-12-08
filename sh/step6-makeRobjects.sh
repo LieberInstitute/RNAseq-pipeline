@@ -43,7 +43,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid coverage-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
 echo "**** Job starts ****"
 date
 

@@ -9,7 +9,7 @@ spec <- matrix(c(
 	'outdir', 'o', 1, 'character', 'Full path to directory where the merged fastq files will be saved to',
     'paired', 'p', 1, 'logical', 'Whether the reads are paired-end or not',
     'extension', 'e', 1, 'character', 'The file extension',
-    'cores', 'c', 1, 'integer', 'Number of cores to use'
+    'cores', 'c', 1, 'integer', 'Number of cores to use',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
