@@ -24,20 +24,21 @@ if (!is.null(opt$help)) {
 ## For testing
 if(FALSE) {
     opt <- list(
-        sampleids = '/users/lcollado/SAMPLE_IDs.txt',
+        sampleids = '/dcl01/lieber/ajaffe/lab/libd_alzheimers/pipeline_results/SAMPLE_IDs.txt',
         paired = TRUE,
         extension = 'fastq.gz',
-        outdir = '/users/lcollado/merged_fastq'
+        outdir = '/dcl01/lieber/ajaffe/lab/libd_alzheimers/pipeline_results/ALZ/dec2016/merged_fastq'
     )
 }
 
 samples <- read.table(opt$sampleids, stringsAsFactors = FALSE)
-dir.create(opt$outdir, showWarnings = FALSE)
+dir.create(opt$outdir, showWarnings = FALSE, recursive = TRUE)
 
 file_list <- split(samples$V1, samples$V2)
 
 ## Get unique names for the samples
 new_names <- sapply(file_list, function(common) {
+    common <- gsub('.*/', '', common)
     n <- length(common)
     if(n == 1) return(common)
     chars <- strsplit(common, '')
