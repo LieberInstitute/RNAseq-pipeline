@@ -32,7 +32,8 @@ qsub pipeline_setup.sh
 
   You can alternatively add the path to the files, which can be useful if you have the FASTQ files in different directories:
 
-  ``` /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005
+  ```
+  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006
@@ -40,7 +41,8 @@ qsub pipeline_setup.sh
   
   If you reads are split in multiple files and you want to merge them specify in `SAMPLE_IDs.txt` a second column with the group identifiers and the boolean `${MERGE}` in the next section. An example of such a `SAMPLE_IDs.txt` file would be
   
-  ``` /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005   1
+  ```
+  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005   1
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006   1
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005   2
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006   2
