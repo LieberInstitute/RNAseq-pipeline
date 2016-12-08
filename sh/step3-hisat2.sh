@@ -42,7 +42,7 @@ mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
 
 # Construct shell files
 FILELIST=${MAINDIR}/SAMPLE_IDs.txt
-NUM=$(cat $FILELIST | wc -l)
+NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
 echo "Creating script ${sname}"
 
 cat > ${MAINDIR}/.${sname}.sh <<EOF
