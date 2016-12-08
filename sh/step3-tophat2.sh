@@ -110,9 +110,9 @@ BAMACC=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.bam
 BAMS=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
 
 #filter unmapped segments
-samtools view -bh -F 4 \$SAM > \$BAMACC
-samtools sort -@ 8 \$BAMACC \$BAMS
-samtools index \${BAMS}.bam
+${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \$SAM > \$BAMACC
+${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \$BAMACC \$BAMS
+${SOFTWARE}/samtools-1.2/samtools index \${BAMS}.bam
 
 rm \$SAM
 
