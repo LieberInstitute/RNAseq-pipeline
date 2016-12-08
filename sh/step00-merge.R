@@ -69,7 +69,7 @@ res <- bpmapply(function(common, new_name) {
         merge_files(paste0(common, read),
             file.path(opt$outdir, paste0(new_name, read)))
     }
-}, file_list, new_names, BPPRAM = MulticoreParam(opt$cores))
+}, file_list, new_names, BPPARAM = MulticoreParam(opt$cores))
 
 message(paste(Sys.time(), 'creating .SAMPLE_IDs_backup.txt'))
 system(paste('mv', opt$sampleids,
