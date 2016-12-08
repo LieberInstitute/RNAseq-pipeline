@@ -1,6 +1,7 @@
 #!/bin/sh
 
 ## Usage
+# qrsh
 # sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh testrun run1 hg38 TRUE TRUE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
 # sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh bs run1 hg38 FALSE FALSE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Projects/brainspan
 # sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh fulltest sep23 hg38 TRUE TRUE TRUE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
@@ -20,11 +21,39 @@ LARGE=${9-"FALSE"}
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
-echo "**** You can install the required R packages by running ****"
-echo "**** qsub pipeline_setup.sh ****"
+## Try running R. If it fails it means that the user is on the login node.
+Rscript -e "Sys.time()" &> .try_load_R
+LOGNODE=$(grep force-quitting .try_load_R | wc -l)
+if [ ${LOGNODE} != "0" ]
+then
+    echo "**** You are on the login node. Use qrsh to run this script ****"
+    exit 1
+fi
+rm .try_load_R
 
 SH_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh
 ANNO_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation
+
+## Check dependencies
+echo "**** checking that R packages are present ****"
+if [ -e ".missing_R_packages" ]
+then
+    echo "**** Installing R packages since some of them are missing ****"
+    qsub ${SH_FOLDER}/pipeline_R_setup.sh
+    rm .missing_R_packages
+fi
+
+echo "**** checking that RSeQC is installed ****"
+module load python/2.7.9
+python -c 'from qcmodule import SAM' &> .check_python_rseqc
+RSEQC=$(cat .check_python_rseqc | wc -l)
+if [ ${RSEQC} != "0" ]
+then
+    echo "**** Installing RSeQC: will take less than 5 minutes ****"
+    echo "**** You can test that it successfully installed by running: python -c 'from qcmodule import SAM'    ****"
+    pip install --user RSeQC
+fi
+rm .check_python_rseqc
 
 # Set variables for desired genome version
 if [ $hgXX == "hg38" ]

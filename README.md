@@ -4,7 +4,7 @@ RNAseq-pipeline
 This pipeline requires several R packages. You can install them by running:
 
 ```
-qsub pipeline_setup.sh
+qsub pipeline_R_setup.sh
 ```
 
 1. Make a directory to deposit subfolders and processed files: `$DIR`.
@@ -51,6 +51,8 @@ qsub pipeline_setup.sh
 3. Run pipeline with following call in `$DIR`:
 
   ```
+  ## You need a compute node to run this script!
+  qrsh
   sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $PE $Stranded $ERCC $FASTQ_DIR $MERGE $LARGE
   ```
 
