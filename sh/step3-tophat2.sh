@@ -48,6 +48,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -hold_jid pipeline_setup,trim-${EXPERIMENT}.${PREFIX}
+#$ -m a
 echo "**** Job starts ****"
 date
 

@@ -42,6 +42,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
 #$ -hold_jid pipeline_setup
+#$ -m a
 
 echo "**** Job starts ****"
 date

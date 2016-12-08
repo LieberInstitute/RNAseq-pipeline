@@ -39,6 +39,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -t 1-${NUM}
 #$ -tc 40
 #$ -hold_jid pipeline_setup,featCounts-${EXPERIMENT}.${PREFIX}
+#$ -m a
 echo "**** Job starts ****"
 date
 
