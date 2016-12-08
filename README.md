@@ -60,7 +60,7 @@ qsub pipeline_setup.sh
   * __PE__: `TRUE` If samples paired-ended
   * __Stranded__: `TRUE` If samples are reverse-stranded (forward-stranded not compatible yet)
   * __ERCC__: `TRUE` If ERCC mix 1 was added
-  * __FASTQ_DIR__: The path of the directory containing the FASTQ files. Do not specify it if `SAMPLE_IDs.txt` already contains full paths.
+  * __FASTQ_DIR__: The path of the directory containing the FASTQ files. Use `""` if `SAMPLE_IDs.txt` already contains full paths.
   * __MERGE__: `TRUE` if you want to merge the files. The will be saved in a directory called `merged_fastq`. `FALSE` by default and doesn't need to be specified.
   * __LARGE__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
 
