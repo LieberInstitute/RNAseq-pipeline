@@ -10,6 +10,7 @@ spec <- matrix(c(
 	'maindir', 'm', 1, 'character', 'Main directory',
 	'experiment', 'e', 1, 'character', 'Experiment',
 	'prefix', 'p', 1, 'character', 'Prefix',
+    'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -25,6 +26,7 @@ hgXX <- opt$organism
 MAINDIR <- opt$maindir
 EXPERIMENT <- opt$experiment
 PREFIX <- opt$prefix
+PE <- opt$paired
 
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
