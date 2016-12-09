@@ -56,16 +56,10 @@ git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/m
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
 
-BAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam
-BG=${MAINDIR}/Coverage/\${ID}.bedGraph
-BGS=${MAINDIR}/Coverage/\${ID}.sorted.bedGraph
-BW=${MAINDIR}/Coverage/\${ID}.bw
-
-${SOFTWARE}/bedtools-2.26.0/bin/bedtools genomecov -ibam \$BAM -bga -split > \$BG
-${SOFTWARE}/bedtools-2.26.0/bin/sortBed -i \$BG > \$BGS
-${SOFTWARE}/bedGraphToBigWig \$BGS $CHRSIZES \$BW
-
-rm \$BG \$BGS
+## Normalizing bigwigs to 40 million 100 bp reads
+module load python/2.7.9
+module load ucsctools
+python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID}
 
 echo "**** Job ends ****"
 date
