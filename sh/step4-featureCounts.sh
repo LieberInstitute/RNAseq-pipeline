@@ -102,7 +102,7 @@ TMPBAM=\${TMPDIR}/\${ID}.bam
 #filter only primary alignments
 ${SOFTWARE}/samtools-1.2/samtools view -@ 8 -bh -F 0x100 \$BAM > \$TMPBAM
 ${SOFTWARE}/samtools-1.2/samtools index \$TMPBAM
-regtools junctions extract -i 9 -o \$OUTJXN \$TMPBAM
+${SOFTWARE}/regtools/regtools junctions extract -i 9 -o \$OUTJXN \$TMPBAM
 ${SOFTWARE}/bed_to_juncs_withCount < \$OUTJXN > \$OUTCOUNT
 
 
