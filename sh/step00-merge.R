@@ -71,7 +71,7 @@ res <- bpmapply(function(common, new_name) {
     }
 }, file_list, new_names, BPPARAM = MulticoreParam(opt$cores))
 
-message(paste(Sys.time(), 'creating .SAMPLE_IDs_backup.txt'))
+message(paste0(Sys.time(), ' creating .SAMPLE_IDs_backup_', Sys.Date(), '.txt'))
 system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
     paste0('.', gsub('.txt', paste0('_backup_', Sys.Date(), '.txt'),
     basename(opt$sampleids))))
