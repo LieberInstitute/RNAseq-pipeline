@@ -11,6 +11,7 @@ spec <- matrix(c(
 	'experiment', 'e', 1, 'character', 'Experiment',
 	'prefix', 'p', 1, 'character', 'Prefix',
     'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
+    'fullcov', 'f', 1, 'logical', 'Whether to create the full coverage object or not',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -35,7 +36,7 @@ pd = data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE, hea
 names(pd)[1] = "SAMPLE_ID"
 N = length(pd$SAMPLE_ID)
 
-### add bam file
+### add bigwig and bam files
 pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID, '_accepted_hits.sorted.bam'))
 pd$bwFile <- file.path(MAINDIR, 'Coverage', paste0(pd$SAMPLE_ID, '.bw'))
 
@@ -98,12 +99,15 @@ pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
 pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
     chrs = CHR[length(CHR)], BPPARAM = MulticoreParam(8)))
 pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
-
+save(pd, file = file.path(MAINDIR, paste0('pd_', EXPNAME, '_n', N, '.rda')))
 
 ###################################################################
-fullCov <- fullCoverage(files=pd$bamFile, chrs = CHR, mc.cores = 8)
+if(opt$fullcov) {
+    fullCov <- fullCoverage(files = pd$bwFile, chrs = CHR, mc.cores = 8)
+    save(fullCov, file = file.path(MAINDIR, paste0('fullCoverage_', EXPNAME,
+        '_n', N, '.rda')))
+}
 
-save(pd, fullCov, compress=TRUE, file = file.path(MAINDIR, paste0('fullCoverage_', EXPNAME, '_n', N, '.rda')))
 
 ## Reproducibility information
 print('Reproducibility information:')

@@ -65,6 +65,7 @@ qsub pipeline_R_setup.sh
   * __FASTQ_DIR__: The path of the directory containing the FASTQ files. Use `""` if `SAMPLE_IDs.txt` already contains full paths (default: `""`).
   * __MERGE__: `TRUE` if you want to merge the files. The will be saved in a directory called `merged_fastq`. `FALSE` by default and doesn't need to be specified.
   * __LARGE__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
+  * __FULLCOV__: `TRUE` if you want to create the full coverage object. Set to `FALSE` by default.
 
 4. Hidden run files will be created with all calls needed to run the pipeline. Each step is submitted to SGE cluster and queued to run sequentially. Steps that can be parallelized are submitted as array jobs.
 

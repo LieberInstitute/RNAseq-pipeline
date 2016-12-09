@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC} ${LARGE}
+# ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC} ${LARGE} ${FULLCOV}
 
 # Define variables
 EXPERIMENT=$1
@@ -11,6 +11,7 @@ SH_FOLDER=$4
 PE=$5
 ERCC=$6
 LARGE=${7-"FALSE"}
+FULLCOV=${8-"FALSE"}
 
 SHORT="Rcounts-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
@@ -61,7 +62,10 @@ git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/m
 rm -rf ${MAINDIR}/Counts/junction/tmpdir
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC}
-Rscript ${MAINDIR}/.create_fullCov_object.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE}
+
+## Don't create the fullcoverage object by default
+Rscript ${MAINDIR}/.create_fullCov_object.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -f ${FULLCOV}
+
 
 echo "**** Job ends ****"
 date
