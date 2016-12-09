@@ -53,7 +53,13 @@ qsub pipeline_R_setup.sh
   ```
   ## You need a compute node to run this script!
   qrsh
-  sh /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $PE $Stranded $ERCC $FASTQ_DIR $MERGE $LARGE
+  bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $PE $Stranded $ERCC $FASTQ_DIR $MERGE $LARGE
+  ```
+  
+  Note that you have to use __bash__ and not __sh__, otherwise you'll get an error like this:
+  
+  ```
+  module: command not found
   ```
 
   * __ExprName__: main identifier, experiment name
