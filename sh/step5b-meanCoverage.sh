@@ -1,12 +1,13 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${LARGE}
+# ${SH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
-LARGE=${3-"FALSE"}
+CHRSIZES=$3
+LARGE=${4-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -51,13 +52,13 @@ echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
 ## Locate normalized BigWig files and concatenate them in a space separated list
-BIGWIGS=$(while read line; do ID=$(basename ${line}); echo "${MAINDIR}/Coverage/${ID}.bw"; done < ${FILELIST} | paste -sd " ")
+BIGWIGS=\$(while read line; do ID=$(basename ${line}); echo "${MAINDIR}/Coverage/${ID}.bw"; done < ${FILELIST} | paste -sd " ")
 
 ## Create mean of normalized bigwigs
 module load wiggletools/default
 module load ucsctools
 wiggletools write ${MAINDIR}/Coverage/mean.wig mean ${BIGWIGS}
-wigToBigWig ${MAINDIR}/Coverage/mean.wig ${MAINDIR}/Coverage/mean.bw
+wigToBigWig ${MAINDIR}/Coverage/mean.wig ${CHRSIZES} ${MAINDIR}/Coverage/mean.bw
 
 ## Remove temp files
 rm ${MAINDIR}/Coverage/mean.wig
