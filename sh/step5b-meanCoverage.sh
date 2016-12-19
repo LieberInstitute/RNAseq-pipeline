@@ -52,7 +52,7 @@ echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
 ## Locate normalized BigWig files and concatenate them in a space separated list
-BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/${ID}.bw"; done < ${FILELIST} | paste -sd " ")
+BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/\${ID}.bw"; done < ${FILELIST} | paste -sd " ")
 
 ## Create mean of normalized bigwigs
 module load wiggletools/default
