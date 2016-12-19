@@ -29,6 +29,17 @@ if (!is.null(opt$help)) {
 	q(status=1)
 }
 
+## For testing
+if(FALSE){
+    opt <- list('organism' = 'hg19',
+        'maindir' = '/dcl01/lieber/ajaffe/lab/libd_alzheimers/pipeline_results',
+        'experiment' = 'alzheimer',
+        'prefix' = 'gsk_phaseII',
+        'paired' = TRUE,
+        'ercc' = FALSE
+    )
+}
+
 hgXX <- opt$organism
 MAINDIR <- opt$maindir
 EXPERIMENT <- opt$experiment
@@ -168,7 +179,7 @@ if (hgXX == "hg19") {
 ### gene counts
 geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(pd$SAMPLE_ID, filename, '_Genes.counts'))
 names(geneFn) = pd$SAMPLE_ID
-all(file.exists(geneFn))
+stopifnot(all(file.exists(geneFn)))
 
 ### read in annotation ##
 geneMap = read.delim(geneFn[1], skip=1, as.is=TRUE)[,1:6]

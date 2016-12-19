@@ -143,7 +143,7 @@ pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 ### gene counts
 geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(pd$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Genes.counts'))
 names(geneFn) = pd$SAMPLE_ID
-all(file.exists(geneFn))
+stopifnot(all(file.exists(geneFn)))
 
 ### read in annotation ##
 geneMap = read.delim(geneFn[1], skip=1, as.is=TRUE)[,1:6]
