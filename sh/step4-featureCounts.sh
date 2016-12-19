@@ -120,7 +120,7 @@ cat > ${MAINDIR}/.${sname}_clean.sh <<EOF
 #$ -N ${sname}_clean
 #$ -o ./logs/${SHORT}_clean.o.txt
 #$ -e ./logs/${SHORT}_clean.e.txt
-#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,featCounts-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
