@@ -199,7 +199,7 @@ write.csv(pd, file = file.path(MAINDIR, 'annotated_pd.csv'))
 ### exon counts
 exonFn <- file.path(MAINDIR, 'Counts', 'exon', paste0(pd$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Exons.counts'))
 names(exonFn) = pd$SAMPLE_ID
-all(file.exists(exonFn))
+stopifnot(all(file.exists(exonFn)))
 
 ### read in annotation ##
 exonMap = read.delim(exonFn[1], skip=1, as.is=TRUE)[,1:6]
@@ -244,7 +244,7 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
 ## via primary alignments only
 junctionFiles <- file.path(MAINDIR, 'Counts', 'junction', paste0(pd$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
-all(file.exists(junctionFiles)) #  TRUE
+stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
 juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
  	output = "Count", maxCores=12,strandSpecific=TRUE)
