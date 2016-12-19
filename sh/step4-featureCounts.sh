@@ -100,10 +100,10 @@ OUTCOUNT=${MAINDIR}/Counts/junction/\${ID}_junctions_primaryOnly_regtools.count
 TMPDIR=${MAINDIR}/Counts/junction/tmpdir
 TMPBAM=\${TMPDIR}/\${ID}.bam
 #filter only primary alignments
-${SOFTWARE}/samtools-1.2/samtools view -@ 8 -bh -F 0x100 \$BAM > \$TMPBAM
-${SOFTWARE}/samtools-1.2/samtools index \$TMPBAM
-${SOFTWARE}/regtools/build/regtools junctions extract -i 9 -o \$OUTJXN \$TMPBAM
-${SOFTWARE}/bed_to_juncs_withCount < \$OUTJXN > \$OUTCOUNT
+${SOFTWARE}/samtools-1.2/samtools view -@ 8 -bh -F 0x100 \$BAM > \${TMPBAM}
+${SOFTWARE}/samtools-1.2/samtools index \${TMPBAM}
+${SOFTWARE}/regtools/build/regtools junctions extract -i 9 -o \${OUTJXN} \${TMPBAM}
+${SOFTWARE}/bed_to_juncs_withCount < \${OUTJXN} > \${OUTCOUNT}
 
 
 echo "**** Job ends ****"
@@ -111,5 +111,30 @@ date
 EOF
 
 call="qsub .${sname}.sh"
+echo $call
+$call
+
+cat > ${MAINDIR}/.${sname}_clean.sh <<EOF
+#!/bin/bash
+#$ -cwd
+#$ -N ${sname}_clean
+#$ -o ./logs/${SHORT}_clean.o.txt
+#$ -e ./logs/${SHORT}_clean.e.txt
+#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
+#$ -m ${EMAIL}
+echo "**** Job starts ****"
+date
+
+echo "**** Pipeline version: latest GitHub sha ****"
+git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+
+## Delete temporary files after they have been used
+rm -rf ${MAINDIR}/Counts/junction/tmpdir
+
+echo "**** Job ends ****"
+date
+EOF
+
+call="qsub .${sname}_clean.sh"
 echo $call
 $call
