@@ -57,7 +57,7 @@ BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Covera
 ## Create mean of normalized bigwigs
 module load wiggletools/default
 module load ucsctools
-wiggletools write ${MAINDIR}/Coverage/mean.wig mean ${BIGWIGS}
+wiggletools write ${MAINDIR}/Coverage/mean.wig mean \${BIGWIGS}
 wigToBigWig ${MAINDIR}/Coverage/mean.wig ${CHRSIZES} ${MAINDIR}/Coverage/mean.bw
 
 ## Remove temp files
