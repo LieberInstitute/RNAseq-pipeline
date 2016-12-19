@@ -32,12 +32,15 @@ PE <- opt$paired
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
 ## read in pheno	
-pd = data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE, header = FALSE))
-names(pd)[1] = "SAMPLE_ID"
-N = length(pd$SAMPLE_ID)
+pd <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
+    header = FALSE))
+names(pd)[1] <- "SAMPLE_ID"
+pd$SAMPLE_ID <- basename(pd$SAMPLE_ID)
+N <- length(pd$SAMPLE_ID)
 
 ### add bigwig and bam files
-pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID, '_accepted_hits.sorted.bam'))
+pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID,
+    '_accepted_hits.sorted.bam'))
 pd$bwFile <- file.path(MAINDIR, 'Coverage', paste0(pd$SAMPLE_ID, '.bw'))
 
 ### get alignment metrics

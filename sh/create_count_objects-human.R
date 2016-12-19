@@ -54,9 +54,11 @@ EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
 
 ## read in pheno	
-pd = data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE, header = FALSE))
-names(pd)[1] = "SAMPLE_ID"
-N = length(pd$SAMPLE_ID)
+pd <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
+    header = FALSE))
+names(pd)[1] <- "SAMPLE_ID"
+pd$SAMPLE_ID <- basename(pd$SAMPLE_ID)
+N <- length(pd$SAMPLE_ID)
 
 
 ############################################################ 
