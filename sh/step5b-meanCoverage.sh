@@ -16,9 +16,9 @@ sname="${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=100G,h_vmem=120G,h_fsize=100G"
+    MEM="mem_free=200G,h_vmem=240G,h_fsize=100G"
 else
-    MEM="mem_free=50G,h_vmem=60G,h_fsize=100G"
+    MEM="mem_free=100G,h_vmem=120G,h_fsize=100G"
 fi
 
 if [ -e ".send_emails" ]
