@@ -23,6 +23,10 @@ FULLCOV=${10-"FALSE"}
 echo "**** Pipeline version: latest GitHub sha ****"
 git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
 
+## Create logs dir, otherwise scripts fail since they use the -o and -e
+## options
+mkdir -p logs
+
 ## Try running R. If it fails it means that the user is on the login node.
 Rscript -e "Sys.time()" &> .try_load_R
 LOGNODE=$(grep force-quitting .try_load_R | wc -l)
