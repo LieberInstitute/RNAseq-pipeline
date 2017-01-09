@@ -61,7 +61,13 @@ echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC}
 
-## Don't create the fullcoverage object by default
+## Don't create the fullCoverage object by default:
+## it's not needed since we create the mean bigwig already and can use it
+## to define the ERs with derfinder::findRegions(), then use the resulting
+## GRanges object and the paths to the BigWig files in
+## derfinder::getRegionCoverage(fullCov = NULL, files = bigWigs, regions = outputFrom_findRegions)
+## or alternatively write the regions to a BED file with rtracklayer,
+## create the counts with bwtool and then read them into R manually
 Rscript ${MAINDIR}/.create_fullCov_object.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -f ${FULLCOV}
 
 
