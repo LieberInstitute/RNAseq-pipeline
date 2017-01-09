@@ -17,6 +17,7 @@ SHORT="Rcounts-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
+pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [[ $LARGE == "TRUE" ]]
 then
@@ -56,8 +57,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-echo "**** Pipeline version: latest GitHub sha ****"
-git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC}
 

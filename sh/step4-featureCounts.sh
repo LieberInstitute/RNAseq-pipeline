@@ -16,6 +16,7 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="featCounts-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
+pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [[ $LARGE == "TRUE" ]]
 then
@@ -67,8 +68,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-echo "**** Pipeline version: latest GitHub sha ****"
-git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
@@ -130,8 +130,7 @@ cat > ${MAINDIR}/.${sname}_clean.sh <<EOF
 echo "**** Job starts ****"
 date
 
-echo "**** Pipeline version: latest GitHub sha ****"
-git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 ## Delete temporary files after they have been used
 rm -rf ${MAINDIR}/Counts/junction/tmpdir

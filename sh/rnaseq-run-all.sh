@@ -20,8 +20,8 @@ LARGE=${9-"FALSE"}
 FULLCOV=${10-"FALSE"}
 
 
-echo "**** Pipeline version: latest GitHub sha ****"
-git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
+pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 ## Create logs dir, otherwise scripts fail since they use the -o and -e
 ## options

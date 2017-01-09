@@ -13,6 +13,7 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="ercc-${EXPERIMENT}"
 sname="${SHORT}.${PREFIX}"
+pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [ -e "${MAINDIR}/.FILE_extension.txt" ]
 then
@@ -36,6 +37,7 @@ else
     EMAIL="a"
 fi
 
+
 # Construct shell files
 FILELIST=${MAINDIR}/SAMPLE_IDs.txt
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
@@ -56,9 +58,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-echo "**** Pipeline version: latest GitHub sha ****"
-git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master
-
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
