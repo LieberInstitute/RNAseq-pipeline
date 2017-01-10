@@ -23,89 +23,44 @@ if (!is.null(opt$help)) {
 	q(status=1)
 }
 
+
 hgXX <- opt$organism
 MAINDIR <- opt$maindir
 EXPERIMENT <- opt$experiment
 PREFIX <- opt$prefix
 PE <- opt$paired
 
-EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
+EXPNAME <- paste0(EXPERIMENT,"_",PREFIX)
 
-## read in pheno	
-pd <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
-    header = FALSE))
-names(pd)[1] <- "SAMPLE_ID"
-pd$SAMPLE_ID <- basename(pd$SAMPLE_ID)
-N <- length(pd$SAMPLE_ID)
-
-### add bigwig and bam files
-pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID,
-    '_accepted_hits.sorted.bam'))
-pd$bwFile <- file.path(MAINDIR, 'Coverage', paste0(pd$SAMPLE_ID, '.bw'))
-
-### get alignment metrics
-if (PE == TRUE) {
-hisatStats = function(logFile) {
-	y = scan(logFile, what = "character", sep= "\n", 
-		quiet = TRUE, strip=TRUE)
-		
-	if (as.numeric(ss(ss(y[2], "\\(",2), "%")) == 100) {
-	## 100% of reads paired
-	reads = as.numeric(ss(y[1], " "))*2
-	unaligned = as.numeric(ss(y[12], " "))
-	o = c(trimmed="FALSE",
-		numReads = reads,
-		numMapped = reads - unaligned,
-		numUnmapped = unaligned,
-		overallMapRate = as.numeric(ss(y[15], "\\%"))/100,
-		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)
-	} else {
-	## Combo of paired and unpaired (from trimming)
-	reads = as.numeric(ss(y[2], " "))*2 + as.numeric(ss(y[15], " "))
-	unaligned = as.numeric(ss(y[12], " ")) + as.numeric(ss(y[16], " "))
-	o = c(trimmed="TRUE",
-		numReads = reads,
-		numMapped = reads - unaligned,
-		numUnmapped = unaligned,
-		overallMapRate = as.numeric(ss(y[19], "\\%"))/100,
-		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)	
-	}
-}
-} else {
-## all reads unpaired
-hisatStats = function(logFile) {
-	y = scan(logFile, what = "character", sep= "\n", 
-		quiet = TRUE, strip=TRUE)
-	o = c(numReads = as.numeric(ss(y[1], " ")),
-		numMapped = as.numeric(ss(y[1], " ")) - as.numeric(ss(y[3], " ")),
-		numUnmapped = as.numeric(ss(y[3], " ")),
-		overallMapRate = as.numeric(ss(y[6], "\\%"))/100)
-}
-}
-
-logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(pd$SAMPLE_ID, '_summary.txt'))
-names(logFiles)  = pd$SAMPLE_ID
-hiStats = t(sapply(logFiles, hisatStats))
-
-pd = cbind(pd,hiStats)
-
-## Chrs to use, mitocondrial chromosome has to be the last one for the code
-## to work later on
-if (hgXX == "rn6") { CHR = c(1:20,"X","Y","MT")
-} else if (hgXX == "mm10") { CHR = paste0("chr",c(1:19,"X","Y","M"))
-} else { CHR = paste0("chr",c(1:22,"X","Y","M")) }
-stopifnot(grepl('M', CHR[length(CHR)]))
-
-### confirm total mapping
-pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-    chrs = CHR[-length(CHR)], BPPARAM = MulticoreParam(8)))
-pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-    chrs = CHR[length(CHR)], BPPARAM = MulticoreParam(8)))
-pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
-save(pd, file = file.path(MAINDIR, paste0('pd_', EXPNAME, '_n', N, '.rda')))
-
-###################################################################
 if(opt$fullcov) {
+    ## read in pheno	
+    pd <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
+        header = FALSE))
+    names(pd)[1] <- "SAMPLE_ID"
+    pd$SAMPLE_ID <- basename(pd$SAMPLE_ID)
+    N <- length(pd$SAMPLE_ID)
+
+    ### add bigwig and bam files
+    pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID,
+        '_accepted_hits.sorted.bam'))
+    pd$bwFile <- file.path(MAINDIR, 'Coverage', paste0(pd$SAMPLE_ID, '.bw'))
+
+    ## Chrs to use, mitocondrial chromosome has to be the last one for the code
+    ## to work later on
+    if (hgXX == "rn6") { CHR = c(1:20,"X","Y","MT")
+    } else if (hgXX == "mm10") { CHR = paste0("chr",c(1:19,"X","Y","M"))
+    } else { CHR = paste0("chr",c(1:22,"X","Y","M")) }
+    stopifnot(grepl('M', CHR[length(CHR)]))
+
+    ### confirm total mapping
+    pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+        chrs = CHR[-length(CHR)], BPPARAM = MulticoreParam(8)))
+    pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+        chrs = CHR[length(CHR)], BPPARAM = MulticoreParam(8)))
+    pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
+
+    ###################################################################
+
     fullCov <- fullCoverage(files = pd$bwFile, chrs = CHR, mc.cores = 8)
     save(fullCov, file = file.path(MAINDIR, paste0('fullCoverage_', EXPNAME,
         '_n', N, '.rda')))

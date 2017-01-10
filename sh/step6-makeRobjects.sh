@@ -52,7 +52,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX},featCounts-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,featCounts-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
@@ -60,6 +60,36 @@ date
 echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC}
+
+echo "**** Job ends ****"
+date
+EOF
+
+call="qsub .${sname}.sh"
+echo $call
+$call
+
+if [[ ${FULLCOV} == "TRUE" ]]
+then
+    SHORT="fullCov-${EXPERIMENT}"
+    sname="${SHORT}.${PREFIX}"
+    # Construct shell files
+    echo "Creating script ${sname}"
+    
+    cat > ${MAINDIR}/.${sname}.sh <<EOF
+#!/bin/bash
+#$ -cwd
+#$ -pe local 8
+#$ -l ${MEM}
+#$ -N ${sname}
+#$ -o ./logs/${SHORT}.o.txt
+#$ -e ./logs/${SHORT}.e.txt
+#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
+#$ -m ${EMAIL}
+echo "**** Job starts ****"
+date
+
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 ## Don't create the fullCoverage object by default:
 ## it's not needed since we create the mean bigwig already and can use it
@@ -75,6 +105,7 @@ echo "**** Job ends ****"
 date
 EOF
 
-call="qsub .${sname}.sh"
-echo $call
-$call
+    call="qsub .${sname}.sh"
+    echo $call
+    $call
+fi
