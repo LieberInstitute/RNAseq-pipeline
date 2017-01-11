@@ -92,8 +92,8 @@ if (ERCC == TRUE ){
 	pdf(file.path(MAINDIR, 'Ercc', 'ercc_spikein_check_mix1.pdf'),h=12,w=18)
 	mypar(4,6)
 	for(i in 1:ncol(erccTPM)) {
-		plot(log2(spikeIns[,"concentration.in.Mix.1..attomoles.ul."]+1) ~ log2(erccTPM[,i]+1),
-			xlab="Kallisto log2(TPM+1)", ylab="Mix 1: log2(Concentration+1)",
+		plot(log2(10*spikeIns[,"concentration.in.Mix.1..attomoles.ul."]+1) ~ log2(erccTPM[,i]+1),
+			xlab="Kallisto log2(TPM+1)", ylab="Mix 1: log2(10*Concentration+1)",
 			main = colnames(erccTPM)[i],
 			xlim = c(min(log2(erccTPM+1)),max(log2(erccTPM+1))))
 		abline(0, 1, lty=2)
@@ -102,7 +102,7 @@ if (ERCC == TRUE ){
 
 	mix1conc = matrix(rep(spikeIns[,"concentration.in.Mix.1..attomoles.ul."]), 
 						nc = ncol(erccTPM), nr = nrow(erccTPM), byrow=FALSE)
-	logErr = (log2(erccTPM+1) - log2(mix1conc+1))
+	logErr = (log2(erccTPM+1) - log2(10*mix1conc+1))
 	pd$ERCCsumLogErr = colSums(logErr)
 		
 	}
