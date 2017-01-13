@@ -42,7 +42,7 @@ if [ -e ".queue" ]
 then
     QUEUE=$(cat .queue)
 else
-    QUEUE=""
+    QUEUE="shared"
 fi
 
 # Directories
@@ -56,7 +56,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${QUEUE} ${MEM}
+#$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
 #$ -pe local 8
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt

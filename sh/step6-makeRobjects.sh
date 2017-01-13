@@ -37,7 +37,7 @@ if [ -e ".queue" ]
 then
     QUEUE=$(cat .queue)
 else
-    QUEUE=""
+    QUEUE="shared"
 fi
 
 if [ $hgXX == "mm10" ]; then SPEC="mouse";
@@ -55,7 +55,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -pe local 8
-#$ -l ${QUEUE} ${MEM}
+#$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
@@ -87,7 +87,7 @@ then
 #!/bin/bash
 #$ -cwd
 #$ -pe local 8
-#$ -l ${QUEUE} ${MEM}
+#$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
