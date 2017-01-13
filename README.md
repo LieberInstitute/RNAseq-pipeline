@@ -80,3 +80,9 @@ qsub pipeline_R_setup.sh
   ```
   touch ${DIR}/.send_emails
   ```
+
+6. Cluster queue: by default the shared queue is used, but if you want to specify one create the hidden file `${DIR}/.queue` with the name of the queue inside of it (no spaces, no new lines). For example:
+
+  ```
+  bluejay
+  ```

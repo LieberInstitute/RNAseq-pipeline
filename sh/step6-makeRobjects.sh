@@ -33,6 +33,13 @@ else
     EMAIL="a"
 fi
 
+if [ -e ".queue" ]
+then
+    QUEUE=$(cat .queue)
+else
+    QUEUE=""
+fi
+
 if [ $hgXX == "mm10" ]; then SPEC="mouse";
 elif [ $hgXX == "rn6" ]; then SPEC="rat";
 else SPEC="human";
@@ -48,7 +55,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -pe local 8
-#$ -l ${MEM}
+#$ -l ${QUEUE} ${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
@@ -80,7 +87,7 @@ then
 #!/bin/bash
 #$ -cwd
 #$ -pe local 8
-#$ -l ${MEM}
+#$ -l ${QUEUE} ${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt

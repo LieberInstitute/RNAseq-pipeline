@@ -32,6 +32,13 @@ else
     EMAIL="a"
 fi
 
+if [ -e ".queue" ]
+then
+    QUEUE=$(cat .queue)
+else
+    QUEUE=""
+fi
+
 # Directories
 mkdir -p ${MAINDIR}/Counts/gene
 mkdir -p ${MAINDIR}/Counts/exon
@@ -56,7 +63,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${MEM}
+#$ -l ${QUEUE} ${MEM}
 #$ -N ${sname}
 #$ -pe local 8
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt

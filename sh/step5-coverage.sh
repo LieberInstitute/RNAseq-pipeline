@@ -29,6 +29,13 @@ else
     EMAIL="a"
 fi
 
+if [ -e ".queue" ]
+then
+    QUEUE=$(cat .queue)
+else
+    QUEUE=""
+fi
+
 # Directories
 mkdir -p ${MAINDIR}/Coverage
 
@@ -40,7 +47,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${MEM}
+#$ -l ${QUEUE} ${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
