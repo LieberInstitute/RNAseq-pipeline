@@ -118,8 +118,8 @@ ORIGINALBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.bam
 SORTEDBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
 
 #filter unmapped segments
-${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \$SAM > \$ORIGINALBAM
-${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \$ORIGINALBAM \$SORTEDBAM
+${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \${SAM} > \${ORIGINALBAM}
+${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \${ORIGINALBAM} \${SORTEDBAM}
 ${SOFTWARE}/samtools-1.2/samtools index \${SORTEDBAM}.bam
 
 ## Clean up
