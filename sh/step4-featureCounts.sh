@@ -39,11 +39,6 @@ else
     QUEUE="shared"
 fi
 
-# Directories
-mkdir -p ${MAINDIR}/Counts/gene
-mkdir -p ${MAINDIR}/Counts/exon
-mkdir -p ${MAINDIR}/Counts/junction/tmpdir
-
 # File name of featureCounts output
 if [ $hgXX == "mm10" ] ; then 
 	FCFILE="\${ID}_Gencode.M11.${hgXX}"
@@ -76,6 +71,11 @@ echo "**** Job starts ****"
 date
 
 echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
+
+# Directories
+mkdir -p ${MAINDIR}/Counts/gene
+mkdir -p ${MAINDIR}/Counts/exon
+mkdir -p ${MAINDIR}/Counts/junction/tmpdir
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
