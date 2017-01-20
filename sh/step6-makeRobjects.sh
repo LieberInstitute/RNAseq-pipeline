@@ -14,7 +14,7 @@ LARGE=${7-"FALSE"}
 FULLCOV=${8-"FALSE"}
 
 SHORT="Rcounts-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
+sname="step6-${SHORT}.${PREFIX}"
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
@@ -59,7 +59,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid pipeline_setup,featCounts-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step4-featCounts-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
@@ -79,7 +79,7 @@ $call
 if [[ ${FULLCOV} == "TRUE" ]]
 then
     SHORT="fullCov-${EXPERIMENT}"
-    sname="${SHORT}.${PREFIX}"
+    sname="step6-${SHORT}.${PREFIX}"
     # Construct shell files
     echo "Creating script ${sname}"
     
@@ -91,7 +91,7 @@ then
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step5-coverage-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date

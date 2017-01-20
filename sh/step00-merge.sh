@@ -13,7 +13,7 @@ LARGE=${5-"FALSE"}
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="merge-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
+sname="step00-${SHORT}.${PREFIX}"
 pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [ -e "${MAINDIR}/.FILE_extension.txt" ]

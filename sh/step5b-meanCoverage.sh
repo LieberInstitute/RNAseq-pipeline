@@ -12,7 +12,7 @@ LARGE=${4-"FALSE"}
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="meanCoverage-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
+sname="step5b-${SHORT}.${PREFIX}"
 pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [[ $LARGE == "TRUE" ]]
@@ -51,7 +51,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step5-coverage-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date

@@ -12,7 +12,7 @@ LARGE=${4-"FALSE"}
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="ercc-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
+sname="step0-${SHORT}.${PREFIX}"
 pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [ -e "${MAINDIR}/.FILE_extension.txt" ]
@@ -60,7 +60,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 20
-#$ -hold_jid pipeline_setup,merge-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step00-merge-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date

@@ -15,7 +15,7 @@ LARGE=${7-"FALSE"}
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="featCounts-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
+sname="step4-${SHORT}.${PREFIX}"
 pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [[ $LARGE == "TRUE" ]]
@@ -65,7 +65,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 10
-#$ -hold_jid pipeline_setup,hisat2-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
@@ -132,7 +132,7 @@ cat > ${MAINDIR}/.${sname}_clean.sh <<EOF
 #$ -N ${sname}_clean
 #$ -o ./logs/${SHORT}_clean.o.txt
 #$ -e ./logs/${SHORT}_clean.e.txt
-#$ -hold_jid pipeline_setup,featCounts-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step4-featCounts-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date

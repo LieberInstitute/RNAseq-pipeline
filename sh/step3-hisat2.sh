@@ -13,7 +13,7 @@ LARGE=${5-"FALSE"}
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="hisat2-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
+sname="step3-${SHORT}.${PREFIX}"
 pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [ -e "${MAINDIR}/.FILE_extension.txt" ]
@@ -63,7 +63,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 15
-#$ -hold_jid pipeline_setup,trim-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step2-trim-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
