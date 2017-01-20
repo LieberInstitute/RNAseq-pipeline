@@ -2,7 +2,7 @@
 
 ## Usage
 # qrsh
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${STRANDED} ${ERCC} ${FQ_FOLDER} ${MERGE} ${LARGE} ${FULLCOV}
+# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${STRANDED} ${ERCC} ${FQ_FOLDER} ${MERGE} ${LARGE} ${FULLCOV} ${SH_FOLDER} ${ANNO_FOLDER}
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh testrun run1 hg38 TRUE TRUE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh bs run1 hg38 FALSE FALSE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Projects/brainspan
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh fulltest sep23 hg38 TRUE TRUE TRUE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
@@ -18,14 +18,8 @@ FQ_FOLDER=${7-""}
 MERGE=${8-"FALSE"}
 LARGE=${9-"FALSE"}
 FULLCOV=${10-"FALSE"}
-
-
-pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
-
-## Create logs dir, otherwise scripts fail since they use the -o and -e
-## options
-mkdir -p logs
+SH_FOLDER=${11-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
+ANNO_FOLDER=${12-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
 
 ## Try running R. If it fails it means that the user is on the login node.
 Rscript -e "Sys.time()" &> .try_load_R
@@ -37,8 +31,9 @@ then
 fi
 rm .try_load_R
 
-SH_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh
-ANNO_FOLDER=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation
+## Create logs dir, otherwise scripts fail since they use the -o and -e
+## options
+mkdir -p logs
 
 ## Check dependencies
 echo "**** checking that R packages are present ****"
@@ -60,6 +55,28 @@ then
     pip install --user RSeQC
 fi
 rm .check_python_rseqc
+
+echo "**** checking that checksumdir is installed ****"
+python -c "import checksumdir" &> .check_checksumdir
+CHECKSUM=$(cat .check_checksumdir | wc -l)
+if [ ${CHECKSUM} != "0" ]
+then
+    echo "**** Installing checksumdir ****"
+    pip install --user checksumdir
+fi
+rm .check_checksumdir
+
+## Save the information about the pipeline version and annotation folder
+## for reproducibility purposes
+REPODIR=$(dirname $SH_FOLDER)
+pipelineversion=$(git --git-dir=${REPODIR}/.git rev-parse origin/master)
+
+echo "**** Computing the md5 for ${ANNO_FOLDER}, takes 2-3 minutes ****"
+annofoldermd5=$(~/.local/bin/checksumdir -a md5 ${ANNO_FOLDER})
+
+## Save the reproducibility info
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}\n**** SH_FOLDER: ****\n${SH_FOLDER}\n**** ANNO_FOLDER: ****\n${ANNO_FOLDER}\n**** md5sum for ANNO_FOLDER ****\n${annofoldermd5}\n**** ANNO_FOLDER contents ****" > logs/pipeline_information.txt
+ls -lhtR ${ANNO_FOLDER} >> logs/pipeline_information.txt
 
 # Set variables for desired genome version
 if [ $hgXX == "hg38" ]
@@ -110,7 +127,7 @@ fi
 
 if [ ${MERGE} == "TRUE" ]
 then
-    sh ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${SH_FOLDER} ${LARGE}
+    sh ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE} ${SH_FOLDER}
 fi
 
 if [ ${ERCC} == "TRUE" ]
@@ -124,4 +141,4 @@ sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${LARG
 sh ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${LARGE}
 sh ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
 sh ${SH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
-sh ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC} ${LARGE} ${FULLCOV}
+sh ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${ERCC} ${LARGE} ${FULLCOV} ${SH_FOLDER}

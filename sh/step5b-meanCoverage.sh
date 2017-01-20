@@ -13,7 +13,6 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="meanCoverage-${EXPERIMENT}"
 sname="step5b-${SHORT}.${PREFIX}"
-pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [[ $LARGE == "TRUE" ]]
 then
@@ -56,7 +55,6 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 ## Locate normalized BigWig files and concatenate them in a space separated list
 BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/\${ID}.bw"; done < ${FILELIST} | paste -sd " ")

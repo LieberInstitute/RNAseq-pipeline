@@ -13,7 +13,6 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="fastqc-${EXPERIMENT}"
 sname="step1-${SHORT}.${PREFIX}"
-pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [ -e "${MAINDIR}/.FILE_extension.txt" ]
 then
@@ -68,7 +67,6 @@ echo "**** Job starts ****"
 date
 
 
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
