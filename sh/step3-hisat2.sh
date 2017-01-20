@@ -114,15 +114,17 @@ fi
 
 ###sam to bam
 SAM=${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam
-BAMACC=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.bam
-BAMS=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
+ORIGINALBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.bam
+SORTEDBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
 
 #filter unmapped segments
-${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \$SAM > \$BAMACC
-${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \$BAMACC \$BAMS
-${SOFTWARE}/samtools-1.2/samtools index \${BAMS}.bam
+${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \$SAM > \$ORIGINALBAM
+${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \$ORIGINALBAM \$SORTEDBAM
+${SOFTWARE}/samtools-1.2/samtools index \${SORTEDBAM}.bam
 
-rm \$SAM
+## Clean up
+rm \${SAM}
+rm \${ORIGINALBAM}
 
 echo "**** Job ends ****"
 date
