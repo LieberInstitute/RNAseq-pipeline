@@ -11,12 +11,12 @@ library('getopt')
 
 ## Specify parameters
 spec <- matrix(c(
-	'organism', 'o', 0, 'character', 'Either hg19 or hg38',
+	'organism', 'o', 2, 'character', 'mm10',
 	'maindir', 'm', 1, 'character', 'Main directory',
 	'experiment', 'e', 1, 'character', 'Experiment',
 	'prefix', 'p', 1, 'character', 'Prefix',
     'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
-    'ercc', 'c', 0, 'logical', 'Whether the reads include ERCC or not',
+    'ercc', 'c', 1, 'logical', 'Whether the reads include ERCC or not',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)

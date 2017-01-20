@@ -13,7 +13,7 @@ library('rafalib')
 
 ## Specify parameters
 spec <- matrix(c(
-	'organism', 'o', 0, 'character', 'Either hg19 or hg38',
+	'organism', 'o', 2, 'character', 'rn6',
 	'maindir', 'm', 1, 'character', 'Main directory',
 	'experiment', 'e', 1, 'character', 'Experiment',
 	'prefix', 'p', 1, 'character', 'Prefix',
