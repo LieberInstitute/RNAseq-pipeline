@@ -1,23 +1,22 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${SH_FOLDER} ${PE} ${ERCC} ${LARGE} ${FULLCOV}
+# ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${ERCC} ${LARGE} ${FULLCOV} ${SH_FOLDER}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 hgXX=$3
-SH_FOLDER=$4
-PE=$5
-ERCC=$6
-LARGE=${7-"FALSE"}
-FULLCOV=${8-"FALSE"}
+PE=$4
+ERCC=$5
+LARGE=${6-"FALSE"}
+FULLCOV=${7-"FALSE"}
+SH_FOLDER={$8-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
 
 SHORT="Rcounts-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
+sname="step6-${SHORT}.${PREFIX}"
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
-pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
 
 if [[ $LARGE == "TRUE" ]]
 then
@@ -59,12 +58,11 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid pipeline_setup,featCounts-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step4-featCounts-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC}
 
@@ -79,7 +77,7 @@ $call
 if [[ ${FULLCOV} == "TRUE" ]]
 then
     SHORT="fullCov-${EXPERIMENT}"
-    sname="${SHORT}.${PREFIX}"
+    sname="step6-${SHORT}.${PREFIX}"
     # Construct shell files
     echo "Creating script ${sname}"
     
@@ -91,12 +89,11 @@ then
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid pipeline_setup,coverage-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step5-coverage-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 ## Don't create the fullCoverage object by default:
 ## it's not needed since we create the mean bigwig already and can use it

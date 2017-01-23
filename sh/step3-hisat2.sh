@@ -13,8 +13,7 @@ LARGE=${5-"FALSE"}
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="hisat2-${EXPERIMENT}"
-sname="${SHORT}.${PREFIX}"
-pipelineversion=$(git --git-dir=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/.git rev-parse origin/master)
+sname="step3-${SHORT}.${PREFIX}"
 
 if [ -e "${MAINDIR}/.FILE_extension.txt" ]
 then
@@ -63,12 +62,11 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 15
-#$ -hold_jid pipeline_setup,trim-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step2-trim-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
 
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}"
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
@@ -114,15 +112,17 @@ fi
 
 ###sam to bam
 SAM=${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam
-BAMACC=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.bam
-BAMS=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
+ORIGINALBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.bam
+SORTEDBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
 
 #filter unmapped segments
-${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \$SAM > \$BAMACC
-${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \$BAMACC \$BAMS
-${SOFTWARE}/samtools-1.2/samtools index \${BAMS}.bam
+${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \${SAM} > \${ORIGINALBAM}
+${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \${ORIGINALBAM} \${SORTEDBAM}
+${SOFTWARE}/samtools-1.2/samtools index \${SORTEDBAM}.bam
 
-rm \$SAM
+## Clean up
+rm \${SAM}
+rm \${ORIGINALBAM}
 
 echo "**** Job ends ****"
 date
