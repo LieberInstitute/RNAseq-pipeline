@@ -41,16 +41,16 @@ RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
 EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
 
 ## read in pheno	
-pd <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
+metrics <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
     header = FALSE))
-names(pd)[1] <- "SAMPLE_ID"
-pd$SAMPLE_ID <- basename(pd$SAMPLE_ID)
-N <- length(pd$SAMPLE_ID)
+names(metrics)[1] <- "SAMPLE_ID"
+metrics$SAMPLE_ID <- basename(metrics$SAMPLE_ID)
+N <- length(metrics$SAMPLE_ID)
 
 ############################################################ 
 ###### ercc plots
 if (ERCC == TRUE ){
-	sampIDs = as.vector(pd$SAMPLE_ID)
+	sampIDs = as.vector(metrics$SAMPLE_ID)
 
 	##observed kallisto tpm
 	erccTPM = sapply(sampIDs, function(x) {
@@ -67,7 +67,7 @@ if (ERCC == TRUE ){
 	##match row order
 	spikeIns = spikeIns[match(rownames(erccTPM),rownames(spikeIns)),]
 
-	pdf(file.path(MAINDIR, 'Ercc', 'ercc_spikein_check_mix1.pdf'),h=12,w=18)
+	metricsf(file.path(MAINDIR, 'Ercc', 'ercc_spikein_check_mix1.metricsf'),h=12,w=18)
 	mypar(4,6)
 	for(i in 1:ncol(erccTPM)) {
 		plot(log2(spikeIns[,"concentration.in.Mix.1..attomoles.ul."]+1) ~ log2(erccTPM[,i]+1),
@@ -81,12 +81,12 @@ if (ERCC == TRUE ){
 	mix1conc = matrix(rep(spikeIns[,"concentration.in.Mix.1..attomoles.ul."]), 
 						nc = ncol(erccTPM), nr = nrow(erccTPM), byrow=FALSE)
 	logErr = (log2(erccTPM+1) - log2(mix1conc+1))
-	pd$ERCCsumLogErr = colSums(logErr)	
+	metrics$ERCCsumLogErr = colSums(logErr)	
 	}
 ############################################################
 
 ### add bam file
-pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID, '_accepted_hits.sorted.bam'))
+metrics$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(metrics$SAMPLE_ID, '_accepted_hits.sorted.bam'))
 
 ### get alignment metrics
 if (PE == TRUE) {
@@ -128,25 +128,25 @@ hisatStats = function(logFile) {
 }
 }
 
-logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(pd$SAMPLE_ID, '_summary.txt'))
-names(logFiles)  = pd$SAMPLE_ID
+logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
+names(logFiles)  = metrics$SAMPLE_ID
 hiStats = t(sapply(logFiles, hisatStats))
 
-pd = cbind(pd,hiStats)	
+metrics = cbind(metrics,hiStats)	
 
 ### confirm total mapping
-pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
+metrics$totalMapped <- unlist(bplapply(metrics$bamFile, getTotalMapped,
     chrs = c(1:20, 'X', 'Y'), BPPARAM = MulticoreParam(opt$cores)))
-pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'MT', 
+metrics$mitoMapped <- unlist(bplapply(metrics$bamFile, getTotalMapped, chrs = 'MT', 
     BPPARAM = MulticoreParam(opt$cores)))
-pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
+metrics$mitoRate <- metrics$mitoMapped / (metrics$mitoMapped +  metrics$totalMapped)
 
 ###################################################################
 
 ###############
 ### gene counts
-geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(pd$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Genes.counts'))
-names(geneFn) = pd$SAMPLE_ID
+geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Genes.counts'))
+names(geneFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(geneFn)))
 
 ### read in annotation ##
@@ -179,30 +179,32 @@ geneCountList = mclapply(geneFn, function(x) {
 }, mc.cores=12)
 geneCounts = do.call("cbind", geneCountList)
 rownames(geneCounts) = rownames(geneMap)
-geneCounts = geneCounts[,pd$SAMPLE_ID] # put in order
+geneCounts = geneCounts[,metrics$SAMPLE_ID] # put in order
 
 # number of reads assigned
 geneStatList = lapply(paste0(geneFn, ".summary"), 
                       read.delim,row.names=1)
 geneStats = do.call("cbind", geneStatList)
-colnames(geneStats) = pd$SAMPLE_ID
-pd$totalAssignedGene = as.numeric(geneStats[1,] / colSums(geneStats))
+colnames(geneStats) = metrics$SAMPLE_ID
+metrics$totalAssignedGene = as.numeric(geneStats[1,] / colSums(geneStats))
 
 # make RPKM
-bg = matrix(rep(colSums(geneStats)), nc = nrow(pd), 
+bg = matrix(rep(colSums(geneStats)), nc = nrow(metrics), 
 	nr = nrow(geneCounts),	byrow=TRUE)
 widG = matrix(rep(geneMap$Length), nr = nrow(geneCounts), 
-	nc = nrow(pd),	byrow=FALSE)
+	nc = nrow(metrics),	byrow=FALSE)
 geneRpkm = geneCounts/(widG/1000)/(bg/1e6)
 
-## save pd
-write.csv(pd, file = file.path(MAINDIR, 'annotated_pd.csv'))
+## save metrics
+write.csv(metrics, file = file.path(MAINDIR, 
+    paste0('read_and_alignment_metrics_', opt$experiment, '_', opt$prefix,
+    '.csv')))
 
 
 ###############
 ### exon counts
-exonFn <- file.path(MAINDIR, 'Counts', 'exon', paste0(pd$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Exons.counts'))
-names(exonFn) = pd$SAMPLE_ID
+exonFn <- file.path(MAINDIR, 'Counts', 'exon', paste0(metrics$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Exons.counts'))
+names(exonFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(exonFn)))
 
 ### read in annotation ##
@@ -220,7 +222,7 @@ exonCountList = mclapply(exonFn, function(x) {
 }, mc.cores=12)
 exonCounts = do.call("cbind", exonCountList)
 rownames(exonCounts) = rownames(exonMap)
-exonCounts = exonCounts[,pd$SAMPLE_ID] # put in order
+exonCounts = exonCounts[,metrics$SAMPLE_ID] # put in order
 
 ## remove duplicated
 eMap = GRanges(exonMap$Chr, IRanges(exonMap$Start, exonMap$End))
@@ -232,13 +234,13 @@ exonMap = exonMap[keepIndex,]
 exonStatList = lapply(paste0(exonFn, ".summary"), 
                       read.delim,row.names=1)
 exonStats = do.call("cbind", exonStatList)
-colnames(exonStats) = pd$SAMPLE_ID
+colnames(exonStats) = metrics$SAMPLE_ID
 
 ## make RPKM
-bgE = matrix(rep(colSums(exonStats)), nc = nrow(pd), 
+bgE = matrix(rep(colSums(exonStats)), nc = nrow(metrics), 
 	nr = nrow(exonCounts),	byrow=TRUE)
 widE = matrix(rep(exonMap$Length), nr = nrow(exonCounts), 
-	nc = nrow(pd),	byrow=FALSE)
+	nc = nrow(metrics),	byrow=FALSE)
 exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
 
@@ -247,10 +249,10 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 ##### junctions
 
 ## via primary alignments only
-junctionFiles <- file.path(MAINDIR, 'Counts', 'junction', paste0(pd$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
+junctionFiles <- file.path(MAINDIR, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
-juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
+juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
  	output = "Count", maxCores=12,strandSpecific=TRUE)
 	
 ## annotate junctions
@@ -322,7 +324,7 @@ anno$isFusion = grepl("-", anno$newGeneID)
 ## extract out
 jMap = anno
 jCounts = juncCounts$countDF
-jCounts = jCounts[names(jMap),paste0('X',gsub("-",".",pd$SAMPLE_ID))]
+jCounts = jCounts[names(jMap),paste0('X',gsub("-",".",metrics$SAMPLE_ID))]
 
 ## rename chr to gencode
 names(jMap) = paste0(as.character(seqnames(jMap)),":",
@@ -345,13 +347,13 @@ jMap$rightSeq = getSeq(Rnorvegicus, right)
 
 ### save counts
 
-save(pd, jMap, jCounts, geneCounts, geneMap, exonCounts, exonMap, compress=TRUE,
+save(metrics, jMap, jCounts, geneCounts, geneMap, exonCounts, exonMap, compress=TRUE,
 	file= file.path(MAINDIR, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
-save(pd, jMap, jRpkm, geneRpkm,	geneMap, exonRpkm, exonMap, compress=TRUE,
+save(metrics, jMap, jRpkm, geneRpkm,	geneMap, exonRpkm, exonMap, compress=TRUE,
 	file= file.path(MAINDIR, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
 ## write out for coverage
-write.table(pd[,c("SAMPLE_ID", "bamFile")], 
+write.table(metrics[,c("SAMPLE_ID", "bamFile")], 
 	file.path(MAINDIR, 'samples_with_bams.txt'),
 	row.names=FALSE, quote=FALSE, sep="\t")
 
