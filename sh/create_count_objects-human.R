@@ -83,6 +83,9 @@ if (ERCC == TRUE ){
 	})
 	rownames(erccTPM) = read.table(file.path(MAINDIR, "Ercc", sampIDs[1], "abundance.tsv"),
 							header = TRUE)$target_id
+	#check finiteness / change columns with all NaNs to 0s
+	erccTPM[,which(is.na(colSums(erccTPM)))] = 0
+	
 	#expected concentration
 	spikeIns = read.delim("/users/ajaffe/Lieber/Projects/RNAseq/Ribozero_Compare/ercc_actual_conc.txt",
 								as.is=TRUE,row.names=2)
