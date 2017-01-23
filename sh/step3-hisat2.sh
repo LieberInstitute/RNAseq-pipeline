@@ -1,14 +1,15 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${LARGE}
+# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
 HISATIDX=$4
-LARGE=${5-"FALSE"}
+CORES=${5-8}
+LARGE=${6-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -57,7 +58,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
-#$ -pe local 8
+#$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
@@ -79,7 +80,7 @@ if [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
 	RP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_paired.fq.gz
 	RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fq.gz
 	
-	${SOFTWARE}/hisat2-2.0.4/hisat2 -p 8 \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \$FP -2 \$RP -U \${FU},\${RU} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
@@ -87,7 +88,7 @@ if [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
 elif  [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fq.gz ] ; then
 	## Trimmed, single-end
 	echo "HISAT2 alignment run on trimmed single-end reads"
-	${SOFTWARE}/hisat2-2.0.4/hisat2 -p 8 \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -U ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fq.gz \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
@@ -95,7 +96,7 @@ elif  [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fq.gz ] ; then
 elif [ $PE == "TRUE" ] ; then
 	## Untrimmed, pair-end
 	echo "HISAT2 alignment run on original untrimmed paired-end reads"
-	${SOFTWARE}/hisat2-2.0.4/hisat2 -p 8 \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \${FILEID}_R1_001.${EXT} -2 \${FILEID}_R2_001.${EXT} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
@@ -103,7 +104,7 @@ elif [ $PE == "TRUE" ] ; then
 else
 	## Untrimmed, single-end
 	echo "HISAT2 alignment run on original untrimmed single-end reads"
-	${SOFTWARE}/hisat2-2.0.4/hisat2 -p 8 \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -U \${FILEID}.${EXT} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
@@ -117,7 +118,7 @@ SORTEDBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
 
 #filter unmapped segments
 ${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \${SAM} > \${ORIGINALBAM}
-${SOFTWARE}/samtools-1.2/samtools sort -@ 8 \${ORIGINALBAM} \${SORTEDBAM}
+${SOFTWARE}/samtools-1.2/samtools sort -@ ${CORES} \${ORIGINALBAM} \${SORTEDBAM}
 ${SOFTWARE}/samtools-1.2/samtools index \${SORTEDBAM}.bam
 
 ## Clean up

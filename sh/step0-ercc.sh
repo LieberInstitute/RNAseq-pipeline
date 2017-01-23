@@ -1,13 +1,15 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
+# ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-LARGE=${4-"FALSE"}
+CORES=${4-8}
+LARGE=${5-"FALSE"}
+
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -54,7 +56,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
-#$ -pe local 8
+#$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
@@ -72,12 +74,12 @@ mkdir -p ${MAINDIR}/Ercc/\${ID}
 if [ $PE == "TRUE" ] ; then 
 ${SOFTWARE}/kallisto quant \
 -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
--o ${MAINDIR}/Ercc/\${ID} -t 8 --rf-stranded \
+-o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --rf-stranded \
 \${FILEID}_R1_001.${EXT} \${FILEID}_R2_001.${EXT}
 else
 ${SOFTWARE}/kallisto quant \
 -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
--o ${MAINDIR}/Ercc/\${ID} -t 8 --single \${FILEID}.${EXT}
+-o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --single \${FILEID}.${EXT}
 
 fi
 

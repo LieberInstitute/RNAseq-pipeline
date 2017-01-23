@@ -1,14 +1,15 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE} ${SH_FOLDER}
+# ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE} ${SH_FOLDER}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
-LARGE=${4-"FALSE"}
-SH_FOLDER={$5-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
+CORES=${4-8}
+LARGE=${5-"FALSE"}
+SH_FOLDER=${6-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -52,7 +53,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
-#$ -pe local 8
+#$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
 #$ -hold_jid pipeline_setup
@@ -62,7 +63,7 @@ echo "**** Job starts ****"
 date
 
 
-Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -p ${PE} -e ${EXT} -c 8
+Rscript ${SH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -p ${PE} -e ${EXT} -c ${CORES}
 
 echo "**** Job ends ****"
 date

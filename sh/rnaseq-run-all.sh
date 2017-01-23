@@ -2,7 +2,7 @@
 
 ## Usage
 # qrsh
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${STRANDED} ${ERCC} ${FQ_FOLDER} ${MERGE} ${LARGE} ${FULLCOV} ${SH_FOLDER} ${ANNO_FOLDER}
+# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${STRANDED} ${ERCC} ${FQ_FOLDER} ${CORES} ${MERGE} ${LARGE} ${FULLCOV} ${SH_FOLDER} ${ANNO_FOLDER}
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh testrun run1 hg38 TRUE TRUE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh bs run1 hg38 FALSE FALSE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Projects/brainspan
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh fulltest sep23 hg38 TRUE TRUE TRUE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
@@ -15,11 +15,12 @@ PE=$4
 STRANDED=$5
 ERCC=$6
 FQ_FOLDER=${7-""}
-MERGE=${8-"FALSE"}
-LARGE=${9-"FALSE"}
-FULLCOV=${10-"FALSE"}
-SH_FOLDER=${11-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
-ANNO_FOLDER=${12-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
+CORES=${8-8}
+MERGE=${9-"FALSE"}
+LARGE=${10-"FALSE"}
+FULLCOV=${11-"FALSE"}
+SH_FOLDER=${12-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
+ANNO_FOLDER=${13-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
 
 ## Try running R. If it fails it means that the user is on the login node.
 Rscript -e "Sys.time()" &> .try_load_R
@@ -127,18 +128,18 @@ fi
 
 if [ ${MERGE} == "TRUE" ]
 then
-    sh ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE} ${SH_FOLDER}
+    sh ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE} ${SH_FOLDER}
 fi
 
 if [ ${ERCC} == "TRUE" ]
 then
-    sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
+    sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
 fi
 
 sh ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
-sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
+sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
 sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${LARGE}
-sh ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${LARGE}
+sh ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${CORES} ${LARGE}
 sh ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
 sh ${SH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
-sh ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${ERCC} ${LARGE} ${FULLCOV} ${SH_FOLDER}
+sh ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${SH_FOLDER}

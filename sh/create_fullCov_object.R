@@ -12,6 +12,7 @@ spec <- matrix(c(
 	'prefix', 'p', 1, 'character', 'Prefix',
     'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
     'fullcov', 'f', 1, 'logical', 'Whether to create the full coverage object or not',
+    'cores', 'c', 1, 'integer', 'Number of cores to use',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -54,14 +55,14 @@ if(opt$fullcov) {
 
     ### confirm total mapping
     pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-        chrs = CHR[-length(CHR)], BPPARAM = MulticoreParam(8)))
+        chrs = CHR[-length(CHR)], BPPARAM = MulticoreParam(opt$cores)))
     pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-        chrs = CHR[length(CHR)], BPPARAM = MulticoreParam(8)))
+        chrs = CHR[length(CHR)], BPPARAM = MulticoreParam(opt$cores)))
     pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
     ###################################################################
 
-    fullCov <- fullCoverage(files = pd$bwFile, chrs = CHR, mc.cores = 8)
+    fullCov <- fullCoverage(files = pd$bwFile, chrs = CHR, mc.cores = opt$cores)
     save(fullCov, file = file.path(MAINDIR, paste0('fullCoverage_', EXPNAME,
         '_n', N, '.rda')))
 }

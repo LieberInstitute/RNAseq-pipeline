@@ -19,6 +19,7 @@ spec <- matrix(c(
 	'prefix', 'p', 1, 'character', 'Prefix',
     'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
     'ercc', 'c', 1, 'logical', 'Whether the reads include ERCC or not',
+    'cores', 't', 1, 'integer', 'Number of cores to use',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -135,9 +136,9 @@ pd = cbind(pd,hiStats)
 
 ### confirm total mapping
 pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-    chrs = c(1:20, 'X', 'Y'), BPPARAM = MulticoreParam(8)))
+    chrs = c(1:20, 'X', 'Y'), BPPARAM = MulticoreParam(opt$cores)))
 pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'MT', 
-    BPPARAM = MulticoreParam(8)))
+    BPPARAM = MulticoreParam(opt$cores)))
 pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 ###################################################################

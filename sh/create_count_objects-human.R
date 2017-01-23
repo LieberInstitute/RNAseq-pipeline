@@ -18,6 +18,7 @@ spec <- matrix(c(
 	'prefix', 'p', 1, 'character', 'Prefix',
     'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
     'ercc', 'c', 1, 'logical', 'Whether the reads include ERCC or not',
+    'cores', 't', 1, 'integer', 'Number of cores to use',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -164,9 +165,9 @@ pd = cbind(pd,hiStats)
 ### confirm total mapping
 pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
     chrs = paste0("chr", c(1:22, 'X', 'Y')), 
-    BPPARAM = MulticoreParam(8)))
+    BPPARAM = MulticoreParam(opt$cores)))
 pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped, chrs = 'chrM', 
-    BPPARAM = MulticoreParam(8)))
+    BPPARAM = MulticoreParam(opt$cores)))
 pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
 
 
@@ -221,7 +222,7 @@ geneMap$EntrezID = sym$entrezgene[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 geneCountList = mclapply(geneFn, function(x) {
 	cat(".")
 	read.delim(pipe(paste("cut -f7", x)), as.is=TRUE,skip=1)[,1]
-}, mc.cores=8)
+}, mc.cores=opt$cores)
 geneCounts = do.call("cbind", geneCountList)
 rownames(geneCounts) = rownames(geneMap)
 geneCounts = geneCounts[,pd$SAMPLE_ID] # put in order
@@ -264,7 +265,7 @@ exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 exonCountList = mclapply(exonFn, function(x) {
 	cat(".")
 	read.delim(pipe(paste("cut -f7", x)), as.is=TRUE,skip=1)[,1]
-}, mc.cores=8)
+}, mc.cores=opt$cores)
 exonCounts = do.call("cbind", exonCountList)
 rownames(exonCounts) = rownames(exonMap)
 exonCounts = exonCounts[,pd$SAMPLE_ID] # put in order
@@ -307,10 +308,10 @@ stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
 if (PE == TRUE) {
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
-		output = "Count", maxCores=8,strandSpecific=TRUE)
+		output = "Count", maxCores=opt$cores,strandSpecific=TRUE)
 } else {
 	juncCounts = junctionCount(junctionFiles, pd$SAMPLE_ID,
-		output = "Count", maxCores=8,strandSpecific=FALSE)
+		output = "Count", maxCores=opt$cores,strandSpecific=FALSE)
 }
 anno = juncCounts$anno
 seqlevels(anno, force=TRUE) = paste0("chr", c(1:22,"X","Y","M"))

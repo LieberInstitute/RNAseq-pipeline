@@ -1,12 +1,13 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
+# ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
+CORES=${4-8}
 LARGE=${4-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
@@ -53,7 +54,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
-#$ -pe local 8
+#$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
@@ -86,7 +87,7 @@ if [ $PE == "TRUE" ] ; then
 		RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fq.gz
 		
 		## trim adapters
-		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar PE -threads 8 -phred33 \
+		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar PE -threads ${CORES} -phred33 \
 		\${FILEID}_R1_001.${EXT} \${FILEID}_R2_001.${EXT} \$FP \$FU \$RP \$RU \
 		ILLUMINACLIP:${SOFTWARE}/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10:1 \
 		LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:75
@@ -114,7 +115,7 @@ else
 		OUT=${MAINDIR}/trimmed_fq/\${ID}_trimmed.${EXT}
 		
 		## trim adapters
-		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar SE -threads 8 -phred33 \
+		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar SE -threads ${CORES} -phred33 \
 		\${FILEID}.${EXT} \$OUT \
 		ILLUMINACLIP:${SOFTWARE}/Trimmomatic-0.36/adapters/TruSeq2-SE.fa:2:30:10:1 \
 		LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36

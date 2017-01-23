@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${LARGE}
+# ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
@@ -10,7 +10,8 @@ STRANDED=$3
 GTF=$4
 hgXX=$5
 PE=$6
-LARGE=${7-"FALSE"}
+CORES=${7-8}
+LARGE=${8-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -59,7 +60,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${QUEUE},${MEM}
 #$ -N ${sname}
-#$ -pe local 8
+#$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
@@ -82,20 +83,20 @@ BAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam
 if [ $PE == "TRUE" ] ; then 
 	# genes	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-s 2 -p -T 8 -a $GTF \
+	-s 2 -p -T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/gene/${FCFILE}_Genes.counts \$BAM
 	# exons	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-s 2 -p -O -f -T 8 -a $GTF \
+	-s 2 -p -O -f -T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/exon/${FCFILE}_Exons.counts \$BAM
 else
 	# genes	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-T 8 -a $GTF \
+	-T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/gene/${FCFILE}_Genes.counts \$BAM
 	# exons	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-O -f -T 8 -a $GTF \
+	-O -f -T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/exon/${FCFILE}_Exons.counts \$BAM
 fi
 	
@@ -105,7 +106,7 @@ OUTCOUNT=${MAINDIR}/Counts/junction/\${ID}_junctions_primaryOnly_regtools.count
 TMPDIR=${MAINDIR}/Counts/junction/tmpdir
 TMPBAM=\${TMPDIR}/\${ID}.bam
 #filter only primary alignments
-${SOFTWARE}/samtools-1.2/samtools view -@ 8 -bh -F 0x100 \$BAM > \${TMPBAM}
+${SOFTWARE}/samtools-1.2/samtools view -@ ${CORES} -bh -F 0x100 \$BAM > \${TMPBAM}
 ${SOFTWARE}/samtools-1.2/samtools index \${TMPBAM}
 
 ## Load python 2.7.9 since the default one cannot run:
