@@ -1,15 +1,16 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${CORES} ${LARGE}
+# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${BED} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 PE=$3
 HISATIDX=$4
-CORES=${5-8}
-LARGE=${6-"FALSE"}
+BED=${5}
+CORES=${6-8}
+LARGE=${7-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -45,9 +46,6 @@ else
     QUEUE="shared"
 fi
 
-# Directories
-mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
-
 # Construct shell files
 FILELIST=${MAINDIR}/SAMPLE_IDs.txt
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
@@ -67,6 +65,10 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
+
+# Directories
+mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
+mkdir -o ${MAINDIR}/HISAT2_out/infer_strand
 
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
@@ -124,6 +126,38 @@ ${SOFTWARE}/samtools-1.2/samtools index \${SORTEDBAM}.bam
 ## Clean up
 rm \${SAM}
 rm \${ORIGINALBAM}
+
+## Run infer experiment
+module load python/2.7.9
+~/.local/bin/infer_experiment.py -i \${SORTEDBAM} -r ${BED} 1> ${MAINDIR}/HISAT2_out/infer_strandness/\${ID}.txt 2>&1
+
+echo "**** Job ends ****"
+date
+EOF
+
+call="qsub .${sname}.sh"
+echo $call
+$call
+
+## Process the output from infer_experiment.py for all samples
+SHORT="infer-strandness-${EXPERIMENT}"
+sname="step3b-${SHORT}.${PREFIX}"
+echo "Creating script ${sname}"
+
+cat > ${MAINDIR}/.${sname}.sh <<EOF
+#!/bin/bash
+#$ -cwd
+#$ -l ${QUEUE}
+#$ -N ${sname}
+#$ -o ./logs/${SHORT}.o.txt
+#$ -e ./logs/${SHORT}.e.txt
+#$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX}
+#$ -m ${EMAIL}
+echo "**** Job starts ****"
+date
+
+## Process the infer experiment info
+Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/step3b_inter_strandness.R
 
 echo "**** Job ends ****"
 date

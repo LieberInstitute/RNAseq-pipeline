@@ -85,21 +85,25 @@ then
 	GTF=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/hisat2_GRCh38primary
 	CHRSIZES=${ANNO_FOLDER}/hg38.chrom.sizes.gencode
+    BED=${ANNO_FOLDER}/RSeQC/hg38.bed
 elif [ $hgXX == "hg19" ]
 then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/hisat2_GRCh37primary
 	CHRSIZES=${ANNO_FOLDER}/hg19.chrom.sizes.gencode
+    BED=${ANNO_FOLDER}/RSeQC/hg19.bed
 elif [ $hgXX == "mm10" ]
 then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/hisat2_GRCm38primary
 	CHRSIZES=${ANNO_FOLDER}/mm10.chrom.sizes.gencode
+    BED=${ANNO_FOLDER}/RSeQC/mm10.bed
 elif [ $hgXX == "rn6" ]
 then 
 	GTF=${ANNO_FOLDER}/ensembl/Rnor_6.0/Rattus_norvegicus.Rnor_6.0.86.gtf
 	HISATIDX=${ANNO_FOLDER}/ensembl/Rnor_6.0/hisat2_Rnor6.0toplevel
 	CHRSIZES=${ANNO_FOLDER}/rn6.chrom.sizes.ensembl
+    BED=${ANNO_FOLDER}/RSeQC/rn6.bed
 else 
 	echo "Enter hg19 or hg38, mm10 for mouse, or rn6 for rat." >&2
 	exit 1
@@ -138,7 +142,7 @@ fi
 
 sh ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
 sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
-sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${CORES} ${LARGE}
+sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${BED} ${CORES} ${LARGE}
 sh ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${CORES} ${LARGE}
 sh ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
 sh ${SH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
