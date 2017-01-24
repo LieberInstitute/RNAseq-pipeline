@@ -36,6 +36,10 @@ inferred_strandness <- do.call(rbind, lapply(strandfiles, function(sf) {
     ) 
 }))
 
+## Print some info
+lapply(inferred_strandness[, -grep('frac', colnames(inferred_strandness))], table, useNA = 'ifany')
+summary(inferred_strandness[, grep('frac', colnames(inferred_strandness))])
+
 save(inferred_strandness ,
     file = 'HISAT2_out/infer_strandness/inferred_strandness.Rdata')
 
