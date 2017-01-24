@@ -68,7 +68,7 @@ date
 
 # Directories
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
-mkdir -o ${MAINDIR}/HISAT2_out/infer_strand
+mkdir -o ${MAINDIR}/HISAT2_out/infer_strandness
 
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
