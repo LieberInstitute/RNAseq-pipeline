@@ -31,17 +31,11 @@ if (!is.null(opt$help)) {
 	q(status=1)
 }
 
-MAINDIR <- opt$maindir
-EXPERIMENT <- opt$experiment
-PREFIX <- opt$prefix
-PE <- opt$paired
-ERCC <- opt$ercc
-
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
-EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
+EXPNAME = paste0(opt$experiment,"_",opt$prefix)
 
 ## read in pheno	
-metrics <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
+metrics <- data.frame(read.table(file.path(opt$maindir, 'SAMPLE_IDs.txt'), as.is=TRUE,
     header = FALSE))
 names(metrics)[1] <- "SAMPLE_ID"
 metrics$SAMPLE_ID <- basename(metrics$SAMPLE_ID)
@@ -49,14 +43,14 @@ N <- length(metrics$SAMPLE_ID)
 
 ############################################################ 
 ###### ercc plots
-if (ERCC == TRUE ){
+if (opt$ercc == TRUE ){
 	sampIDs = as.vector(metrics$SAMPLE_ID)
 
 	##observed kallisto tpm
 	erccTPM = sapply(sampIDs, function(x) {
-	  read.table(file.path(MAINDIR, "Ercc", x, "abundance.tsv"),header = TRUE)$tpm
+	  read.table(file.path(opt$maindir, "Ercc", x, "abundance.tsv"),header = TRUE)$tpm
 	})
-	rownames(erccTPM) = read.table(file.path(MAINDIR, "Ercc", sampIDs[1], "abundance.tsv"),
+	rownames(erccTPM) = read.table(file.path(opt$maindir, "Ercc", sampIDs[1], "abundance.tsv"),
 							header = TRUE)$target_id
 	#check finiteness / change columns with all NaNs to 0s
 	erccTPM[which(is.na(erccTPM),arr.ind=T)] = 0
@@ -67,7 +61,7 @@ if (ERCC == TRUE ){
 	##match row order
 	spikeIns = spikeIns[match(rownames(erccTPM),rownames(spikeIns)),]
 
-	metricsf(file.path(MAINDIR, 'Ercc', 'ercc_spikein_check_mix1.metricsf'),h=12,w=18)
+	metricsf(file.path(opt$maindir, 'Ercc', 'ercc_spikein_check_mix1.metricsf'),h=12,w=18)
 	mypar(4,6)
 	for(i in 1:ncol(erccTPM)) {
 		plot(log2(spikeIns[,"concentration.in.Mix.1..attomoles.ul."]+1) ~ log2(erccTPM[,i]+1),
@@ -86,10 +80,10 @@ if (ERCC == TRUE ){
 ############################################################
 
 ### add bam file
-metrics$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(metrics$SAMPLE_ID, '_accepted_hits.sorted.bam'))
+metrics$bamFile <- file.path(opt$maindir, 'HISAT2_out', paste0(metrics$SAMPLE_ID, '_accepted_hits.sorted.bam'))
 
 ### get alignment metrics
-if (PE == TRUE) {
+if (opt$paired == TRUE) {
 hisatStats = function(logFile) {
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
@@ -128,7 +122,7 @@ hisatStats = function(logFile) {
 }
 }
 
-logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
+logFiles = file.path(opt$maindir, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
 names(logFiles)  = metrics$SAMPLE_ID
 hiStats = t(sapply(logFiles, hisatStats))
 
@@ -145,7 +139,7 @@ metrics$mitoRate <- metrics$mitoMapped / (metrics$mitoMapped +  metrics$totalMap
 
 ###############
 ### gene counts
-geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Genes.counts'))
+geneFn <- file.path(opt$maindir, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Genes.counts'))
 names(geneFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(geneFn)))
 
@@ -196,14 +190,14 @@ widG = matrix(rep(geneMap$Length), nr = nrow(geneCounts),
 geneRpkm = geneCounts/(widG/1000)/(bg/1e6)
 
 ## save metrics
-write.csv(metrics, file = file.path(MAINDIR, 
+write.csv(metrics, file = file.path(opt$maindir, 
     paste0('read_and_alignment_metrics_', opt$experiment, '_', opt$prefix,
     '.csv')))
 
 
 ###############
 ### exon counts
-exonFn <- file.path(MAINDIR, 'Counts', 'exon', paste0(metrics$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Exons.counts'))
+exonFn <- file.path(opt$maindir, 'Counts', 'exon', paste0(metrics$SAMPLE_ID, '_Ensembl.rnor6.0.rn6_Exons.counts'))
 names(exonFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(exonFn)))
 
@@ -249,7 +243,7 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 ##### junctions
 
 ## via primary alignments only
-junctionFiles <- file.path(MAINDIR, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
+junctionFiles <- file.path(opt$maindir, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
 juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
@@ -348,13 +342,13 @@ jMap$rightSeq = getSeq(Rnorvegicus, right)
 ### save counts
 
 save(metrics, jMap, jCounts, geneCounts, geneMap, exonCounts, exonMap, compress=TRUE,
-	file= file.path(MAINDIR, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
+	file= file.path(opt$maindir, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
 save(metrics, jMap, jRpkm, geneRpkm,	geneMap, exonRpkm, exonMap, compress=TRUE,
-	file= file.path(MAINDIR, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
+	file= file.path(opt$maindir, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
 ## write out for coverage
 write.table(metrics[,c("SAMPLE_ID", "bamFile")], 
-	file.path(MAINDIR, 'samples_with_bams.txt'),
+	file.path(opt$maindir, 'samples_with_bams.txt'),
 	row.names=FALSE, quote=FALSE, sep="\t")
 
 ## Reproducibility information

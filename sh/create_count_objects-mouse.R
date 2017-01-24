@@ -29,27 +29,22 @@ if (!is.null(opt$help)) {
 	q(status=1)
 }
 
-MAINDIR <- opt$maindir
-EXPERIMENT <- opt$experiment
-PREFIX <- opt$prefix
-PE <- opt$paired
-
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
-EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
+EXPNAME = paste0(opt$experiment,"_",opt$prefix)
 
 
 ## read in pheno	
-metrics <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
+metrics <- data.frame(read.table(file.path(opt$maindir, 'SAMPLE_IDs.txt'), as.is=TRUE,
     header = FALSE))
 names(metrics)[1] <- "SAMPLE_ID"
 metrics$SAMPLE_ID <- basename(metrics$SAMPLE_ID)
 N <- length(metrics$SAMPLE_ID)
 
 ### add bam file
-metrics$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(metrics$SAMPLE_ID, '_accepted_hits.sorted.bam'))
+metrics$bamFile <- file.path(opt$maindir, 'HISAT2_out', paste0(metrics$SAMPLE_ID, '_accepted_hits.sorted.bam'))
 
 ### get alignment metrics
-if (PE == TRUE) {
+if (opt$paired == TRUE) {
 hisatStats = function(logFile) {
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
@@ -88,7 +83,7 @@ hisatStats = function(logFile) {
 }
 }
 
-logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
+logFiles = file.path(opt$maindir, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
 names(logFiles)  = metrics$SAMPLE_ID
 hiStats = t(sapply(logFiles, hisatStats))
 
@@ -106,7 +101,7 @@ metrics$mitoRate <- metrics$mitoMapped / (metrics$mitoMapped +  metrics$totalMap
 
 ###############
 ### gene counts
-geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, '_Gencode.M11.mm10_Genes.counts'))
+geneFn <- file.path(opt$maindir, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, '_Gencode.M11.mm10_Genes.counts'))
 names(geneFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(geneFn)))
 
@@ -164,14 +159,14 @@ widG = matrix(rep(geneMap$Length), nr = nrow(geneCounts),
 geneRpkm = geneCounts/(widG/1000)/(bg/1e6)
 
 ## save metrics
-write.csv(metrics, file = file.path(MAINDIR,
+write.csv(metrics, file = file.path(opt$maindir,
     paste0('read_and_alignment_metrics_', opt$experiment, '_', opt$prefix,
     '.csv')))
 
 
 ###############
 ### exon counts
-exonFn <- file.path(MAINDIR, 'Counts', 'exon', paste0(metrics$SAMPLE_ID, '_Gencode.M11.mm10_Exons.counts'))
+exonFn <- file.path(opt$maindir, 'Counts', 'exon', paste0(metrics$SAMPLE_ID, '_Gencode.M11.mm10_Exons.counts'))
 names(exonFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(exonFn)))
 
@@ -222,7 +217,7 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 ##### junctions
 
 ## via primary alignments only
-junctionFiles <- file.path(MAINDIR, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
+junctionFiles <- file.path(opt$maindir, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
 juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
@@ -316,13 +311,13 @@ jMap$rightSeq = getSeq(Mmusculus, right)
 ### save counts
 
 save(metrics, jMap, jCounts, geneCounts, geneMap, exonCounts, exonMap, compress=TRUE,
-	file= file.path(MAINDIR, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
+	file= file.path(opt$maindir, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
 save(metrics, jMap, jRpkm, geneRpkm,	geneMap, exonRpkm, exonMap, compress=TRUE,
-	file= file.path(MAINDIR, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
+	file= file.path(opt$maindir, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
 ## write out for coverage
 write.table(metrics[,c("SAMPLE_ID", "bamFile")], 
-	file.path(MAINDIR, 'samples_with_bams.txt'),
+	file.path(opt$maindir, 'samples_with_bams.txt'),
 	row.names=FALSE, quote=FALSE, sep="\t")
 
 ## Reproducibility information

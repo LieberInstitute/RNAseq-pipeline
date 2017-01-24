@@ -24,46 +24,49 @@ if (!is.null(opt$help)) {
 	q(status=1)
 }
 
-
-hgXX <- opt$organism
-MAINDIR <- opt$maindir
-EXPERIMENT <- opt$experiment
-PREFIX <- opt$prefix
-PE <- opt$paired
-
-EXPNAME <- paste0(EXPERIMENT,"_",PREFIX)
+EXPNAME <- paste0(opt$experiment, "_", opt$prefix)
 
 if(opt$fullcov) {
     ## read in pheno	
-    pd <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
-        header = FALSE))
-    names(pd)[1] <- "SAMPLE_ID"
-    pd$SAMPLE_ID <- basename(pd$SAMPLE_ID)
-    N <- length(pd$SAMPLE_ID)
+    info <- data.frame(read.table(file.path(opt$maindir, 'SAMPLE_IDs.txt'),
+        as.is = TRUE, header = FALSE))
+    names(info)[1] <- "SAMPLE_ID"
+    info$SAMPLE_ID <- basename(info$SAMPLE_ID)
+    N <- length(info$SAMPLE_ID)
 
     ### add bigwig and bam files
-    pd$bamFile <- file.path(MAINDIR, 'HISAT2_out', paste0(pd$SAMPLE_ID,
+    info$bamFile <- file.path(opt$maindir, 'HISAT2_out', paste0(info$SAMPLE_ID,
         '_accepted_hits.sorted.bam'))
-    pd$bwFile <- file.path(MAINDIR, 'Coverage', paste0(pd$SAMPLE_ID, '.bw'))
+    info$bwFile <- file.path(opt$maindir, 'Coverage', paste0(info$SAMPLE_ID,
+        '.bw'))
 
     ## Chrs to use, mitocondrial chromosome has to be the last one for the code
     ## to work later on
-    if (hgXX == "rn6") { CHR = c(1:20,"X","Y","MT")
-    } else if (hgXX == "mm10") { CHR = paste0("chr",c(1:19,"X","Y","M"))
-    } else { CHR = paste0("chr",c(1:22,"X","Y","M")) }
+    if (opt$organism == "rn6") {
+        CHR <- c(1:20,"X","Y","MT")
+    } else if (opt$organism == "mm10") {
+        CHR <- paste0("chr",c(1:19,"X","Y","M"))
+    } else {
+        CHR <- paste0("chr",c(1:22,"X","Y","M"))
+    }
     stopifnot(grepl('M', CHR[length(CHR)]))
 
-    ### confirm total mapping
-    pd$totalMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-        chrs = CHR[-length(CHR)], BPPARAM = MulticoreParam(opt$cores)))
-    pd$mitoMapped <- unlist(bplapply(pd$bamFile, getTotalMapped,
-        chrs = CHR[length(CHR)], BPPARAM = MulticoreParam(opt$cores)))
-    pd$mitoRate <- pd$mitoMapped / (pd$mitoMapped +  pd$totalMapped)
-
     ###################################################################
-
-    fullCov <- fullCoverage(files = pd$bwFile, chrs = CHR, mc.cores = opt$cores)
-    save(fullCov, file = file.path(MAINDIR, paste0('fullCoverage_', EXPNAME,
+    
+    ## Uses BAM files if the bigwigs are strand specific
+    strandrule <- readLines(file.path(opt$maindir,
+        'inferred_strandness_pattern.txt'))
+    
+    if(strandrule == 'none') {
+        fullCov <- fullCoverage(files = info$bwFile, chrs = CHR,
+            mc.cores = opt$cores)
+    } else {
+        warning('Using the BAM files instead of the strand-specific BigWigs. You might want to run fullCoverage on the strand-specific BigWigs for your analysis purposes')
+        fullCov <- fullCoverage(files = info$bamFile, chrs = CHR,
+            mc.cores = opt$cores)
+    }
+    
+    save(fullCov, file = file.path(opt$maindir, paste0('fullCoverage_', EXPNAME,
         '_n', N, '.rda')))
 }
 

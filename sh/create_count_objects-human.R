@@ -41,32 +41,18 @@ if(FALSE){
     )
 }
 
-hgXX <- opt$organism
-MAINDIR <- opt$maindir
-EXPERIMENT <- opt$experiment
-PREFIX <- opt$prefix
-PE <- opt$paired
-ERCC <- opt$ercc
-
-#hgXX="hg19"
-#MAINDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/tests/lake"
-#EXPERIMENT="lake"
-#PREFIX="ten"
-#PE="FALSE"
-#ERCC="FALSE"
-
-if (hgXX == "hg19") { 
+if (opt$organism == "hg19") { 
 	library('BSgenome.Hsapiens.UCSC.hg19')
-} else if (hgXX == "hg38") { 
+} else if (opt$organism == "hg38") { 
 	library('BSgenome.Hsapiens.UCSC.hg38')
 }
 
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
-EXPNAME = paste0(EXPERIMENT,"_",PREFIX)
+EXPNAME = paste0(opt$experiment,"_",opt$prefix)
 
 
 ## read in pheno	
-metrics <- data.frame(read.table(file.path(MAINDIR, 'SAMPLE_IDs.txt'), as.is=TRUE,
+metrics <- data.frame(read.table(file.path(opt$maindir, 'SAMPLE_IDs.txt'), as.is=TRUE,
     header = FALSE))
 names(metrics)[1] <- "SAMPLE_ID"
 metrics$SAMPLE_ID <- basename(metrics$SAMPLE_ID)
@@ -75,14 +61,14 @@ N <- length(metrics$SAMPLE_ID)
 
 ############################################################ 
 ###### ercc plots
-if (ERCC == TRUE ){
+if (opt$ercc == TRUE ){
 	sampIDs = as.vector(metrics$SAMPLE_ID)
 
 	##observed kallisto tpm
 	erccTPM = sapply(sampIDs, function(x) {
-	  read.table(file.path(MAINDIR, "Ercc", x, "abundance.tsv"),header = TRUE)$tpm
+	  read.table(file.path(opt$maindir, "Ercc", x, "abundance.tsv"),header = TRUE)$tpm
 	})
-	rownames(erccTPM) = read.table(file.path(MAINDIR, "Ercc", sampIDs[1], "abundance.tsv"),
+	rownames(erccTPM) = read.table(file.path(opt$maindir, "Ercc", sampIDs[1], "abundance.tsv"),
 							header = TRUE)$target_id
 	#check finiteness / change columns with all NaNs to 0s
 	erccTPM[which(is.na(erccTPM),arr.ind=T)] = 0
@@ -93,7 +79,7 @@ if (ERCC == TRUE ){
 	##match row order
 	spikeIns = spikeIns[match(rownames(erccTPM),rownames(spikeIns)),]
 
-	metricsf(file.path(MAINDIR, 'Ercc', 'ercc_spikein_check_mix1.metricsf'),h=12,w=18)
+	metricsf(file.path(opt$maindir, 'Ercc', 'ercc_spikein_check_mix1.metricsf'),h=12,w=18)
 	mypar(4,6)
 	for(i in 1:ncol(erccTPM)) {
 		plot(log2(10*spikeIns[,"concentration.in.Mix.1..attomoles.ul."]+1) ~ log2(erccTPM[,i]+1),
@@ -114,10 +100,10 @@ if (ERCC == TRUE ){
 
 
 ### add bam file
-metrics$bamFile <- file.path(MAINDIR, "HISAT2_out", paste0(metrics$SAMPLE_ID, "_accepted_hits.sorted.bam"))
+metrics$bamFile <- file.path(opt$maindir, "HISAT2_out", paste0(metrics$SAMPLE_ID, "_accepted_hits.sorted.bam"))
 
 ### get alignment metrics
-if (PE == TRUE) {
+if (opt$paired == TRUE) {
 hisatStats = function(logFile) {
 	y = scan(logFile, what = "character", sep= "\n", 
 		quiet = TRUE, strip=TRUE)
@@ -156,7 +142,7 @@ hisatStats = function(logFile) {
 }
 }
 
-logFiles = file.path(MAINDIR, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
+logFiles = file.path(opt$maindir, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
 names(logFiles)  = metrics$SAMPLE_ID
 hiStats = t(sapply(logFiles, hisatStats))
 
@@ -173,15 +159,15 @@ metrics$mitoRate <- metrics$mitoMapped / (metrics$mitoMapped +  metrics$totalMap
 
 ###################################################################
 
-if (hgXX == "hg19") {
+if (opt$organism == "hg19") {
 	filename = "_Gencode.v25lift37.hg19"
-} else if (hgXX == "hg38") {
+} else if (opt$organism == "hg38") {
 	filename = "_Gencode.v25.hg38"
 }
 
 ###############
 ### gene counts
-geneFn <- file.path(MAINDIR, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, filename, '_Genes.counts'))
+geneFn <- file.path(opt$maindir, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, filename, '_Genes.counts'))
 names(geneFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(geneFn)))
 
@@ -200,13 +186,13 @@ geneMap$ensemblID = ss(geneMap$Geneid, "\\.")
 geneMap$Geneid = NULL
 
 ######### biomart 
-if (hgXX=="hg19") {
+if (opt$organism=="hg19") {
 	# VERSION 75, GRCh37.p13
 	ensembl = useMart("ENSEMBL_MART_ENSEMBL", 
 		dataset="hsapiens_gene_ensembl", host="feb2014.archive.ensembl.org")
 	sym = getBM(attributes = c("ensembl_gene_id","hgnc_symbol","entrezgene"), 
 		values=geneMap$ensemblID, mart=ensembl)
-} else if (hgXX=="hg38") {
+} else if (opt$organism=="hg38") {
 	# VERSION 85, GRCh38.p7
 	ensembl = useMart("ENSEMBL_MART_ENSEMBL",  
 		dataset="hsapiens_gene_ensembl", host="jul2016.archive.ensembl.org")
@@ -242,14 +228,14 @@ widG = matrix(rep(geneMap$Length), nr = nrow(geneCounts),
 geneRpkm = geneCounts/(widG/1000)/(bg/1e6)
 
 ## save metrics
-write.csv(metrics, file = file.path(MAINDIR,
+write.csv(metrics, file = file.path(opt$maindir,
     paste0('read_and_alignment_metrics_', opt$experiment, '_', opt$prefix,
     '.csv')))
 
 
 ###############
 ### exon counts
-exonFn <- file.path(MAINDIR, 'Counts', 'exon', paste0(metrics$SAMPLE_ID, filename, '_Exons.counts'))
+exonFn <- file.path(opt$maindir, 'Counts', 'exon', paste0(metrics$SAMPLE_ID, filename, '_Exons.counts'))
 names(exonFn) = metrics$SAMPLE_ID
 stopifnot(all(file.exists(exonFn)))
 
@@ -296,19 +282,19 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 ##### junctions
 
 ## import theJunctions annotation
-if (hgXX == "hg19") { 
+if (opt$organism == "hg19") { 
 	#load(file.path(RDIR, "junction_annotation_hg19_ensembl_v75.rda"))
 	load(file.path(RDIR, "junction_annotation_hg19_gencode_v25lift37.rda"))
-} else if (hgXX == "hg38") { 
+} else if (opt$organism == "hg38") { 
 	#load(file.path(RDIR, "junction_annotation_hg38_ensembl_v85.rda"))
 	load(file.path(RDIR, "junction_annotation_hg38_gencode_v25.rda"))
 }
 
 ## via primary alignments only
-junctionFiles <- file.path(MAINDIR, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
+junctionFiles <- file.path(opt$maindir, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
-if (PE == TRUE) {
+if (opt$paired == TRUE) {
 	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
 		output = "Count", maxCores=opt$cores,strandSpecific=TRUE)
 } else {
@@ -404,9 +390,9 @@ jMap$rightSeq = getSeq(Hsapiens, right)
 
 ############################
 ### add transcript maps ####
-if (hgXX == "hg19") { 
+if (opt$organism == "hg19") { 
 	load(file.path(RDIR, "feature_to_Tx_hg19_gencode_v25lift37.rda"))
-} else if (hgXX == "hg38") { 
+} else if (opt$organism == "hg38") { 
 	load(file.path(RDIR, "feature_to_Tx_hg38_gencode_v25.rda")) 
 }
 
@@ -438,13 +424,13 @@ colnames(mcols(jMap))[10] = "Class"
 ### save counts
 
 save(metrics, jMap, jCounts, geneCounts, geneMap, exonCounts, exonMap, compress=TRUE,
-	file= file.path(MAINDIR, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
+	file= file.path(opt$maindir, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
 save(metrics, jMap, jRpkm, geneRpkm,	geneMap, exonRpkm, exonMap, compress=TRUE,
-	file= file.path(MAINDIR, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
+	file= file.path(opt$maindir, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
 ## write out for coverage
 write.table(metrics[,c("SAMPLE_ID", "bamFile")], 
-	file.path(MAINDIR, 'samples_with_bams.txt'),
+	file.path(opt$maindir, 'samples_with_bams.txt'),
 	row.names=FALSE, quote=FALSE, sep="\t")
 
 

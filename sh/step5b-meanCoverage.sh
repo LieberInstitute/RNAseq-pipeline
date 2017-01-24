@@ -55,18 +55,36 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-
-## Locate normalized BigWig files and concatenate them in a space separated list
-BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/\${ID}.bw"; done < ${FILELIST} | paste -sd " ")
-
-## Create mean of normalized bigwigs
+## Load required software
 module load wiggletools/default
 module load ucsctools
-wiggletools write ${MAINDIR}/Coverage/mean.wig mean \${BIGWIGS}
-wigToBigWig ${MAINDIR}/Coverage/mean.wig ${CHRSIZES} ${MAINDIR}/Coverage/mean.bw
+
+## Read the strandness information
+STRANDRULE=\$(cat inferred_strandness_pattern.txt)
+
+if [ \${STRANDRULE} == "none" ]
+then
+    ## Locate normalized BigWig files and concatenate them in a space separated list
+    BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/\${ID}.bw"; done < ${FILELIST} | paste -sd " ")
+    
+    ## Create mean of normalized bigwigs
+    wiggletools write ${MAINDIR}/Coverage/mean.wig mean \${BIGWIGS}
+    wigToBigWig ${MAINDIR}/Coverage/mean.wig ${CHRSIZES} ${MAINDIR}/Coverage/mean.bw
+else
+    for strand in Forward Reverse
+    do
+        echo "Processing strand \${strand}"
+        ## Locate normalized BigWig files and concatenate them in a space separated list
+        BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/\${ID}.\${strand}.bw"; done < ${FILELIST} | paste -sd " ")
+    
+        ## Create mean of normalized bigwigs
+        wiggletools write ${MAINDIR}/Coverage/mean.\${strand}.wig mean \${BIGWIGS}
+        wigToBigWig ${MAINDIR}/Coverage/mean.\${strand}.wig ${CHRSIZES} ${MAINDIR}/Coverage/mean.\${strand}.bw
+    done
+fi
 
 ## Remove temp files
-rm ${MAINDIR}/Coverage/mean.wig
+rm ${MAINDIR}/Coverage/mean*.wig
 
 echo "**** Job ends ****"
 date

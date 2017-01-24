@@ -52,7 +52,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 40
-#$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX},step3b-infer-strandness-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
@@ -60,14 +60,15 @@ date
 
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
+STRANDRULE=\$(cat inferred_strandness_pattern.txt)
 
 ## Normalizing bigwigs to 40 million 100 bp reads
 module load python/2.7.9
 module load ucsctools
-python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID}
+python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID} -d "\${STRANDRULE}"
 
 ## Remove temp files
-rm ${MAINDIR}/Coverage/\${ID}.wig
+rm ${MAINDIR}/Coverage/\${ID}*.wig
 
 echo "**** Job ends ****"
 date
