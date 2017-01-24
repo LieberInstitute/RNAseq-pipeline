@@ -157,7 +157,7 @@ echo "**** Job starts ****"
 date
 
 ## Process the infer experiment info
-Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/step3b_inter_strandness.R
+Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3b_infer_strandness.R
 
 echo "**** Job ends ****"
 date
