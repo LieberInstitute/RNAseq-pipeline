@@ -40,6 +40,47 @@ names(metrics)[1] <- "SAMPLE_ID"
 metrics$SAMPLE_ID <- basename(metrics$SAMPLE_ID)
 N <- length(metrics$SAMPLE_ID)
 
+
+############################################################ 
+###### ercc plots
+if (opt$ercc == TRUE ){
+	sampIDs = as.vector(metrics$SAMPLE_ID)
+
+	##observed kallisto tpm
+	erccTPM = sapply(sampIDs, function(x) {
+	  read.table(file.path(opt$maindir, "Ercc", x, "abundance.tsv"),header = TRUE)$tpm
+	})
+	rownames(erccTPM) = read.table(file.path(opt$maindir, "Ercc", sampIDs[1], "abundance.tsv"),
+							header = TRUE)$target_id
+	#check finiteness / change NaNs to 0s
+	erccTPM[which(is.na(erccTPM),arr.ind=T)] = 0
+	
+	#expected concentration
+	spikeIns = read.delim("/users/ajaffe/Lieber/Projects/RNAseq/Ribozero_Compare/ercc_actual_conc.txt",
+								as.is=TRUE,row.names=2)
+	##match row order
+	spikeIns = spikeIns[match(rownames(erccTPM),rownames(spikeIns)),]
+
+	metricsf(file.path(opt$maindir, 'Ercc', 'ercc_spikein_check_mix1.metricsf'),h=12,w=18)
+	mypar(4,6)
+	for(i in 1:ncol(erccTPM)) {
+		plot(log2(10*spikeIns[,"concentration.in.Mix.1..attomoles.ul."]+1) ~ log2(erccTPM[,i]+1),
+			xlab="Kallisto log2(TPM+1)", ylab="Mix 1: log2(10*Concentration+1)",
+			main = colnames(erccTPM)[i],
+			xlim = c(min(log2(erccTPM+1)),max(log2(erccTPM+1))))
+		abline(0, 1, lty=2)
+	}
+	dev.off()
+
+	mix1conc = matrix(rep(spikeIns[,"concentration.in.Mix.1..attomoles.ul."]), 
+						nc = ncol(erccTPM), nr = nrow(erccTPM), byrow=FALSE)
+	logErr = (log2(erccTPM+1) - log2(10*mix1conc+1))
+	metrics$ERCCsumLogErr = colSums(logErr)
+		
+	}
+############################################################
+
+
 ### add bam file
 metrics$bamFile <- file.path(opt$maindir, 'HISAT2_out', paste0(metrics$SAMPLE_ID, '_accepted_hits.sorted.bam'))
 
@@ -222,39 +263,40 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 junctionFiles <- file.path(opt$maindir, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
+## annotate junctions
+load(file.path(RDIR, "junction_annotation_mm10_gencode_vM11.rda"))
+
+
 juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
  	output = "Count", maxCores=12,strandSpecific=TRUE)
 	
-## annotate junctions
-load("/users/ajaffe/Lieber/Projects/RNAseq/ensembl_mm10_v79_junction_annotation.rda")
-
 anno = juncCounts$anno
-anno = anno[seqnames(anno) %in% paste0("chr", c(1:19,"X","Y","M"))]
-seqlevels(anno) = paste0("chr", c(1:19,"X","Y","M"))
+seqlevels(anno, force=TRUE) = paste0("chr", c(1:19,"X","Y","M"))
 
 ## add additional annotation
-anno$inEnsembl = countOverlaps(anno, theJunctions, type="equal") > 0
-anno$inEnsemblStart = countOverlaps(anno, theJunctions, type="start") > 0
-anno$inEnsemblEnd = countOverlaps(anno, theJunctions, type="end") > 0
+anno$inGencode = countOverlaps(anno, theJunctions, type="equal") > 0
+anno$inGencodeStart = countOverlaps(anno, theJunctions, type="start") > 0
+anno$inGencodeEnd = countOverlaps(anno, theJunctions, type="end") > 0
 
 oo = findOverlaps(anno, theJunctions, type="equal")
-anno$ensemblGeneID = NA
-anno$ensemblGeneID[queryHits(oo)] = as.character(theJunctions$ensemblID[subjectHits(oo)])
-anno$ensemblSymbol = NA
-anno$ensemblSymbol[queryHits(oo)] = theJunctions$symbol[subjectHits(oo)]
-anno$ensemblStrand = NA
-anno$ensemblStrand[queryHits(oo)] = as.character(strand(theJunctions)[subjectHits(oo)])
-anno$ensemblTx = CharacterList(vector("list", length(anno)))
-anno$ensemblTx[queryHits(oo)] = theJunctions$tx[subjectHits(oo)]
-anno$numTx = elementNROWS(anno$ensemblTx)
+anno$gencodeGeneID = NA
+anno$gencodeGeneID[queryHits(oo)] = as.character(theJunctions$gencodeID[subjectHits(oo)])
+anno$ensemblID = ss(anno$gencodeGeneID, "\\.")
+anno$Symbol = NA
+anno$Symbol[queryHits(oo)] = theJunctions$symbol[subjectHits(oo)]
+anno$gencodeStrand = NA
+anno$gencodeStrand[queryHits(oo)] = as.character(strand(theJunctions)[subjectHits(oo)])
+anno$gencodeTx = CharacterList(vector("list", length(anno)))
+anno$gencodeTx[queryHits(oo)] = theJunctions$tx[subjectHits(oo)]
+anno$numTx = elementNROWS(anno$gencodeTx)
 
 # clean up
-anno$ensemblSymbol = geneMap$Symbol[match(anno$ensemblGeneID, rownames(geneMap))]
+#anno$Symbol = geneMap$Symbol[match(anno$gencodeGeneID, rownames(geneMap))]
 
 ## junction code
-anno$code = ifelse(anno$inEnsembl, "InEns", 
-	ifelse(anno$inEnsemblStart & anno$inEnsemblEnd, "ExonSkip",
-	ifelse(anno$inEnsemblStart | anno$inEnsemblEnd, "AltStartEnd", "Novel")))
+anno$code = ifelse(anno$inGencode, "InGen", 
+	ifelse(anno$inGencodeStart & anno$inGencodeEnd, "ExonSkip",
+	ifelse(anno$inGencodeStart | anno$inGencodeEnd, "AltStartEnd", "Novel")))
 
 ## b/w exons and junctions
 exonGR = GRanges( exonMap$Chr,	IRanges(exonMap$Start, exonMap$End))
@@ -262,8 +304,8 @@ anno$startExon = match(paste0(seqnames(anno),":",start(anno)-1),
 	paste0(seqnames(exonGR), ":", end(exonGR)))
 anno$endExon = match(paste0(seqnames(anno),":",end(anno)+1),
 	paste0(seqnames(exonGR), ":", start(exonGR)))
-g = data.frame(leftGene = exonMap$Geneid[anno$startExon],
-	rightGene = exonMap$Geneid[anno$endExon],
+g = data.frame(leftGene = exonMap$gencodeID[anno$startExon],
+	rightGene = exonMap$gencodeID[anno$endExon],
 	leftGeneSym = exonMap$Symbol[anno$startExon],
 	rightGeneSym = exonMap$Symbol[anno$endExon],
 	stringsAsFactors=FALSE)
@@ -291,24 +333,34 @@ anno$newGeneID = g$newGene
 anno$newGeneSymbol = g$newGeneSym
 anno$isFusion = grepl("-", anno$newGeneID)
 
+anno$newGeneSymbol[anno$code =="InGen"] = anno$Symbol[anno$code =="InGen"]
+anno$newGeneID[anno$code =="InGen"] = anno$gencodeGeneID[anno$code =="InGen"]
 ## extract out
 jMap = anno
 jCounts = juncCounts$countDF
 jCounts = jCounts[names(jMap),gsub("-",".",metrics$SAMPLE_ID)]
 
-# MAPPED PER 10 MILLION
 mappedPer10M = sapply(jCounts, sum)/10e6
 countsM = DataFrame(mapply(function(x,d) x/d, jCounts , mappedPer10M))
 rownames(jCounts) = rownames(countsM) = names(jMap)
 jRpkm = as.data.frame(countsM)
+rownames(jRpkm) = names(jMap)
+colnames(jRpkm)  = colnames(geneRpkm)
 
 ## sequence of acceptor/donor sites
-left = right = anno
+left = right = jMap
 end(left) = start(left) +1
 start(right) = end(right) -1
 
-jMap$leftSeq  = getSeq(Mmusculus, left)
-jMap$rightSeq = getSeq(Mmusculus, right)
+jMap$leftSeq  = getSeq(Hsapiens, left)
+jMap$rightSeq = getSeq(Hsapiens, right)
+
+
+## Finish up
+geneMap$meanExprs = rowMeans(geneRpkm)
+exonMap$meanExprs = rowMeans(exonRpkm)
+jMap$meanExprs = rowMeans(jRpkm)
+
 
 ### save counts
 
