@@ -99,6 +99,11 @@ metrics$mitoRate <- metrics$mitoMapped / (metrics$mitoMapped +  metrics$totalMap
 
 ###################################################################
 
+gencodeGTF = import(con="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf", format="gtf")
+gencodeGENES = mcols(gencodeGTF)[which(gencodeGTF$type=="gene"),c("gene_id","type","gene_type")]
+rownames(gencodeGENES) = gencodeGENES$gene_id
+rm(gencodeGTF)
+
 ###############
 ### gene counts
 geneFn <- file.path(opt$maindir, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, '_Gencode.M11.mm10_Genes.counts'))
@@ -122,15 +127,11 @@ geneMap$Start = as.numeric(ss(geneMap$Start, ";"))
 tmp = strsplit(geneMap$End, ";")
 geneMap$End = as.numeric(sapply(tmp, function(x) x[length(x)]))
 geneMap$Strand = ss(geneMap$Strand, ";")
-
-#remove genecode vers num from end of Geneid, e.g. ENSG00000223972.5
-geneMap$tempend = ""
-geneMap$tempend[grep("_PAR_Y",geneMap$Geneid)] = "_PAR_Y"
-geneMap$Geneid = paste0(ss(geneMap$Geneid, "\\."),geneMap$tempend)
 rownames(geneMap) = geneMap$Geneid
+geneMap$gencodeID = geneMap$Geneid
+geneMap$ensemblID = ss(geneMap$Geneid, "\\.")
 geneMap$Geneid = NULL
-geneMap$tempend = NULL
-# geneMap[7430:7440,]
+geneMap$gene_type = gencodeGENES[geneMap$gencodeID,"gene_type"]
 
 geneMap$Symbol = sym$mgi_symbol[match(rownames(geneMap), sym$ensembl_gene_id)]
 geneMap$EntrezID = sym$entrezgene[match(rownames(geneMap), sym$ensembl_gene_id)]
@@ -150,6 +151,9 @@ geneStatList = lapply(paste0(geneFn, ".summary"),
 geneStats = do.call("cbind", geneStatList)
 colnames(geneStats) = metrics$SAMPLE_ID
 metrics$totalAssignedGene = as.numeric(geneStats[1,] / colSums(geneStats))
+# rna Rate
+metrics$rRNA_rate = colSums(geneCounts[which(geneMap$gene_type == "rRNA"),])/colSums(geneCounts)
+
 
 # make RPKM
 bg = matrix(rep(colSums(geneStats)), nc = nrow(metrics), 
@@ -172,16 +176,14 @@ stopifnot(all(file.exists(exonFn)))
 
 ### read in annotation ##
 exonMap = read.delim(exonFn[1], skip=1, as.is=TRUE)[,1:6]
+exonMap$gencodeID = exonMap$Geneid
+exonMap$ensemblID = ss(exonMap$Geneid, "\\.")
 rownames(exonMap) = paste0("e", rownames(exonMap))
+exonMap$Geneid = NULL
+exonMap$gene_type = gencodeGENES[exonMap$gencodeID,"gene_type"]
 
-#remove genecode vers num from end of Geneid, e.g. ENSG00000223972.5
-exonMap$tempend = ""
-exonMap$tempend[grep("_PAR_Y",exonMap$Geneid)] = "_PAR_Y"
-exonMap$Geneid = paste0(ss(exonMap$Geneid, "\\."),exonMap$tempend)
-exonMap$tempend = NULL
-
-exonMap$Symbol = sym$mgi_symbol[match(exonMap$Geneid, sym$ensembl_gene_id)]
-exonMap$EntrezID = sym$entrezgene[match(exonMap$Geneid, sym$ensembl_gene_id)]
+exonMap$Symbol = sym$hgnc_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
+exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 
 ## counts
 exonCountList = mclapply(exonFn, function(x) {

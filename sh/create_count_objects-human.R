@@ -161,9 +161,14 @@ metrics$mitoRate <- metrics$mitoMapped / (metrics$mitoMapped +  metrics$totalMap
 
 if (opt$organism == "hg19") {
 	filename = "_Gencode.v25lift37.hg19"
+	gencodeGTF = import(con="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf", format="gtf")
 } else if (opt$organism == "hg38") {
 	filename = "_Gencode.v25.hg38"
+	gencodeGTF = import(con="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf", format="gtf")
 }
+gencodeGENES = mcols(gencodeGTF)[which(gencodeGTF$type=="gene"),c("gene_id","type","gene_type")]
+rownames(gencodeGENES) = gencodeGENES$gene_id
+rm(gencodeGTF)
 
 ###############
 ### gene counts
@@ -184,6 +189,7 @@ rownames(geneMap) = geneMap$Geneid
 geneMap$gencodeID = geneMap$Geneid
 geneMap$ensemblID = ss(geneMap$Geneid, "\\.")
 geneMap$Geneid = NULL
+geneMap$gene_type = gencodeGENES[geneMap$gencodeID,"gene_type"]
 
 ######### biomart 
 if (opt$organism=="hg19") {
@@ -219,6 +225,9 @@ geneStatList = lapply(paste0(geneFn, ".summary"),
 geneStats = do.call("cbind", geneStatList)
 colnames(geneStats) = metrics$SAMPLE_ID
 metrics$totalAssignedGene = as.numeric(geneStats[1,] / colSums(geneStats))
+# rna Rate
+metrics$rRNA_rate = colSums(geneCounts[which(geneMap$gene_type == "rRNA"),])/colSums(geneCounts)
+
 
 # make RPKM
 bg = matrix(rep(colSums(geneStats)), nc = nrow(metrics), 
@@ -245,6 +254,7 @@ exonMap$gencodeID = exonMap$Geneid
 exonMap$ensemblID = ss(exonMap$Geneid, "\\.")
 rownames(exonMap) = paste0("e", rownames(exonMap))
 exonMap$Geneid = NULL
+exonMap$gene_type = gencodeGENES[exonMap$gencodeID,"gene_type"]
 
 exonMap$Symbol = sym$hgnc_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
