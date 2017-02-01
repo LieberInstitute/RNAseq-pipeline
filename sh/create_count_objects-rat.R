@@ -10,6 +10,7 @@ library('BSgenome.Rnorvegicus.UCSC.rn6')
 library('jaffelab')
 library('getopt')
 library('rafalib')
+library('devtools')
 
 ## Specify parameters
 spec <- matrix(c(
@@ -356,9 +357,4 @@ print('Reproducibility information:')
 Sys.time()
 proc.time()
 options(width = 120)
-gotDevtools <- requireNamespace('devtools', quietly = TRUE)
-if(gotDevtools) {
-    devtools::session_info()
-} else {
-    sessionInfo()
-}
+session_info()

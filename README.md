@@ -11,41 +11,26 @@ qsub pipeline_R_setup.sh
 
   Often, `$DIR/FASTQ` contains the fastq files for this experiment but the fastq files don't necessarily have to be in this location.
 
-2. In `$DIR`, make text file called `SAMPLE_IDs.txt` with FASTQ file prefixes delimited with newline.
-  
-  Sample file possibilities for prefix _SAMPLE_: 
-  
-  Paired-end files: _SAMPLE_`_R1_001.fastq.gz` and _SAMPLE_`_R2_001.fastq.gz`
- 
-  Single-end files : _SAMPLE_`.fastq.gz`
+2. In `$DIR`, make text file called `SAMPLE_IDs.txt` which has to be a manifest file just like the ones used in [Rail-RNA](http://rail.bio) and [Myrna](http://bowtie-bio.sourceforge.net/myrna/). The exception is that the paths have to be local as no URLs are supported. It has the following structure:
+
+
+    1. (for a set of unpaired input reads) `<FASTQ FILE>(tab)<optional MD5>(tab)<sample label>`
+    2. (for a set of paired input reads) `<FASTQ FILE 1>(tab)<optional MD5 1>(tab)<FASTQ FILE 2>(tab)<optional MD5 2>(tab)<sample label>`
   
   The following extensions are supported: `fastq.gz`, `fq.gz`, `fastq`, `fq`.
   
   For example, a `SAMPLE_IDs.txt` file can look like this (these are paired-end samples):
 
   ```
-  R10126_C1BP4ACXX_GAGATTCC_L005
-  R10126_C1BP4ACXX_GAGATTCC_L006
-  R10126_C1BP4ACXX_GAGATTCC_L007
-  R10126_C1BP4ACXX_GAGATTCC_L008
-  ```
-
-  You can alternatively add the path to the files, which can be useful if you have the FASTQ files in different directories:
-
-  ```
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006
+  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005_R1_001.fastq.gz 0   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005_R2_001.fastq.gz   0   sample1
+  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006_R1_001.fastq.gz 0   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006_R2_001.fastq.gz   0   sample2
   ```
   
-  If you reads are split in multiple files and you want to merge them specify in `SAMPLE_IDs.txt` a second column with the group identifiers and the boolean `${MERGE}` in the next section. An example of such a `SAMPLE_IDs.txt` file would be
+  If you reads are split in multiple files and you want to merge them, simply repeat a sample id. The merged files will be saved at in a directory called `merged_fastq`.
   
   ```
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005   1
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006   1
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L005   2
-  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10145_C1BM1ACXX/R10145_C1BM1ACXX_AGCGATAG_L006   2
+  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005_R2_001.fastq.gz 0   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005_R2_001.fastq.gz   0   sample1
+  /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006_R2_001.fastq.gz 0   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L006_R2_001.fastq.gz   0   sample1
   ```
 
 3. Run pipeline with following call in `$DIR`:
@@ -69,7 +54,6 @@ qsub pipeline_R_setup.sh
   1. __ERCC__: `TRUE` If ERCC mix 1 was added
   1. __FASTQ_DIR__: The path of the directory containing the FASTQ files. Use `""` if `SAMPLE_IDs.txt` already contains full paths (default: `""`).
   1. __CORES__: defaults to 8. Specifies how many cores to use per job for the jobs that are parallelized.
-  1. __MERGE__: `TRUE` if you want to merge the files. The will be saved in a directory called `merged_fastq`. `FALSE` by default and doesn't need to be specified.
   1. __LARGE__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
   1. __FULLCOV__: `TRUE` if you want to create the fullCoverage object. Set to `FALSE` by default. Note that the fullCoverage object is not needed (by default) since we create the normalized mean BigWig already and can use it to define the ERs with `derfinder::findRegions()`, then use the resulting GRanges object and the paths to the BigWig files in `derfinder::getRegionCoverage(fullCov = NULL, files = bigWigs, regions = outputFrom_findRegions)` or alternatively write the regions to a BED file with rtracklayer, create the counts with [bwtool](https://github.com/CRG-Barcelona/bwtool) and then read them into R manually (similar to what we did in [recount-website](https://github.com/leekgroup/recount-website)).
   1. __BASH_FOLDER__: defaults to `/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh`. It's the directory where the shell files are located at. You only need to specify it if you cloned this repository somewhere else.

@@ -1,14 +1,12 @@
 ## Required libraries
 library('getopt')
 library('BiocParallel')
-library('qualV')
+library('devtools')
 
 ## Specify parameters
 spec <- matrix(c(
     'sampleids', 's', 1, 'character', 'Path to the SAMPLE_IDs.txt file',
 	'outdir', 'o', 1, 'character', 'Full path to directory where the merged fastq files will be saved to',
-    'paired', 'p', 1, 'logical', 'Whether the reads are paired-end or not',
-    'extension', 'e', 1, 'character', 'The file extension',
     'cores', 'c', 1, 'integer', 'Number of cores to use',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
@@ -24,52 +22,57 @@ if (!is.null(opt$help)) {
 ## For testing
 if(FALSE) {
     opt <- list(
-        sampleids = '/dcl01/lieber/ajaffe/lab/libd_alzheimers/pipeline_results/SAMPLE_IDs.txt',
-        paired = TRUE,
-        extension = 'fastq.gz',
-        outdir = '/dcl01/lieber/ajaffe/lab/libd_alzheimers/pipeline_results/ALZ/dec2016/merged_fastq'
+        sampleids = 'https://raw.githubusercontent.com/nellore/rail/master/ex/dm3_example.manifest',
+        outdir = 'merged_fastq',
+        cores = 1
     )
+    testing <- TRUE
 }
 
-samples <- read.table(opt$sampleids, stringsAsFactors = FALSE)
+manifest <- read.table(opt$sampleids, sep = '\t', header = FALSE,
+    stringsAsFactors = FALSE)
+    
+if(testing) {
+    ## For testing
+    manifest[, ncol(manifest)] <- rep('sample1', nrow(manifest))
+}
+
+## Is the data paired end?
+paired <- ncol(manifest) > 3
+
+## Find the extension
+files <- manifest[, 1]
+if(paired) files <- c(files, manifest[, 3])
+extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')
+patterns <- paste0(extensions, '$')
+present <- sapply(lapply(patterns, grepl, files), any)
+extension <- extensions[present][1]
+if(sum(present) == 0) {
+    error("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
+}
+
+## Create the output directory
 dir.create(opt$outdir, showWarnings = FALSE, recursive = TRUE)
 
-file_list <- split(samples$V1, samples$V2)
+## Split according to the sample names
+file_groups <- split(manifest, manifest[, ncol(manifest)])
 
-## Get unique names for the samples
-new_names <- sapply(file_list, function(common) {
-    common <- gsub('.*/', '', common)
-    n <- length(common)
-    if(n == 1) return(common)
-    chars <- strsplit(common, '')
-    result <- chars[[1]]
-    j <- 2
-    while(j <= n) {
-        result <- LCS(result, chars[[j]])$LCS
-        j <- j + 1
-    }
-    result <- paste(result, collapse = '')
-    return(result)
-})
 
 merge_files <- function(file_names, new_file) {
     message(paste(Sys.time(), 'creating', new_file))
     call <- paste('cat', paste(file_names, collapse = ' '), '>', new_file)
-    system(call)
+    print(call)
+    if(!testing) system(call)
 }
 
 res <- bpmapply(function(common, new_name) {
-    if(opt$paired) {
-        for(read in paste0(c('_R1_001.', '_R2_001.'), opt$extension)) {
-            merge_files(paste0(common, read),
-                file.path(opt$outdir, paste0(new_name, read)))
-        }
-    } else {
-        read <- paste0('.', opt$extension)
-        merge_files(paste0(common, read),
-            file.path(opt$outdir, paste0(new_name, read)))
+    merge_files(common[, 1],
+        file.path(opt$outdir, paste0(new_name, '.', extension)))
+    if(paired) {
+        merge_files(common[, 3],
+            file.path(opt$outdir, paste0(new_name, '_read2.', extension)))
     }
-}, file_list, new_names, BPPARAM = MulticoreParam(opt$cores))
+}, file_groups, names(file_groups), BPPARAM = MulticoreParam(opt$cores))
 
 message(paste0(Sys.time(), ' creating .SAMPLE_IDs_backup_', Sys.Date(), '.txt'))
 system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
@@ -78,17 +81,31 @@ system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
 ))
 
 message(paste(Sys.time(), 'creating the new SAMPLE_IDs.txt file with the merged samples'))
-write.table(file.path(opt$outdir, new_names), file = opt$sampleids,
-    row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+if(paired) {
+    new_manifest <- data.frame(
+        file.path(opt$outdir, paste0(names(file_groups), '.', extension)),
+        rep(0, length(file_groups)),
+        file.path(opt$outdir, paste0(names(file_groups), '_read2.', extension)),
+        rep(0, length(file_groups)),
+        names(file_groups), stringsAsFactors = FALSE
+    )
+} else {
+    new_manifest <- data.frame(
+        file.path(opt$outdir, paste0(names(file_groups), '.', extension)),
+        rep(0, length(file_groups)),
+        names(file_groups), stringsAsFactors = FALSE
+    )
+}
+## Make names short, in case you want to interactively check the new manifest
+colnames(new_manifest) <- paste0('V', seq_len(ncol(new_manifest)))
+
+write.table(new_manifest, file = opt$sampleids, row.names = FALSE,
+    col.names = FALSE, quote = FALSE)
 
 ## Reproducibility information
 print('Reproducibility information:')
 Sys.time()
 proc.time()
 options(width = 120)
-gotDevtools <- requireNamespace('devtools', quietly = TRUE)
-if(gotDevtools) {
-    devtools::session_info()
-} else {
-    sessionInfo()
-}
+session_info()

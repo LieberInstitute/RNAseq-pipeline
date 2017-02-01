@@ -107,14 +107,6 @@ else
 	exit 1
 fi
 
-## Add full paths to SAMPLE_IDs.txt if necessary
-if [ "${FQ_FOLDER}" != "" ]
-then
-    echo "Adding ${FQ_FOLDER} to SAMPLE_IDs.txt"
-    mv SAMPLE_IDs.txt .SAMPLE_IDs_original.txt
-    awk -v fold=${FQ_FOLDER} '{print fold"/" $0;}' .SAMPLE_IDs_original.txt > SAMPLE_IDs.txt
-fi
-
 ## Find extension of fastq file and whether to merge or not
 ## also add  full paths to SAMPLE_IDs.txt if necessary
 Rscript ${BASH_FOLDER}/find_sample_info.R -s SAMPLE_IDs.txt -f "${FQ_FOLDER}"
