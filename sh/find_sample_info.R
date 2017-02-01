@@ -3,7 +3,8 @@ library('getopt')
 
 ## Specify parameters
 spec <- matrix(c(
-    'file', 'f', 1, 'character', 'Path file without extensions',
+    'fastq', 'f', 1, 'character', 'Fastq folder',
+    'sampleids', 's', 2, 'character', 'path to SAMPLE_IDs.txt file',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -18,11 +19,37 @@ if (!is.null(opt$help)) {
 ## For testing
 if(FALSE) {
     opt <- list(
-        file = '/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005'
+        fastq = '/dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX',
+        sampleids = 'https://raw.githubusercontent.com/nellore/rail/master/ex/dm3_example.manifest'
     )
 }
 
-files <- system(paste0('ls ', opt$file, '*'), intern = TRUE)
+manifest <- read.table(opt$sampleids, sep = '\t', header = FALSE)
+
+## Is the data paired end?
+paired <- ncol(manifest) > 3
+if(paired) system('touch .paired_end')
+
+## Is merging required?
+merged <- length(unique(manifest[, ncol(manifest)])) == nrow(manifest)
+if(!merged) system('touch .requires_merging')
+    
+## Add the fastq folder path if necessary
+if(opt$fastq != '') {
+    write.table(manifest, file = '.SAMPLE_IDs_original.txt', sep = '\t',
+        col.names = FALSE, row.names = FALSE, quote = FALSE)
+    
+    manifest[, 1] <- file.path(opt$fastq, manifest[, 1])
+    if(paired) {
+        manifest[, 3] <- file.path(opt$fastq, manifest[, 3])
+    }
+    write.table(manifest, file = 'SAMPLE_IDs.txt', sep = '\t',
+        col.names = FALSE, row.names = FALSE, quote = FALSE)
+}
+
+## Find the extension
+
+files <- system(paste0('ls ', manifest[1, 1], '*'), intern = TRUE)
 
 extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')
 patterns <- paste0(extensions, '$')

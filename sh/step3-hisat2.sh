@@ -1,16 +1,15 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${BED} ${CORES} ${LARGE}
+# ${BASH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${HISATIDX} ${BED} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
-PE=$3
-HISATIDX=$4
-BED=${5}
-CORES=${6-8}
-LARGE=${7-"FALSE"}
+HISATIDX=$3
+BED=$4
+CORES=${5-8}
+LARGE=${6-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -44,6 +43,13 @@ then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
+fi
+
+if [ -e ".paired_end" ]
+then
+    PE="TRUE"
+else
+    PE="FALSE"
 fi
 
 # Construct shell files

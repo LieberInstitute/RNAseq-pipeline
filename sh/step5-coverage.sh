@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
+# ${BASH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1

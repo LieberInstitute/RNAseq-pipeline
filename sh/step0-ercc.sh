@@ -1,14 +1,13 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
+# ${BASH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
-PE=$3
-CORES=${4-8}
-LARGE=${5-"FALSE"}
+CORES=${3-8}
+LARGE=${4-"FALSE"}
 
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
@@ -43,6 +42,13 @@ then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
+fi
+
+if [ -e ".paired_end" ]
+then
+    PE="TRUE"
+else
+    PE="FALSE"
 fi
 
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${CORES} ${LARGE}
+# ${BASH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${CORES} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
@@ -9,9 +9,8 @@ PREFIX=$2
 STRANDED=$3
 GTF=$4
 hgXX=$5
-PE=$6
-CORES=${7-8}
-LARGE=${8-"FALSE"}
+CORES=${6-8}
+LARGE=${7-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -37,6 +36,13 @@ then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
+fi
+
+if [ -e ".paired_end" ]
+then
+    PE="TRUE"
+else
+    PE="FALSE"
 fi
 
 # File name of featureCounts output

@@ -2,7 +2,7 @@
 
 ## Usage
 # qrsh
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${STRANDED} ${ERCC} ${FQ_FOLDER} ${CORES} ${MERGE} ${LARGE} ${FULLCOV} ${SH_FOLDER} ${ANNO_FOLDER}
+# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${STRANDED} ${ERCC} ${FQ_FOLDER} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER} ${ANNO_FOLDER}
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh testrun run1 hg38 TRUE TRUE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh bs run1 hg38 FALSE FALSE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Projects/brainspan
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh fulltest sep23 hg38 TRUE TRUE TRUE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
@@ -11,16 +11,14 @@
 EXPERIMENT=$1
 PREFIX=$2
 hgXX=$3
-PE=$4
-STRANDED=$5
-ERCC=$6
-FQ_FOLDER=${7-""}
-CORES=${8-8}
-MERGE=${9-"FALSE"}
-LARGE=${10-"FALSE"}
-FULLCOV=${11-"FALSE"}
-SH_FOLDER=${12-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
-ANNO_FOLDER=${13-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
+STRANDED=$4
+ERCC=$5
+FQ_FOLDER=${6-""}
+CORES=${7-8}
+LARGE=${8-"FALSE"}
+FULLCOV=${9-"FALSE"}
+BASH_FOLDER=${10-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
+ANNO_FOLDER=${11-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
 
 ## Try running R. If it fails it means that the user is on the login node.
 Rscript -e "Sys.time()" &> .try_load_R
@@ -41,7 +39,7 @@ echo "**** checking that R packages are present ****"
 if [ -e ".missing_R_packages" ]
 then
     echo "**** Installing R packages since some of them are missing ****"
-    qsub ${SH_FOLDER}/pipeline_R_setup.sh
+    qsub ${BASH_FOLDER}/pipeline_R_setup.sh
     rm .missing_R_packages
 fi
 
@@ -69,14 +67,14 @@ rm .check_checksumdir
 
 ## Save the information about the pipeline version and annotation folder
 ## for reproducibility purposes
-REPODIR=$(dirname $SH_FOLDER)
+REPODIR=$(dirname $BASH_FOLDER)
 pipelineversion=$(git --git-dir=${REPODIR}/.git rev-parse origin/master)
 
 echo "**** Computing the md5 for ${ANNO_FOLDER}, takes 2-3 minutes ****"
 annofoldermd5=$(~/.local/bin/checksumdir -a md5 ${ANNO_FOLDER})
 
 ## Save the reproducibility info
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}\n**** SH_FOLDER: ****\n${SH_FOLDER}\n**** ANNO_FOLDER: ****\n${ANNO_FOLDER}\n**** md5sum for ANNO_FOLDER ****\n${annofoldermd5}\n**** ANNO_FOLDER contents ****" > logs/pipeline_information.txt
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}\n**** BASH_FOLDER: ****\n${BASH_FOLDER}\n**** ANNO_FOLDER: ****\n${ANNO_FOLDER}\n**** md5sum for ANNO_FOLDER ****\n${annofoldermd5}\n**** ANNO_FOLDER contents ****" > logs/pipeline_information.txt
 ls -lhtR ${ANNO_FOLDER} >> logs/pipeline_information.txt
 
 # Set variables for desired genome version
@@ -117,33 +115,33 @@ then
     awk -v fold=${FQ_FOLDER} '{print fold"/" $0;}' .SAMPLE_IDs_original.txt > SAMPLE_IDs.txt
 fi
 
-## Find extension of fastq file names
-FILEID=$(head -n 1 SAMPLE_IDs.txt | cut -f 1 -d " ")
-Rscript ${SH_FOLDER}/find_extension.R -f ${FILEID}
+## Find extension of fastq file and whether to merge or not
+## also add  full paths to SAMPLE_IDs.txt if necessary
+Rscript ${BASH_FOLDER}/find_sample_info.R -s SAMPLE_IDs.txt -f "${FQ_FOLDER}"
 
-if [ -e ".FILE_extension.txt" ]
+if [ ! -e ".FILE_extension.txt" ]
 then
-    EXT=$(cat .FILE_extension.txt)
-else
+    echo "Error: could not find .FILE_extension.txt"
     exit 1
 fi
 
 ## create and submit all scripts
 
-if [ ${MERGE} == "TRUE" ]
+if [ -e ".requires_merging" ]
 then
-    sh ${SH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE} ${SH_FOLDER}
+    sh ${BASH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE} ${BASH_FOLDER}
+    rm .requires_merging
 fi
 
 if [ ${ERCC} == "TRUE" ]
 then
-    sh ${SH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
+    sh ${BASH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE}
 fi
 
-sh ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
-sh ${SH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${PE} ${CORES} ${LARGE}
-sh ${SH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${PE} ${HISATIDX} ${BED} ${CORES} ${LARGE}
-sh ${SH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${PE} ${CORES} ${LARGE}
-sh ${SH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
-sh ${SH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
-sh ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${SH_FOLDER}
+sh ${BASH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${LARGE}
+sh ${BASH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE}
+sh ${BASH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${HISATIDX} ${BED} ${CORES} ${LARGE}
+sh ${BASH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${CORES} ${LARGE}
+sh ${BASH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
+sh ${BASH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
+sh ${BASH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER}

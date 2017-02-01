@@ -1,13 +1,12 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${PE} ${LARGE}
+# ${BASH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${LARGE}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
-PE=$3
-LARGE=${4-"FALSE"}
+LARGE=${3-"FALSE"}
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -41,6 +40,13 @@ then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
+fi
+
+if [ -e ".paired_end" ]
+then
+    PE="TRUE"
+else
+    PE="FALSE"
 fi
 
 # Directories

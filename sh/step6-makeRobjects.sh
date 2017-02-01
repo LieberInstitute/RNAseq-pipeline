@@ -1,18 +1,17 @@
 #!/bin/sh
 
 ## Usage
-# ${SH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${PE} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${SH_FOLDER}
+# ${BASH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER}
 
 # Define variables
 EXPERIMENT=$1
 PREFIX=$2
 hgXX=$3
-PE=$4
-ERCC=$5
-CORES=${6-8}
-LARGE=${7-"FALSE"}
-FULLCOV=${8-"FALSE"}
-SH_FOLDER=${9-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
+ERCC=$4
+CORES=${5-8}
+LARGE=${6-"FALSE"}
+FULLCOV=${7-"FALSE"}
+BASH_FOLDER=${8-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
 
 SHORT="Rcounts-${EXPERIMENT}"
 sname="step6-${SHORT}.${PREFIX}"
@@ -40,13 +39,20 @@ else
     QUEUE="shared"
 fi
 
+if [ -e ".paired_end" ]
+then
+    PE="TRUE"
+else
+    PE="FALSE"
+fi
+
 if [ $hgXX == "mm10" ]; then SPEC="mouse";
 elif [ $hgXX == "rn6" ]; then SPEC="rat";
 else SPEC="human";
 fi
 
-cp ${SH_FOLDER}/create_count_objects-${SPEC}.R ${MAINDIR}/.create_count_objects-${SPEC}.R
-cp ${SH_FOLDER}/create_fullCov_object.R ${MAINDIR}/.create_fullCov_object.R
+cp ${BASH_FOLDER}/create_count_objects-${SPEC}.R ${MAINDIR}/.create_count_objects-${SPEC}.R
+cp ${BASH_FOLDER}/create_fullCov_object.R ${MAINDIR}/.create_fullCov_object.R
 
 # Construct shell files
 echo "Creating script ${sname}"
