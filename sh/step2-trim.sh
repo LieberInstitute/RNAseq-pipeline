@@ -14,12 +14,6 @@ MAINDIR=${PWD}
 SHORT="trim-${EXPERIMENT}"
 sname="step2-${SHORT}.${PREFIX}"
 
-if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
-then
-    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
-    exit 1
-fi
-
 if [[ $LARGE == "TRUE" ]]
 then
     MEM="mem_free=20G,h_vmem=30G,h_fsize=100G"
@@ -47,7 +41,7 @@ else
 fi
 
 # Construct shell files
-FILELIST=${MAINDIR}/SAMPLE_IDs.txt
+FILELIST=${MAINDIR}/samples.manifest
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
 echo "Creating script ${sname}"
 
@@ -66,14 +60,17 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-
-FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
-ID=\$(basename "\${FILEID}")
-EXT=\$(awk "NR==\${SGE_TASK_ID}" ${MAINDIR}/.file_extensions.txt )
+## Locate file and ids
+FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+if [ $PE == "TRUE" ] 
+then
+    FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+fi
+ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 
 if [ $PE == "TRUE" ] ; then 
-	REPORT1=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_R1_001_fastqc/summary.txt
-	REPORT2=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_R2_001_fastqc/summary.txt
+	REPORT1=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_R1_fastqc/summary.txt
+	REPORT2=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_R2_fastqc/summary.txt
 	RESULT1=\$(grep "Adapter Content" \$REPORT1 | cut -c1-4)
 	RESULT2=\$(grep "Adapter Content" \$REPORT2 | cut -c1-4)
 
@@ -84,14 +81,14 @@ if [ $PE == "TRUE" ] ; then
 		echo "Trimming will occur."
 		
 		mkdir -p ${MAINDIR}/trimmed_fq
-		FP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz
-		FU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_unpaired.fq.gz
-		RP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_paired.fq.gz
-		RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fq.gz
+		FP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq
+		FU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_unpaired.fastq
+		RP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_paired.fastq
+		RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fastq
 		
 		## trim adapters
 		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar PE -threads ${CORES} -phred33 \
-		\${FILEID}_R1_001.${EXT} \${FILEID}_R2_001.${EXT} \$FP \$FU \$RP \$RU \
+		\${FILE1} \${FILE2} \$FP \$FU \$RP \$RU \
 		ILLUMINACLIP:${SOFTWARE}/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10:1 \
 		LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:75
 
@@ -115,11 +112,11 @@ else
 		echo "Trimming will occur."
 		
 		mkdir -p ${MAINDIR}/trimmed_fq
-		OUT=${MAINDIR}/trimmed_fq/\${ID}_trimmed.${EXT}
+		OUT=${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq
 		
 		## trim adapters
 		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar SE -threads ${CORES} -phred33 \
-		\${FILEID}.${EXT} \$OUT \
+		\${FILE1} \$OUT \
 		ILLUMINACLIP:${SOFTWARE}/Trimmomatic-0.36/adapters/TruSeq2-SE.fa:2:30:10:1 \
 		LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
 

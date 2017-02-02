@@ -13,12 +13,6 @@ MAINDIR=${PWD}
 SHORT="fastqc-${EXPERIMENT}"
 sname="step1-${SHORT}.${PREFIX}"
 
-if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
-then
-    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
-    exit 1
-fi
-
 if [[ $LARGE == "TRUE" ]]
 then
     MEM="mem_free=10G,h_vmem=14G,h_fsize=100G"
@@ -50,7 +44,7 @@ mkdir -p ${MAINDIR}/FastQC/Untrimmed
 mkdir -p ${MAINDIR}/logs
 
 # Construct shell files
-FILELIST=${MAINDIR}/SAMPLE_IDs.txt
+FILELIST=${MAINDIR}/samples.manifest
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
 echo "Creating script ${sname}"
 
@@ -68,18 +62,23 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
-ID=\$(basename "\${FILEID}")
+## Locate file and ids
+FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+if [ $PE == "TRUE" ] 
+then
+    FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+fi
+ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
+
 mkdir -p ${MAINDIR}/FastQC/Untrimmed/\${ID}
-EXT=\$(awk "NR==\${SGE_TASK_ID}" ${MAINDIR}/.file_extensions.txt )
 
 if [ $PE == "TRUE" ]
 then 
     ${SOFTWARE}/FastQC_v0.11.5/fastqc \
-\${FILEID}_R1_001.${EXT} \${FILEID}_R2_001.${EXT} \
+\${FILE1} \${FILE2} \
 --outdir=${MAINDIR}/FastQC/Untrimmed/\${ID} --extract
 else
-    ${SOFTWARE}/FastQC_v0.11.5/fastqc \${FILEID}.${EXT} \
+    ${SOFTWARE}/FastQC_v0.11.5/fastqc \${FILE1} \
 --outdir=${MAINDIR}/FastQC/Untrimmed/\${ID} --extract
 fi
 

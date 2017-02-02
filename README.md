@@ -11,7 +11,7 @@ qsub pipeline_R_setup.sh
 
   Often, `$DIR/FASTQ` contains the fastq files for this experiment but the fastq files don't necessarily have to be in this location.
 
-2. In `$DIR`, make text file called `SAMPLE_IDs.txt` which has to be a manifest file just like the ones used in [Rail-RNA](http://rail.bio) and [Myrna](http://bowtie-bio.sourceforge.net/myrna/). The exception is that the paths have to be local as no URLs are supported. It has the following structure:
+2. In `$DIR`, make text file called `samples.manifest` which has to be a manifest file just like the ones used in [Rail-RNA](http://rail.bio) and [Myrna](http://bowtie-bio.sourceforge.net/myrna/). The exception is that the paths have to be local as no URLs are supported. It has the following structure:
 
 
     1. (for a set of unpaired input reads) `<FASTQ FILE>(tab)<optional MD5>(tab)<sample label>`
@@ -19,7 +19,7 @@ qsub pipeline_R_setup.sh
   
   The following extensions are supported: `fastq.gz`, `fq.gz`, `fastq`, `fq`.
   
-  For example, a `SAMPLE_IDs.txt` file can look like this (these are paired-end samples):
+  For example, a `samples.manifest` file can look like this (these are paired-end samples):
 
   ```
   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005_R1_001.fastq.gz 0   /dcl01/lieber/ajaffe/Nina/GSK_PhaseII/data/Sample_R10126_C1BP4ACXX/R10126_C1BP4ACXX_GAGATTCC_L005_R2_001.fastq.gz   0   sample1
@@ -52,7 +52,7 @@ qsub pipeline_R_setup.sh
   1. __Genome__: supported genomes are `hg19, hg38, mm10, rn6`
   1. __Stranded__: `TRUE` If samples are reverse-stranded (forward-stranded not compatible yet)
   1. __ERCC__: `TRUE` If ERCC mix 1 was added
-  1. __FASTQ_DIR__: The path of the directory containing the FASTQ files. Use `""` if `SAMPLE_IDs.txt` already contains full paths (default: `""`).
+  1. __FASTQ_DIR__: The path of the directory containing the FASTQ files. Use `""` if `samples.manifest` already contains full paths (default: `""`).
   1. __CORES__: defaults to 8. Specifies how many cores to use per job for the jobs that are parallelized.
   1. __LARGE__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
   1. __FULLCOV__: `TRUE` if you want to create the fullCoverage object. Set to `FALSE` by default. Note that the fullCoverage object is not needed (by default) since we create the normalized mean BigWig already and can use it to define the ERs with `derfinder::findRegions()`, then use the resulting GRanges object and the paths to the BigWig files in `derfinder::getRegionCoverage(fullCov = NULL, files = bigWigs, regions = outputFrom_findRegions)` or alternatively write the regions to a BED file with rtracklayer, create the counts with [bwtool](https://github.com/CRG-Barcelona/bwtool) and then read them into R manually (similar to what we did in [recount-website](https://github.com/leekgroup/recount-website)).

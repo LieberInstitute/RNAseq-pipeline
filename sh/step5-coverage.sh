@@ -37,7 +37,7 @@ fi
 mkdir -p ${MAINDIR}/Coverage
 
 # Construct shell files
-FILELIST=${MAINDIR}/SAMPLE_IDs.txt
+FILELIST=${MAINDIR}/samples.manifest
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
 echo "Creating script ${sname}"
 
@@ -56,8 +56,12 @@ echo "**** Job starts ****"
 date
 
 
-FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
-ID=\$(basename "\${FILEID}")
+FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+if [ $PE == "TRUE" ] 
+then
+    FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+fi
+ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 STRANDRULE=\$(cat inferred_strandness_pattern.txt)
 
 ## Normalizing bigwigs to 40 million 100 bp reads

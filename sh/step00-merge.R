@@ -5,7 +5,7 @@ library('devtools')
 
 ## Specify parameters
 spec <- matrix(c(
-    'sampleids', 's', 1, 'character', 'Path to the SAMPLE_IDs.txt file',
+    'sampleids', 's', 1, 'character', 'Path to the samples.manifest file',
 	'outdir', 'o', 1, 'character', 'Full path to directory where the merged fastq files will be saved to',
     'cores', 'c', 1, 'integer', 'Number of cores to use',
 	'help' , 'h', 0, 'logical', 'Display help'
@@ -64,11 +64,6 @@ dir.create(opt$outdir, showWarnings = FALSE, recursive = TRUE)
 file_groups <- split(manifest, manifest[, ncol(manifest)])
 extensions <- sapply(extensions, '[', 1)
 
-## Update the file extensions
-write.table(extensions, file = '.file_extensions.txt', quote = FALSE,
-    row.names = FALSE, col.names = FALSE)
-
-
 merge_files <- function(file_names, new_file) {
     message(paste(Sys.time(), 'creating', new_file))
     call <- paste('cat', paste(file_names, collapse = ' '), '>', new_file)
@@ -92,7 +87,7 @@ system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
     basename(opt$sampleids))))
 ))
 
-message(paste(Sys.time(), 'creating the new SAMPLE_IDs.txt file with the merged samples'))
+message(paste(Sys.time(), 'creating the new samples.manifest file with the merged samples'))
 
 if(paired) {
     new_manifest <- data.frame(

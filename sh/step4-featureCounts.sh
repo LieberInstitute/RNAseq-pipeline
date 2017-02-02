@@ -55,7 +55,7 @@ else
 fi
 
 # Construct shell files
-FILELIST=${MAINDIR}/SAMPLE_IDs.txt
+FILELIST=${MAINDIR}/samples.manifest
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
 echo "Creating script ${sname}"
 
@@ -80,8 +80,12 @@ mkdir -p ${MAINDIR}/Counts/gene
 mkdir -p ${MAINDIR}/Counts/exon
 mkdir -p ${MAINDIR}/Counts/junction/tmpdir
 
-FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
-ID=\$(basename "\${FILEID}")
+FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+if [ $PE == "TRUE" ] 
+then
+    FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+fi
+ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 BAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam
 
 if [ $PE == "TRUE" ] ; then 

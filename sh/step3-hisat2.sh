@@ -16,12 +16,6 @@ MAINDIR=${PWD}
 SHORT="hisat2-${EXPERIMENT}"
 sname="step3-${SHORT}.${PREFIX}"
 
-if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
-then
-    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
-    exit 1
-fi
-
 if [[ $LARGE == "TRUE" ]]
 then
     MEM="mem_free=10G,h_vmem=14G,h_fsize=100G"
@@ -49,7 +43,7 @@ else
 fi
 
 # Construct shell files
-FILELIST=${MAINDIR}/SAMPLE_IDs.txt
+FILELIST=${MAINDIR}/samples.manifest
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
 echo "Creating script ${sname}"
 
@@ -72,28 +66,32 @@ date
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
 mkdir -p ${MAINDIR}/HISAT2_out/infer_strandness
 
-FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
-ID=\$(basename "\${FILEID}")
-EXT=\$(awk "NR==\${SGE_TASK_ID}" ${MAINDIR}/.file_extensions.txt )
+## Locate file and ids
+FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+if [ $PE == "TRUE" ] 
+then
+    FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+fi
+ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 
-if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
+if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq ] ; then
 	## Trimmed, paired-end
 	echo "HISAT2 alignment run on trimmed paired-end reads"
-	FP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz
-	FU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_unpaired.fq.gz
-	RP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_paired.fq.gz
-	RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fq.gz
+	FP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq
+	FU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_unpaired.fastq
+	RP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_paired.fastq
+	RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fastq
 	
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \$FP -2 \$RP -U \${FU},\${RU} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 	
-elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fq.gz ] ; then
+elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq ] ; then
 	## Trimmed, single-end
 	echo "HISAT2 alignment run on trimmed single-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
-	-x $HISATIDX -U ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fq.gz \
+	-x $HISATIDX -U ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 
@@ -101,7 +99,7 @@ elif [ $PE == "TRUE" ] ; then
 	## Untrimmed, pair-end
 	echo "HISAT2 alignment run on original untrimmed paired-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
-	-x $HISATIDX -1 \${FILEID}_R1_001.${EXT} -2 \${FILEID}_R2_001.${EXT} \
+	-x $HISATIDX -1 \${FILE1} -2 \${FILE2} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 
@@ -109,7 +107,7 @@ else
 	## Untrimmed, single-end
 	echo "HISAT2 alignment run on original untrimmed single-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
-	-x $HISATIDX -U \${FILEID}.${EXT} \
+	-x $HISATIDX -U \${FILE1} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 fi

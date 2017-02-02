@@ -19,8 +19,9 @@ if (!is.null(opt$help)) {
 }
 
 ###
-DF = read.table(file.path(opt$maindir, 'SAMPLE_IDs.txt'))
-sampIDs = as.vector(DF[,1])
+manifest <- read.table(file.path(opt$maindir, 'samples.manifest'), sep = '\t',
+    header = FALSE, stringsAsFactors = FALSE)
+sampIDs <- manifest[, ncol(manifest)]
 
 
 ##observed kallisto tpm

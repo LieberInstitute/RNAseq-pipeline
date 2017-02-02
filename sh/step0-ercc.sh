@@ -15,18 +15,6 @@ MAINDIR=${PWD}
 SHORT="ercc-${EXPERIMENT}"
 sname="step0-${SHORT}.${PREFIX}"
 
-if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
-then
-    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
-    exit 1
-fi
-
-if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
-then
-    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
-    exit 1
-fi
-
 if [[ $LARGE == "TRUE" ]]
 then
     MEM="mem_free=6G,h_vmem=10G,h_fsize=100G"
@@ -55,7 +43,7 @@ fi
 
 
 # Construct shell files
-FILELIST=${MAINDIR}/SAMPLE_IDs.txt
+FILELIST=${MAINDIR}/samples.manifest
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
 echo "Creating script ${sname}"
 
@@ -74,22 +62,25 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-
-FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
-ID=\$(basename "\${FILEID}")
+## Locate file and ids
+FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+if [ $PE == "TRUE" ] 
+then
+    FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+fi
+ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 mkdir -p ${MAINDIR}/Ercc/\${ID}
-EXT=\$(awk "NR==\${SGE_TASK_ID}" ${MAINDIR}/.file_extensions.txt )
 
-if [ $PE == "TRUE" ] ; then 
-${SOFTWARE}/kallisto quant \
--i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
--o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --rf-stranded \
-\${FILEID}_R1_001.${EXT} \${FILEID}_R2_001.${EXT}
+if [ $PE == "TRUE" ]
+then 
+    ${SOFTWARE}/kallisto quant \
+    -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
+    -o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --rf-stranded \
+    \${FILE1} \${FILE2}
 else
-${SOFTWARE}/kallisto quant \
--i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
--o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --single \${FILEID}.${EXT}
-
+    ${SOFTWARE}/kallisto quant \
+    -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
+    -o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --single \${FILE1}
 fi
 
 echo "**** Job ends ****"

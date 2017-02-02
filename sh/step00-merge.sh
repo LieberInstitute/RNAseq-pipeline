@@ -34,13 +34,6 @@ then
     QUEUE="$(cat .queue),"
 fi
 
-if [ -f ".paired_end" ]
-then
-    PE="TRUE"
-else
-    PE="FALSE"
-fi
-
 # Construct shell files
 echo "Creating script ${sname}"
 
@@ -58,7 +51,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-Rscript ${BASH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -c ${CORES}
+Rscript ${BASH_FOLDER}/step00-merge.R -s ${MAINDIR}/samples.manifest -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -c ${CORES}
 
 echo "**** Job ends ****"
 date

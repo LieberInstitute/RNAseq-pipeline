@@ -35,10 +35,10 @@ EXPNAME = paste0(opt$experiment,"_",opt$prefix)
 
 
 ## read in pheno	
-metrics <- data.frame(read.table(file.path(opt$maindir, 'SAMPLE_IDs.txt'), as.is=TRUE,
-    header = FALSE))
-names(metrics)[1] <- "SAMPLE_ID"
-metrics$SAMPLE_ID <- basename(metrics$SAMPLE_ID)
+manifest <- read.table(file.path(opt$maindir, 'samples.manifest'), sep = '\t',
+    header = FALSE, stringsAsFactors = FALSE)
+metrics <- data.frame('SAMPLE_ID' = manifest[, ncol(manifest)],
+    stringsAsFactors = FALSE)
 N <- length(metrics$SAMPLE_ID)
 
 

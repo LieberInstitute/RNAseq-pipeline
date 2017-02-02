@@ -108,20 +108,12 @@ else
 fi
 
 ## Find extension of fastq file and whether to merge or not
-## also add  full paths to SAMPLE_IDs.txt if necessary
-Rscript ${BASH_FOLDER}/find_sample_info.R -s SAMPLE_IDs.txt -f "${FQ_FOLDER}"
-
-if [ ! -f ".file_extensions.txt" ]
-then
-    echo "Error: could not find .file_extensions.txt"
-    exit 1
-fi
+## also add  full paths to samples.manifest if necessary
+Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest -f "${FQ_FOLDER}"
 
 ## create and submit all scripts
-
 if [ -f ".requires_merging" ]
 then
-    rm .file_extensions.txt
     sh ${BASH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE} ${BASH_FOLDER}
     rm .requires_merging
 fi

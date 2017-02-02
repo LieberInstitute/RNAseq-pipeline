@@ -4,7 +4,7 @@ library('devtools')
 
 ## Specify parameters
 spec <- matrix(c(
-    'sampleids', 's', 2, 'character', 'path to SAMPLE_IDs.txt file',
+    'sampleids', 's', 2, 'character', 'path to samples.manifest file',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -44,9 +44,6 @@ ext_found <- sapply(files, function(file) {
 if(any(is.na(ext_found))) {
     stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
 }
-
-write.table(ext_found, file = '.file_extensions.txt', quote = FALSE,
-    row.names = FALSE, col.names = FALSE)
 
 ## Reproducibility information
 print('Reproducibility information:')
