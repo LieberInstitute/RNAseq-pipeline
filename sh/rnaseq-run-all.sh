@@ -2,7 +2,7 @@
 
 ## Usage
 # qrsh
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${STRANDED} ${ERCC} ${FQ_FOLDER} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER} ${ANNO_FOLDER}
+# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${STRANDED} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER} ${ANNO_FOLDER}
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh testrun run1 hg38 TRUE TRUE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh bs run1 hg38 FALSE FALSE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Projects/brainspan
 # bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh fulltest sep23 hg38 TRUE TRUE TRUE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
@@ -13,12 +13,11 @@ PREFIX=$2
 hgXX=$3
 STRANDED=$4
 ERCC=$5
-FQ_FOLDER=${6-""}
-CORES=${7-8}
-LARGE=${8-"FALSE"}
-FULLCOV=${9-"FALSE"}
-BASH_FOLDER=${10-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
-ANNO_FOLDER=${11-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
+CORES=${6-8}
+LARGE=${7-"FALSE"}
+FULLCOV=${8-"FALSE"}
+BASH_FOLDER=${9-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
+ANNO_FOLDER=${10-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
 
 ## Try running R. If it fails it means that the user is on the login node.
 Rscript -e "Sys.time()" &> .try_load_R
@@ -109,7 +108,7 @@ fi
 
 ## Find extension of fastq file and whether to merge or not
 ## also add  full paths to samples.manifest if necessary
-Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest -f "${FQ_FOLDER}"
+Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest
 
 ## create and submit all scripts
 if [ -f ".requires_merging" ]
