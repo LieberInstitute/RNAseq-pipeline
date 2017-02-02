@@ -16,11 +16,9 @@ MAINDIR=${PWD}
 SHORT="hisat2-${EXPERIMENT}"
 sname="step3-${SHORT}.${PREFIX}"
 
-if [ -e "${MAINDIR}/.FILE_extension.txt" ]
+if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
 then
-    EXT=$(cat ${MAINDIR}/.FILE_extension.txt)
-else
-    echo "Error: could not find ${MAINDIR}/.FILE_extension.txt"
+    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
     exit 1
 fi
 
@@ -31,21 +29,21 @@ else
     MEM="mem_free=5G,h_vmem=7G,h_fsize=100G"
 fi
 
-if [ -e ".send_emails" ]
+if [ -f ".send_emails" ]
 then
     EMAIL="e"
 else
     EMAIL="a"
 fi
 
-if [ -e ".queue" ]
+if [ -f ".queue" ]
 then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
 fi
 
-if [ -e ".paired_end" ]
+if [ -f ".paired_end" ]
 then
     PE="TRUE"
 else
@@ -76,11 +74,11 @@ date
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
 mkdir -p ${MAINDIR}/HISAT2_out/infer_strandness
 
-
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
+EXT=\$(awk "NR==\${SGE_TASK_ID}" ${MAINDIR}/.file_extensions.txt )
 
-if [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
+if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
 	## Trimmed, paired-end
 	echo "HISAT2 alignment run on trimmed paired-end reads"
 	FP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz
@@ -93,7 +91,7 @@ if [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fq.gz ] ; then
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 	
-elif  [ -e ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fq.gz ] ; then
+elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fq.gz ] ; then
 	## Trimmed, single-end
 	echo "HISAT2 alignment run on trimmed single-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \

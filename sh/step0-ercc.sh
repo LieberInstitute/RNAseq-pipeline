@@ -15,11 +15,15 @@ MAINDIR=${PWD}
 SHORT="ercc-${EXPERIMENT}"
 sname="step0-${SHORT}.${PREFIX}"
 
-if [ -e "${MAINDIR}/.FILE_extension.txt" ]
+if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
 then
-    EXT=$(cat ${MAINDIR}/.FILE_extension.txt)
-else
-    echo "Error: could not find ${MAINDIR}/.FILE_extension.txt"
+    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
+    exit 1
+fi
+
+if [ ! -f "${MAINDIR}/.file_extensions.txt" ]
+then
+    echo "Error: could not find ${MAINDIR}/.file_extensions.txt"
     exit 1
 fi
 
@@ -30,21 +34,21 @@ else
     MEM="mem_free=3G,h_vmem=5G,h_fsize=100G"
 fi
 
-if [ -e ".send_emails" ]
+if [ -f ".send_emails" ]
 then
     EMAIL="e"
 else
     EMAIL="a"
 fi
 
-if [ -e ".queue" ]
+if [ -f ".queue" ]
 then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
 fi
 
-if [ -e ".paired_end" ]
+if [ -f ".paired_end" ]
 then
     PE="TRUE"
 else
@@ -76,6 +80,7 @@ date
 FILEID=\$(awk "NR==\${SGE_TASK_ID}" $FILELIST )
 ID=\$(basename "\${FILEID}")
 mkdir -p ${MAINDIR}/Ercc/\${ID}
+EXT=\$(awk "NR==\${SGE_TASK_ID}" ${MAINDIR}/.file_extensions.txt )
 
 if [ $PE == "TRUE" ] ; then 
 ${SOFTWARE}/kallisto quant \

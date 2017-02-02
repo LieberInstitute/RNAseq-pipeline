@@ -34,18 +34,19 @@ if(paired) system('touch .paired_end')
 merged <- length(unique(manifest[, ncol(manifest)])) == nrow(manifest)
 if(!merged) system('touch .requires_merging')
 
-## Check the file extension
+## Find the file extensions
 files <- manifest[, 1]
-if(paired) files <- c(files, manifest[, 3])
-
 extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')
 patterns <- paste0(extensions, '$')
-present <- sapply(lapply(patterns, grepl, files), any)
-extension <- extensions[present][1]
-
-if(sum(present) == 0) {
-    error("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
+ext_found <- sapply(files, function(file) {
+    extensions[unlist(sapply(patterns, grep, file))[1]]
+})
+if(any(is.na(ext_found))) {
+    stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
 }
+
+write.table(ext_found, file = '.file_extensions.txt', quote = FALSE,
+    row.names = FALSE, col.names = FALSE)
 
 ## Reproducibility information
 print('Reproducibility information:')

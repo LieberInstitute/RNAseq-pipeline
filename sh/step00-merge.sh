@@ -15,14 +15,6 @@ MAINDIR=${PWD}
 SHORT="merge-${EXPERIMENT}"
 sname="step00-${SHORT}.${PREFIX}"
 
-if [ -e "${MAINDIR}/.FILE_extension.txt" ]
-then
-    EXT=$(cat ${MAINDIR}/.FILE_extension.txt)
-else
-    echo "Error: could not find ${MAINDIR}/.FILE_extension.txt"
-    exit 1
-fi
-
 if [[ $LARGE == "TRUE" ]]
 then
     MEM="mem_free=6G,h_vmem=10G,h_fsize=150G"
@@ -30,21 +22,21 @@ else
     MEM="mem_free=3G,h_vmem=5G,h_fsize=150G"
 fi
 
-if [ -e ".send_emails" ]
+if [ -f ".send_emails" ]
 then
     EMAIL="e"
 else
     EMAIL="a"
 fi
 
-if [ -e ".queue" ]
+if [ -f ".queue" ]
 then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
 fi
 
-if [ -e ".paired_end" ]
+if [ -f ".paired_end" ]
 then
     PE="TRUE"
 else
@@ -68,8 +60,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-
-Rscript ${BASH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -p ${PE} -e ${EXT} -c ${CORES}
+Rscript ${BASH_FOLDER}/step00-merge.R -s ${MAINDIR}/SAMPLE_IDs.txt -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -c ${CORES}
 
 echo "**** Job ends ****"
 date

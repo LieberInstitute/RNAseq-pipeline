@@ -40,15 +40,21 @@ if(testing) {
 ## Is the data paired end?
 paired <- ncol(manifest) > 3
 
-## Find the extension
+## Find the file extensions
 files <- manifest[, 1]
-if(paired) files <- c(files, manifest[, 3])
 extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')
 patterns <- paste0(extensions, '$')
-present <- sapply(lapply(patterns, grepl, files), any)
-extension <- extensions[present][1]
-if(sum(present) == 0) {
-    error("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
+ext_found <- sapply(files, function(file) {
+    extensions[unlist(sapply(patterns, grep, file))[1]]
+})
+if(any(is.na(ext_found))) {
+    stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
+}
+extensions <- split(ext_found, manifest[, ncol(manifest)])
+
+## Check that extensions are the same per group
+if(any(sapply(extensions, function(x) { length(unique(x)) }) != 1)) {
+    stop("For each sample name, the extensions of the fastq files to be merged have to be the same")
 }
 
 ## Create the output directory
@@ -56,6 +62,11 @@ dir.create(opt$outdir, showWarnings = FALSE, recursive = TRUE)
 
 ## Split according to the sample names
 file_groups <- split(manifest, manifest[, ncol(manifest)])
+extensions <- sapply(extensions, '[', 1)
+
+## Update the file extensions
+write.table(extensions, file = '.file_extensions.txt', quote = FALSE,
+    row.names = FALSE, col.names = FALSE)
 
 
 merge_files <- function(file_names, new_file) {
@@ -65,14 +76,15 @@ merge_files <- function(file_names, new_file) {
     if(!testing) system(call)
 }
 
-res <- bpmapply(function(common, new_name) {
+res <- bpmapply(function(common, new_name, extension) {
     merge_files(common[, 1],
         file.path(opt$outdir, paste0(new_name, '.', extension)))
     if(paired) {
         merge_files(common[, 3],
             file.path(opt$outdir, paste0(new_name, '_read2.', extension)))
     }
-}, file_groups, names(file_groups), BPPARAM = MulticoreParam(opt$cores))
+}, file_groups, names(file_groups), extensions, 
+    BPPARAM = MulticoreParam(opt$cores))
 
 message(paste0(Sys.time(), ' creating .SAMPLE_IDs_backup_', Sys.Date(), '.txt'))
 system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
@@ -84,15 +96,16 @@ message(paste(Sys.time(), 'creating the new SAMPLE_IDs.txt file with the merged 
 
 if(paired) {
     new_manifest <- data.frame(
-        file.path(opt$outdir, paste0(names(file_groups), '.', extension)),
+        file.path(opt$outdir, paste0(names(file_groups), '.', extensions)),
         rep(0, length(file_groups)),
-        file.path(opt$outdir, paste0(names(file_groups), '_read2.', extension)),
+        file.path(opt$outdir, paste0(names(file_groups), '_read2.',
+            extensions)),
         rep(0, length(file_groups)),
         names(file_groups), stringsAsFactors = FALSE
     )
 } else {
     new_manifest <- data.frame(
-        file.path(opt$outdir, paste0(names(file_groups), '.', extension)),
+        file.path(opt$outdir, paste0(names(file_groups), '.', extensions)),
         rep(0, length(file_groups)),
         names(file_groups), stringsAsFactors = FALSE
     )

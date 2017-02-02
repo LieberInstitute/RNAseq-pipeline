@@ -36,7 +36,7 @@ mkdir -p logs
 
 ## Check dependencies
 echo "**** checking that R packages are present ****"
-if [ -e ".missing_R_packages" ]
+if [ -f ".missing_R_packages" ]
 then
     echo "**** Installing R packages since some of them are missing ****"
     qsub ${BASH_FOLDER}/pipeline_R_setup.sh
@@ -111,16 +111,17 @@ fi
 ## also add  full paths to SAMPLE_IDs.txt if necessary
 Rscript ${BASH_FOLDER}/find_sample_info.R -s SAMPLE_IDs.txt -f "${FQ_FOLDER}"
 
-if [ ! -e ".FILE_extension.txt" ]
+if [ ! -f ".file_extensions.txt" ]
 then
-    echo "Error: could not find .FILE_extension.txt"
+    echo "Error: could not find .file_extensions.txt"
     exit 1
 fi
 
 ## create and submit all scripts
 
-if [ -e ".requires_merging" ]
+if [ -f ".requires_merging" ]
 then
+    rm .file_extensions.txt
     sh ${BASH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE} ${BASH_FOLDER}
     rm .requires_merging
 fi

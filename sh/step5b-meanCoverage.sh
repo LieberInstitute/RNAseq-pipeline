@@ -21,14 +21,14 @@ else
     MEM="mem_free=100G,h_vmem=120G,h_fsize=100G"
 fi
 
-if [ -e ".send_emails" ]
+if [ -f ".send_emails" ]
 then
     EMAIL="e"
 else
     EMAIL="a"
 fi
 
-if [ -e ".queue" ]
+if [ -f ".queue" ]
 then
     QUEUE=$(cat .queue)
 else

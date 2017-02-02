@@ -24,21 +24,21 @@ else
     MEM="mem_free=10G,h_vmem=12G,h_fsize=100G"
 fi
 
-if [ -e ".send_emails" ]
+if [ -f ".send_emails" ]
 then
     EMAIL="e"
 else
     EMAIL="a"
 fi
 
-if [ -e ".queue" ]
+if [ -f ".queue" ]
 then
     QUEUE=$(cat .queue)
 else
     QUEUE="shared"
 fi
 
-if [ -e ".paired_end" ]
+if [ -f ".paired_end" ]
 then
     PE="TRUE"
 else
