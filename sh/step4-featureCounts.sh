@@ -1,16 +1,51 @@
-#!/bin/sh
+#!/bin/bash
 
-## Usage
-# ${BASH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${CORES} ${LARGE}
+## Usage information:
+# bash step4-featureCounts.sh --help
 
 # Define variables
-EXPERIMENT=$1
-PREFIX=$2
-STRANDED=$3
-GTF=$4
-hgXX=$5
-CORES=${6-8}
-LARGE=${7-"FALSE"}
+TEMP=$(getopt -o x:p:sg:r:c:lh --long experiment:,prefix:,stranded,gtf:,reference:,cores:,large,help -n 'step4-featureCounts' -- "$@")
+eval set -- "$TEMP"
+
+STRANDED="FALSE"
+LARGE="FALSE"
+CORES=8
+
+while true; do
+    case "$1" in
+        -x|--experiment)
+            case "$2" in
+                "") shift 2 ;;
+                *) EXPERIMENT=$2 ; shift 2;;
+            esac;;
+        -p|--prefix)
+            case "$2" in
+                "") shift 2 ;;
+                *) PREFIX=$2 ; shift 2;;
+            esac;;
+        -s|--stranded) STRANDED="TRUE"; shift ;;
+        -g|--gtf)
+            case "$2" in
+                "") shift 2 ;;
+                *) GTF=$2 ; shift 2;;
+            esac;;
+        -r|--reference)
+            case "$2" in
+                "") shift 2 ;;
+                *) hgXX=$2 ; shift 2;;
+            esac;;
+        -c|--cores)
+            case "$2" in
+                "") CORES="8" ; shift 2;;
+                *) CORES=$2; shift 2;;
+            esac ;;
+        -l|--large) LARGE="TRUE"; shift ;;
+        -h|--help)
+            echo -e "Usage:\nShort options:\n  bash step4-featureCounts.sh -x -p -s (default:FALSE) -g -r (hg38, hg19, mm10, rn6) -c (default:8) -l (default:FALSE)\nLong options:\n  bash step4-featureCounts.sh --experiment --prefix --stranded (default:FALSE) --gtf --reference (hg38, hg19, mm10, rn6) --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            --) shift; break ;;
+        *) echo "Incorrect options!"; exit 1;;
+    esac
+done
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}

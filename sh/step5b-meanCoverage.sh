@@ -1,13 +1,38 @@
-#!/bin/sh
+#!/bin/bash
 
-## Usage
-# ${BASH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
+## Usage information:
+# bash step5b-meanCoverage.sh --help
 
 # Define variables
-EXPERIMENT=$1
-PREFIX=$2
-CHRSIZES=$3
-LARGE=${4-"FALSE"}
+TEMP=$(getopt -o x:p:s:lh --long experiment:,prefix:,chrsizes:,large,help -n 'step5b-meanCoverage' -- "$@")
+eval set -- "$TEMP"
+
+LARGE="FALSE"
+
+while true; do
+    case "$1" in
+        -x|--experiment)
+            case "$2" in
+                "") shift 2 ;;
+                *) EXPERIMENT=$2 ; shift 2;;
+            esac;;
+        -p|--prefix)
+            case "$2" in
+                "") shift 2 ;;
+                *) PREFIX=$2 ; shift 2;;
+            esac;;
+        -s|--chrsizes)
+            case "$2" in
+                "") shift 2 ;;
+                *) CHRSIZES=$2 ; shift 2;;
+            esac;;
+        -l|--large) LARGE="TRUE"; shift ;;
+        -h|--help)
+            echo -e "Usage:\nShort options:\n  bash step5b-meanCoverage.sh -x -p -s -l (default:FALSE)\nLong options:\n  bash step5b-meanCoverage.sh --experiment --prefix --chrsizes --large (default:FALSE)"; exit 0; shift ;;
+            --) shift; break ;;
+        *) echo "Incorrect options!"; exit 1;;
+    esac
+done
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
@@ -48,7 +73,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
-#$ -hold_jid pipeline_setup,step5-coverage-${EXPERIMENT}.${PREFIX}
+#$ -hold_jid pipeline_setup,step5b-meanCoverage-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date

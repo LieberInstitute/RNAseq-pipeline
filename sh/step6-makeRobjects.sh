@@ -1,17 +1,54 @@
-#!/bin/sh
+#!/bin/bash
 
-## Usage
-# ${BASH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER}
+## Usage information:
+# bash step6-makeRobjects.sh --help
 
 # Define variables
-EXPERIMENT=$1
-PREFIX=$2
-hgXX=$3
-ERCC=$4
-CORES=${5-8}
-LARGE=${6-"FALSE"}
-FULLCOV=${7-"FALSE"}
-BASH_FOLDER=${8-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
+TEMP=$(getopt -o x:p:r:ec:lfb:a:h --long experiment:,prefix:,reference:,ercc,cores:,large,fullcov,bashfolder:,annofolder:,help -n 'step6-makeRobjects' -- "$@")
+eval set -- "$TEMP"
+
+ERCC="FALSE"
+LARGE="FALSE"
+FULLCOV="FALSE"
+CORES=8
+BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"
+
+while true; do
+    case "$1" in
+        -x|--experiment)
+            case "$2" in
+                "") shift 2 ;;
+                *) EXPERIMENT=$2 ; shift 2;;
+            esac;;
+        -p|--prefix)
+            case "$2" in
+                "") shift 2 ;;
+                *) PREFIX=$2 ; shift 2;;
+            esac;;
+        -r|--reference)
+            case "$2" in
+                "") shift 2 ;;
+                *) hgXX=$2 ; shift 2;;
+            esac;;
+        -e|--ercc) ERCC="TRUE"; shift ;;
+        -c|--cores)
+            case "$2" in
+                "") CORES="8" ; shift 2;;
+                *) CORES=$2; shift 2;;
+            esac ;;
+        -l|--large) LARGE="TRUE"; shift ;;
+        -f|--fullcov) LARGE="TRUE"; shift ;;
+        -b|--bashfolder)
+            case "$2" in
+                "") BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"; shift 2;;
+                *) BASH_FOLDER=$2; shift 2;;
+            esac;;
+        -h|--help)
+            echo -e "Usage:\nShort options:\n  bash step6-makeRobjects.sh -x -p -r (hg38, hg19, mm10, rn6) -e (default:FALSE) -c (default:8) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) \nLong options:\n  bash step6-makeRobjects.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --ercc (default:FALSE) --cores (default:8) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh)"; exit 0; shift ;;
+            --) shift; break ;;
+        *) echo "Incorrect options!"; exit 1;;
+    esac
+done
 
 SHORT="Rcounts-${EXPERIMENT}"
 sname="step6-${SHORT}.${PREFIX}"

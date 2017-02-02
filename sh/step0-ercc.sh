@@ -1,14 +1,39 @@
-#!/bin/sh
+#!/bin/bash
 
-## Usage
-# ${BASH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE}
+## Usage information:
+# bash step0-ercc.sh --help
 
 # Define variables
-EXPERIMENT=$1
-PREFIX=$2
-CORES=${3-8}
-LARGE=${4-"FALSE"}
+TEMP=$(getopt -o x:p:c:lh --long experiment:,prefix:,cores:,large,help -n 'step0-ercc' -- "$@")
+eval set -- "$TEMP"
 
+LARGE="FALSE"
+CORES=8
+
+while true; do
+    case "$1" in
+        -x|--experiment)
+            case "$2" in
+                "") shift 2 ;;
+                *) EXPERIMENT=$2 ; shift 2;;
+            esac;;
+        -p|--prefix)
+            case "$2" in
+                "") shift 2 ;;
+                *) PREFIX=$2 ; shift 2;;
+            esac;;
+        -c|--cores)
+            case "$2" in
+                "") CORES="8" ; shift 2;;
+                *) CORES=$2; shift 2;;
+            esac ;;
+        -l|--large) LARGE="TRUE"; shift ;;
+        -h|--help)
+            echo -e "Usage:\nShort options:\n  bash step0-ercc.sh -x -p -c (default:8) -l (default:FALSE)\nLong options:\n  bash step0-ercc.sh --experiment --prefix --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            --) shift; break ;;
+        *) echo "Incorrect options!"; exit 1;;
+    esac
+done
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}

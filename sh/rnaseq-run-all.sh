@@ -1,23 +1,63 @@
 #!/bin/bash
 
-## Usage
-# qrsh
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${STRANDED} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER} ${ANNO_FOLDER}
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh testrun run1 hg38 TRUE TRUE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh bs run1 hg38 FALSE FALSE FALSE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Projects/brainspan
-# bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh fulltest sep23 hg38 TRUE TRUE TRUE /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/test_runthroughAZ/fq
+## Usage information:
+# bash rnaseq-run-all.sh --help
 
 # Define variables
-EXPERIMENT=$1
-PREFIX=$2
-hgXX=$3
-STRANDED=$4
-ERCC=$5
-CORES=${6-8}
-LARGE=${7-"FALSE"}
-FULLCOV=${8-"FALSE"}
-BASH_FOLDER=${9-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"}
-ANNO_FOLDER=${10-"/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"}
+TEMP=$(getopt -o x:p:r:sec:lfb:a:h --long experiment:,prefix:,reference:,stranded,ercc,cores:,large,fullcov,bashfolder:,annofolder:,help -n 'rnaseq-run-all' -- "$@")
+eval set -- "$TEMP"
+
+STRANDED="FALSE"
+ERCC="FALSE"
+LARGE="FALSE"
+FULLCOV="FALSE"
+CORES=8
+BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"
+ANNO_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"
+
+
+while true; do
+    case "$1" in
+        -x|--experiment)
+            case "$2" in
+                "") shift 2 ;;
+                *) EXPERIMENT=$2 ; shift 2;;
+            esac;;
+        -p|--prefix)
+            case "$2" in
+                "") shift 2 ;;
+                *) PREFIX=$2 ; shift 2;;
+            esac;;
+        -r|--reference)
+            case "$2" in
+                "") shift 2 ;;
+                *) hgXX=$2 ; shift 2;;
+            esac;;
+        -s|--stranded) STRANDED="TRUE"; shift ;;
+        -e|--ercc) ERCC="TRUE"; shift ;;
+        -c|--cores)
+            case "$2" in
+                "") CORES="8" ; shift 2;;
+                *) CORES=$2; shift 2;;
+            esac ;;
+        -l|--large) LARGE="TRUE"; shift ;;
+        -f|--fullcov) LARGE="TRUE"; shift ;;
+        -b|--bashfolder)
+            case "$2" in
+                "") BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"; shift 2;;
+                *) BASH_FOLDER=$2; shift 2;;
+            esac;;
+        -a|--annofolder)
+            case "$2" in
+                "") ANNO_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"; shift 2;;
+                *) ANNO_FOLDER=$2; shift 2;;
+            esac;;
+        -h|--help)
+            echo -e "Usage:\n  qrsh\nShort options:\n  bash rnaseq-run-all.sh -x -p -r (hg38, hg19, mm10, rn6) -s (default:FALSE) -e (default:FALSE) -c (default:8) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) -a (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation)\nLong options:\n  bash rnaseq-run-all.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --stranded (default:FALSE) --ercc (default:FALSE) --cores (default:8) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) --annofolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation)"; exit 0; shift ;;
+            --) shift; break ;;
+        *) echo "Incorrect options!"; exit 1;;
+    esac
+done
 
 ## Try running R. If it fails it means that the user is on the login node.
 Rscript -e "Sys.time()" &> .try_load_R
@@ -113,19 +153,19 @@ Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest
 ## create and submit all scripts
 if [ -f ".requires_merging" ]
 then
-    sh ${BASH_FOLDER}/step00-merge.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE} ${BASH_FOLDER}
+    sh ${BASH_FOLDER}/step00-merge.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --cores ${CORES} --large ${LARGE} --bashfolder ${BASH_FOLDER}
     rm .requires_merging
 fi
 
 if [ ${ERCC} == "TRUE" ]
 then
-    sh ${BASH_FOLDER}/step0-ercc.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE}
+    sh ${BASH_FOLDER}/step0-ercc.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --cores ${CORES} --large ${LARGE}
 fi
 
-sh ${BASH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${LARGE}
-sh ${BASH_FOLDER}/step2-trim.sh ${EXPERIMENT} ${PREFIX} ${CORES} ${LARGE}
-sh ${BASH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${HISATIDX} ${BED} ${CORES} ${LARGE}
-sh ${BASH_FOLDER}/step4-featureCounts.sh ${EXPERIMENT} ${PREFIX} ${STRANDED} ${GTF} ${hgXX} ${CORES} ${LARGE}
-sh ${BASH_FOLDER}/step5-coverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
-sh ${BASH_FOLDER}/step5b-meanCoverage.sh ${EXPERIMENT} ${PREFIX} ${CHRSIZES} ${LARGE}
-sh ${BASH_FOLDER}/step6-makeRobjects.sh ${EXPERIMENT} ${PREFIX} ${hgXX} ${ERCC} ${CORES} ${LARGE} ${FULLCOV} ${BASH_FOLDER}
+sh ${BASH_FOLDER}/step1-fastqc.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --large ${LARGE}
+sh ${BASH_FOLDER}/step2-trim.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --cores ${CORES} --large ${LARGE}
+sh ${BASH_FOLDER}/step3-hisat2.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --index ${HISATIDX} --bed ${BED} --cores ${CORES} --large ${LARGE}
+sh ${BASH_FOLDER}/step4-featureCounts.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --stranded ${STRANDED} --gtf ${GTF} --reference ${hgXX} --cores ${CORES} --large ${LARGE}
+sh ${BASH_FOLDER}/step5-coverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
+sh ${BASH_FOLDER}/step5b-meanCoverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
+sh ${BASH_FOLDER}/step6-makeRobjects.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --ercc ${hgXX} --cores ${CORES} --large ${LARGE} --fullcov ${FULLCOV} --bashfolder ${BASH_FOLDER}

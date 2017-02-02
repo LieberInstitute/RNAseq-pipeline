@@ -38,29 +38,30 @@ qsub pipeline_R_setup.sh
   ```
   ## You need a compute node to run this script!
   qrsh
-  bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh $ExprName $SomeIdentifier $Genome $Stranded $ERCC $FASTQ_DIR $MERGE $LARGE
+  ## Change the path if you cloned this repo elsewhere!
+  bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh --help
   ```
   
-  Note that you have to use __bash__ and not __sh__, otherwise you'll get an error like this:
-  
-  ```
-  module: command not found
-  ```
+  Note that you have to use __bash__ and not __sh__, otherwise you'll get an error like.
 
-  1. __ExprName__: main identifier, experiment name
-  1. __SomeIdentifier__: spurious additional identifier, date is a good thing use here
-  1. __Genome__: supported genomes are `hg19, hg38, mm10, rn6`
-  1. __Stranded__: `TRUE` If samples are reverse-stranded (forward-stranded not compatible yet)
-  1. __ERCC__: `TRUE` If ERCC mix 1 was added
-  1. __FASTQ_DIR__: The path of the directory containing the FASTQ files. Use `""` if `samples.manifest` already contains full paths (default: `""`).
-  1. __CORES__: defaults to 8. Specifies how many cores to use per job for the jobs that are parallelized.
-  1. __LARGE__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
-  1. __FULLCOV__: `TRUE` if you want to create the fullCoverage object. Set to `FALSE` by default. Note that the fullCoverage object is not needed (by default) since we create the normalized mean BigWig already and can use it to define the ERs with `derfinder::findRegions()`, then use the resulting GRanges object and the paths to the BigWig files in `derfinder::getRegionCoverage(fullCov = NULL, files = bigWigs, regions = outputFrom_findRegions)` or alternatively write the regions to a BED file with rtracklayer, create the counts with [bwtool](https://github.com/CRG-Barcelona/bwtool) and then read them into R manually (similar to what we did in [recount-website](https://github.com/leekgroup/recount-website)).
-  1. __BASH_FOLDER__: defaults to `/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh`. It's the directory where the shell files are located at. You only need to specify it if you cloned this repository somewhere else.
-  1. __ANNO_FOLDER__: defaults to `/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation`. We currently don't have scripts for you to automatically reproduce that directory, but you can copy it to another location if you want to have more control on it and change some files.
+  1. __experiment__: main identifier, experiment name
+  1. __prefix__: spurious additional identifier, date is a good thing use here
+  1. __reference__: supported genomes are `hg19, hg38, mm10, rn6`
+  1. __stranded__: `FALSE` by default and will be turned to `TRUE` if specified (it's a flag). Specify if samples are reverse-stranded (forward-stranded not compatible yet).
+  1. __ercc__: `FALSE` by default and will be turned to `TRUE` if specified (it's a flag). Specify if ERCC mix 1 was added.
+  1. __cores__: defaults to 8. Specifies how many cores to use per job for the jobs that are parallelized.
+  1. __large__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
+  1. __fullcov__: `TRUE` if you want to create the fullCoverage object. Set to `FALSE` by default. Note that the fullCoverage object is not needed (by default) since we create the normalized mean BigWig already and can use it to define the ERs with `derfinder::findRegions()`, then use the resulting GRanges object and the paths to the BigWig files in `derfinder::getRegionCoverage(fullCov = NULL, files = bigWigs, regions = outputFrom_findRegions)` or alternatively write the regions to a BED file with rtracklayer, create the counts with [bwtool](https://github.com/CRG-Barcelona/bwtool) and then read them into R manually (similar to what we did in [recount-website](https://github.com/leekgroup/recount-website)).
+  1. __bashfolder__: defaults to `/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh`. It's the directory where the shell files are located at. You only need to specify it if you cloned this repository somewhere else.
+  1. __annofolder__: defaults to `/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation`. We currently don't have scripts for you to automatically reproduce that directory, but you can copy it to another location if you want to have more control on it and change some files.
   
 
-4. Hidden run files will be created with all calls needed to run the pipeline. Each step is submitted to SGE cluster and queued to run sequentially. Steps that can be parallelized are submitted as array jobs.
+4. Hidden run files will be created with all calls needed to run the pipeline. Each step is submitted to SGE cluster and queued to run sequentially. Steps that can be parallelized are submitted as array jobs. If you with to manually run a given step, check the default options by using the `--help` option. For example:
+
+  ```
+  ## Change the path if you cloned this repo elsewhere!
+  bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3-hisat2.sh --help
+  ```
 
 5. Completion emails: by default you will only get an email if a job failed. If you want to get completion emails add the empty file `${DIR}/.send_emails`. You can create it with:
 
@@ -73,5 +74,7 @@ qsub pipeline_R_setup.sh
   ```
   bluejay
   ```
+  
+  Do not save `shared` into `${DIR}/.queue`. Otherwise your jobs won't run.
 
 For reproducibility purposes, the information about the version of the pipeline and contents of `ANNO_FOLDER` will be stored in `logs/pipeline_information.txt`.

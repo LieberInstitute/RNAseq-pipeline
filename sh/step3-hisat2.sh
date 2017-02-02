@@ -1,15 +1,49 @@
-#!/bin/sh
+#!/bin/bash
 
-## Usage
-# ${BASH_FOLDER}/step3-hisat2.sh ${EXPERIMENT} ${PREFIX} ${HISATIDX} ${BED} ${CORES} ${LARGE}
+## Usage information:
+# bash step3-hisat2.sh --help
 
 # Define variables
-EXPERIMENT=$1
-PREFIX=$2
-HISATIDX=$3
-BED=$4
-CORES=${5-8}
-LARGE=${6-"FALSE"}
+TEMP=$(getopt -o x:p:i:b:c:lh --long experiment:,prefix:,index:,bed:,cores:,large,help -n 'step3-hisat2' -- "$@")
+eval set -- "$TEMP"
+
+LARGE="FALSE"
+CORES=8
+
+while true; do
+    case "$1" in
+        -x|--experiment)
+            case "$2" in
+                "") shift 2 ;;
+                *) EXPERIMENT=$2 ; shift 2;;
+            esac;;
+        -p|--prefix)
+            case "$2" in
+                "") shift 2 ;;
+                *) PREFIX=$2 ; shift 2;;
+            esac;;
+        -i|--index)
+            case "$2" in
+                "") shift 2 ;;
+                *) HISATIDX=$2 ; shift 2;;
+            esac;;
+        -b|--bed)
+            case "$2" in
+                "") shift 2 ;;
+                *) BED=$2 ; shift 2;;
+            esac;;
+        -c|--cores)
+            case "$2" in
+                "") CORES="8" ; shift 2;;
+                *) CORES=$2; shift 2;;
+            esac ;;
+        -l|--large) LARGE="TRUE"; shift ;;
+        -h|--help)
+            echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -c (default:8) -l (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            --) shift; break ;;
+        *) echo "Incorrect options!"; exit 1;;
+    esac
+done
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}

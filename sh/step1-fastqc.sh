@@ -1,12 +1,33 @@
-#!/bin/sh
+#!/bin/bash
 
-## Usage
-# ${BASH_FOLDER}/step1-fastqc.sh ${EXPERIMENT} ${PREFIX} ${LARGE}
+## Usage information:
+# bash step1-fastqc.sh --help
 
 # Define variables
-EXPERIMENT=$1
-PREFIX=$2
-LARGE=${3-"FALSE"}
+TEMP=$(getopt -o x:p:lh --long experiment:,prefix:,large,help -n 'step1-fastqc' -- "$@")
+eval set -- "$TEMP"
+
+LARGE="FALSE"
+
+while true; do
+    case "$1" in
+        -x|--experiment)
+            case "$2" in
+                "") shift 2 ;;
+                *) EXPERIMENT=$2 ; shift 2;;
+            esac;;
+        -p|--prefix)
+            case "$2" in
+                "") shift 2 ;;
+                *) PREFIX=$2 ; shift 2;;
+            esac;;
+        -l|--large) LARGE="TRUE"; shift ;;
+        -h|--help)
+            echo -e "Usage:\nShort options:\n  bash step1-fastqc.sh -x -p -l (default:FALSE)\nLong options:\n  bash step1-fastqc.sh --experiment --prefix --large (default:FALSE)"; exit 0; shift ;;
+            --) shift; break ;;
+        *) echo "Incorrect options!"; exit 1;;
+    esac
+done
 
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
