@@ -31,9 +31,7 @@ fi
 
 if [ -f ".queue" ]
 then
-    QUEUE=$(cat .queue)
-else
-    QUEUE="shared"
+    QUEUE="$(cat .queue),"
 fi
 
 if [ -f ".paired_end" ]
@@ -49,7 +47,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${QUEUE},${MEM}
+#$ -l ${QUEUE}${MEM}
 #$ -N ${sname}
 #$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.o.txt

@@ -34,9 +34,7 @@ fi
 
 if [ -f ".queue" ]
 then
-    QUEUE=$(cat .queue)
-else
-    QUEUE="shared"
+    QUEUE="$(cat .queue),"
 fi
 
 if [ -f ".paired_end" ]
@@ -61,7 +59,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -pe local ${CORES}
-#$ -l ${QUEUE},${MEM}
+#$ -l ${QUEUE}${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
@@ -92,7 +90,7 @@ then
 #!/bin/bash
 #$ -cwd
 #$ -pe local ${CORES}
-#$ -l ${QUEUE},${MEM}
+#$ -l ${QUEUE}${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
