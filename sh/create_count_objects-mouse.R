@@ -62,7 +62,7 @@ if (opt$ercc == TRUE ){
 	##match row order
 	spikeIns = spikeIns[match(rownames(erccTPM),rownames(spikeIns)),]
 
-	metricsf(file.path(opt$maindir, 'Ercc', 'ercc_spikein_check_mix1.metricsf'),h=12,w=18)
+	pdf(file.path(opt$maindir, 'Ercc', 'ercc_spikein_check_mix1.pdf'),h=12,w=18)
 	mypar(4,6)
 	for(i in 1:ncol(erccTPM)) {
 		plot(log2(10*spikeIns[,"concentration.in.Mix.1..attomoles.ul."]+1) ~ log2(erccTPM[,i]+1),
