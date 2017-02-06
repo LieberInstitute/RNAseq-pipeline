@@ -21,6 +21,9 @@ if(FALSE) {
     opt <- list(
         sampleids = 'https://raw.githubusercontent.com/nellore/rail/master/ex/dm3_example.manifest'
     )
+    opt <- list(
+        sampleids = "/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/samples.manifest"
+    )
 }
 
 manifest <- read.table(opt$sampleids, sep = '\t', header = FALSE,

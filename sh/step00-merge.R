@@ -20,14 +20,14 @@ if (!is.null(opt$help)) {
 }
 
 ## For testing
-if(FALSE) {
+testing <- FALSE
+if(testing) {
     opt <- list(
         sampleids = 'https://raw.githubusercontent.com/nellore/rail/master/ex/dm3_example.manifest',
         outdir = 'merged_fastq',
         cores = 1
     )
-    testing <- TRUE
-}
+} 
 
 manifest <- read.table(opt$sampleids, sep = '\t', header = FALSE,
     stringsAsFactors = FALSE)

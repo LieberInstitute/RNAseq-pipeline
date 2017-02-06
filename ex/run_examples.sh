@@ -14,6 +14,8 @@ cat > .gitignore <<EOF
 */Coverage
 */logs
 */FastQC
+*/HISAT2_out
+*/Counts
 EOF
 
 ## Clean examples
