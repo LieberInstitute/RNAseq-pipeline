@@ -84,7 +84,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
-Rscript ${BASH_FOLDER}/step00-merge.R -s ${MAINDIR}/samples.manifest -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -c ${CORES}
+Rscript ${BASH_FOLDER}/step00-merge.R -s ${MAINDIR}/.samples_unmerged.manifest -o ${MAINDIR}/${EXPERIMENT}/${PREFIX}/merged_fastq -c ${CORES}
 
 echo "**** Job ends ****"
 date

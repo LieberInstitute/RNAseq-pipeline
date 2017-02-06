@@ -5,6 +5,7 @@ library('devtools')
 ## Specify parameters
 spec <- matrix(c(
     'sampleids', 's', 2, 'character', 'path to samples.manifest file',
+    'outdir', 'o', 1, 'character', 'Full path to directory where the merged fastq files will be saved to',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -19,10 +20,12 @@ if (!is.null(opt$help)) {
 ## For testing
 if(FALSE) {
     opt <- list(
-        sampleids = 'https://raw.githubusercontent.com/nellore/rail/master/ex/dm3_example.manifest'
+        sampleids = 'https://raw.githubusercontent.com/nellore/rail/master/ex/dm3_example.manifest',
+        outdir = 'merged_fastq'
     )
     opt <- list(
-        sampleids = "/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/samples.manifest"
+        sampleids = "/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/samples.manifest",
+        outdir = 'merged_fastq'
     )
 }
 
@@ -33,10 +36,6 @@ manifest <- read.table(opt$sampleids, sep = '\t', header = FALSE,
 paired <- ncol(manifest) > 3
 if(paired) system('touch .paired_end')
 
-## Is merging required?
-merged <- length(unique(manifest[, ncol(manifest)])) == nrow(manifest)
-if(!merged) system('touch .requires_merging')
-
 ## Find the file extensions
 files <- manifest[, 1]
 extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')
@@ -46,6 +45,43 @@ ext_found <- sapply(files, function(file) {
 })
 if(any(is.na(ext_found))) {
     stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
+}
+
+## Is merging required?
+merged <- length(unique(manifest[, ncol(manifest)])) == nrow(manifest)
+if(!merged) {
+    system('touch .requires_merging')
+    message(paste0(Sys.time(), ' creating .samples_unmerged.manifest'))
+    system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
+        '.samples_unmerged.manifest')))
+
+    message(paste(Sys.time(), 'creating the new samples.manifest file with the merged samples'))
+
+    ## Split according to the sample names
+    file_groups <- split(manifest, manifest[, ncol(manifest)])
+    extensions <- sapply(split(ext_found, manifest[, ncol(manifest)]), '[', 1)
+    
+    if(paired) {
+        new_manifest <- data.frame(
+            file.path(opt$outdir, paste0(names(file_groups), '.', extensions)),
+            rep(0, length(file_groups)),
+            file.path(opt$outdir, paste0(names(file_groups), '_read2.',
+                extensions)),
+            rep(0, length(file_groups)),
+            names(file_groups), stringsAsFactors = FALSE
+        )
+    } else {
+        new_manifest <- data.frame(
+            file.path(opt$outdir, paste0(names(file_groups), '.', extensions)),
+            rep(0, length(file_groups)),
+            names(file_groups), stringsAsFactors = FALSE
+        )
+    }
+    ## Make names short, in case you want to interactively check the new manifest
+    colnames(new_manifest) <- paste0('V', seq_len(ncol(new_manifest)))
+
+    write.table(new_manifest, file = opt$sampleids, row.names = FALSE,
+        col.names = FALSE, quote = FALSE)
 }
 
 ## Reproducibility information

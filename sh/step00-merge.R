@@ -81,37 +81,6 @@ res <- bpmapply(function(common, new_name, extension) {
 }, file_groups, names(file_groups), extensions, 
     BPPARAM = MulticoreParam(opt$cores))
 
-message(paste0(Sys.time(), ' creating .samples_backup_', Sys.Date(),
-    '.manifest'))
-system(paste('mv', opt$sampleids, file.path(dirname(opt$sampleids),
-    paste0('.', gsub('.manifest', paste0('_backup_', Sys.Date(), '.manifest'),
-    basename(opt$sampleids))))
-))
-
-message(paste(Sys.time(), 'creating the new samples.manifest file with the merged samples'))
-
-if(paired) {
-    new_manifest <- data.frame(
-        file.path(opt$outdir, paste0(names(file_groups), '.', extensions)),
-        rep(0, length(file_groups)),
-        file.path(opt$outdir, paste0(names(file_groups), '_read2.',
-            extensions)),
-        rep(0, length(file_groups)),
-        names(file_groups), stringsAsFactors = FALSE
-    )
-} else {
-    new_manifest <- data.frame(
-        file.path(opt$outdir, paste0(names(file_groups), '.', extensions)),
-        rep(0, length(file_groups)),
-        names(file_groups), stringsAsFactors = FALSE
-    )
-}
-## Make names short, in case you want to interactively check the new manifest
-colnames(new_manifest) <- paste0('V', seq_len(ncol(new_manifest)))
-
-write.table(new_manifest, file = opt$sampleids, row.names = FALSE,
-    col.names = FALSE, quote = FALSE)
-
 ## Reproducibility information
 print('Reproducibility information:')
 Sys.time()
