@@ -68,7 +68,9 @@ fi
 
 if [ -f ".queue" ]
 then
-    QUEUE="$(cat .queue),"
+    SGEQUEUE="$(cat .queue),"
+else
+    SGEQUEUE=""
 fi
 
 if [ -f ".paired_end" ]
@@ -97,7 +99,7 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${QUEUE}${MEM}
+#$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
 #$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.o.\$TASK_ID.txt

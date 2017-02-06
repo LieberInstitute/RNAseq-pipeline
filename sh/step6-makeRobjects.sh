@@ -71,7 +71,9 @@ fi
 
 if [ -f ".queue" ]
 then
-    QUEUE="$(cat .queue),"
+    SGEQUEUE="$(cat .queue),"
+else
+    SGEQUEUE=""
 fi
 
 if [ -f ".paired_end" ]
@@ -96,7 +98,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -pe local ${CORES}
-#$ -l ${QUEUE}${MEM}
+#$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
@@ -127,7 +129,7 @@ then
 #!/bin/bash
 #$ -cwd
 #$ -pe local ${CORES}
-#$ -l ${QUEUE}${MEM}
+#$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.o.txt
 #$ -e ./logs/${SHORT}.e.txt
