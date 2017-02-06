@@ -23,7 +23,7 @@ EOF
 bash clean_examples.sh
 
 cd single_end
-bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "single" --reference "hg19" --cores 1 --fullcov
+bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "single" --reference "hg19" --cores 1 --fullcov "TRUE"
 
 cd ../paired_end
 bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "paired" --reference "mm10" --cores 1

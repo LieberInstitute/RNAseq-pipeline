@@ -37,7 +37,7 @@ while true; do
                 *) CORES=$2; shift 2;;
             esac ;;
         -l|--large) LARGE="TRUE"; shift ;;
-        -f|--fullcov) LARGE="TRUE"; shift ;;
+        -f|--fullcov) FULLCOV="TRUE"; shift ;;
         -b|--bashfolder)
             case "$2" in
                 "") BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"; shift 2;;

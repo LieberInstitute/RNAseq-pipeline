@@ -134,7 +134,7 @@ else
 	REPORT1=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_fastqc/summary.txt
 	RESULT1=\$(grep "Adapter Content" \$REPORT1 | cut -c1-4)
 
-	if [ \$RESULT1 == "FAIL" ] ; then
+	if [[ \$RESULT1 == "FAIL" ]] ; then
 		## trim, rerun fastQC
 		echo "Adapters: \$RESULT1"
 		echo "Trimming will occur."

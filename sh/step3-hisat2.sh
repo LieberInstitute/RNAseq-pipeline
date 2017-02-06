@@ -165,7 +165,7 @@ rm \${ORIGINALBAM}
 
 ## Run infer experiment
 module load python/2.7.9
-~/.local/bin/infer_experiment.py -i \${SORTEDBAM} -r ${BED} 1> ${MAINDIR}/HISAT2_out/infer_strandness/\${ID}.txt 2>&1
+~/.local/bin/infer_experiment.py -i \${SORTEDBAM}.bam -r ${BED} 1> ${MAINDIR}/HISAT2_out/infer_strandness/\${ID}.txt 2>&1
 
 echo "**** Job ends ****"
 date

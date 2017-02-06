@@ -47,8 +47,8 @@ qsub pipeline_R_setup.sh
   1. __experiment__: main identifier, experiment name
   1. __prefix__: spurious additional identifier, date is a good thing use here
   1. __reference__: supported genomes are `hg19, hg38, mm10, rn6`
-  1. __stranded__: `FALSE` by default and will be turned to `TRUE` if specified (it's a flag). Specify if samples are reverse-stranded (forward-stranded not compatible yet).
-  1. __ercc__: `FALSE` by default and will be turned to `TRUE` if specified (it's a flag). Specify if ERCC mix 1 was added.
+  1. __stranded__: `FALSE` by default and will be turned to `TRUE` if specified. Specify if samples are reverse-stranded (forward-stranded not compatible yet).
+  1. __ercc__: `FALSE` by default and will be turned to `TRUE` if specified. Specify if ERCC mix 1 was added.
   1. __cores__: defaults to 8. Specifies how many cores to use per job for the jobs that are parallelized.
   1. __large__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
   1. __fullcov__: `TRUE` if you want to create the fullCoverage object. Set to `FALSE` by default. Note that the fullCoverage object is not needed (by default) since we create the normalized mean BigWig already and can use it to define the ERs with `derfinder::findRegions()`, then use the resulting GRanges object and the paths to the BigWig files in `derfinder::getRegionCoverage(fullCov = NULL, files = bigWigs, regions = outputFrom_findRegions)` or alternatively write the regions to a BED file with rtracklayer, create the counts with [bwtool](https://github.com/CRG-Barcelona/bwtool) and then read them into R manually (similar to what we did in [recount-website](https://github.com/leekgroup/recount-website)).
