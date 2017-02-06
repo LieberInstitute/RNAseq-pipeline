@@ -73,12 +73,18 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -o ./logs/${SHORT}.o.txt
-#$ -e ./logs/${SHORT}.e.txt
+#$ -o ./logs/${SHORT}.txt
+#$ -e ./logs/${SHORT}.txt
 #$ -hold_jid pipeline_setup,step5b-meanCoverage-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
+
+if [ ! -f "inferred_strandness_pattern.txt" ]
+then
+    echo "Missing the file inferred_strandness_pattern.txt"
+    exit 1
+fi
 
 ## Load required software
 module load wiggletools/default

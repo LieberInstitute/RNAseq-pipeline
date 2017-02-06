@@ -76,8 +76,8 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
 #$ -pe local ${CORES}
-#$ -o ./logs/${SHORT}.o.txt
-#$ -e ./logs/${SHORT}.e.txt
+#$ -o ./logs/${SHORT}.txt
+#$ -e ./logs/${SHORT}.txt
 #$ -hold_jid pipeline_setup
 #$ -m ${EMAIL}
 

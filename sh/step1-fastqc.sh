@@ -76,8 +76,8 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
-#$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
+#$ -o ./logs/${SHORT}.\$TASK_ID.txt
+#$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 100
 #$ -hold_jid pipeline_setup,step00-merge-${EXPERIMENT}.${PREFIX}

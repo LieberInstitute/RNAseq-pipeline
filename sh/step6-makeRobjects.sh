@@ -100,8 +100,8 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -pe local ${CORES}
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -o ./logs/${SHORT}.o.txt
-#$ -e ./logs/${SHORT}.e.txt
+#$ -o ./logs/${SHORT}.txt
+#$ -e ./logs/${SHORT}.txt
 #$ -hold_jid pipeline_setup,step4-featCounts-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
@@ -131,8 +131,8 @@ then
 #$ -pe local ${CORES}
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -o ./logs/${SHORT}.o.txt
-#$ -e ./logs/${SHORT}.e.txt
+#$ -o ./logs/${SHORT}.txt
+#$ -e ./logs/${SHORT}.txt
 #$ -hold_jid pipeline_setup,step5-coverage-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"

@@ -73,8 +73,8 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
-#$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
+#$ -o ./logs/${SHORT}.\$TASK_ID.txt
+#$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 40
 #$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX},step3b-infer-strandness-${EXPERIMENT}.${PREFIX}
@@ -82,6 +82,11 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
+if [ ! -f "inferred_strandness_pattern.txt" ]
+then
+    echo "Missing the file inferred_strandness_pattern.txt"
+    exit 1
+fi
 
 FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
 if [ $PE == "TRUE" ] 

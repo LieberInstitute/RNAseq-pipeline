@@ -89,8 +89,8 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
 #$ -pe local ${CORES}
-#$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
-#$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
+#$ -o ./logs/${SHORT}.\$TASK_ID.txt
+#$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 15
 #$ -hold_jid pipeline_setup,step2-trim-${EXPERIMENT}.${PREFIX}
@@ -183,10 +183,9 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${SGEQUEUE}
 #$ -N ${sname}
-#$ -o ./logs/${SHORT}.o.txt
-#$ -e ./logs/${SHORT}.e.txt
+#$ -o ./logs/${SHORT}.txt
+#$ -e ./logs/${SHORT}.txt
 #$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"

@@ -102,8 +102,8 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
 #$ -pe local ${CORES}
-#$ -o ./logs/${SHORT}.o.\$TASK_ID.txt
-#$ -e ./logs/${SHORT}.e.\$TASK_ID.txt
+#$ -o ./logs/${SHORT}.\$TASK_ID.txt
+#$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
 #$ -tc 10
 #$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX}
@@ -174,8 +174,8 @@ cat > ${MAINDIR}/.${sname}_clean.sh <<EOF
 #!/bin/bash
 #$ -cwd
 #$ -N ${sname}_clean
-#$ -o ./logs/${SHORT}_clean.o.txt
-#$ -e ./logs/${SHORT}_clean.e.txt
+#$ -o ./logs/${SHORT}_clean.txt
+#$ -e ./logs/${SHORT}_clean.txt
 #$ -hold_jid pipeline_setup,step4-featCounts-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"

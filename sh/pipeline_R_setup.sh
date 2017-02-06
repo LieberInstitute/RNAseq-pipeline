@@ -1,8 +1,8 @@
 #!/bin/bash
 #$ -cwd
 #$ -N pipeline_setup
-#$ -o ./logs/pipeline_setup.o.txt
-#$ -e ./logs/pipeline_setup.e.txt
+#$ -o ./logs/pipeline_setup.txt
+#$ -e ./logs/pipeline_setup.txt
 echo "**** Job starts ****"
 date
 
