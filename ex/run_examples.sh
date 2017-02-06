@@ -1,8 +1,8 @@
 #!/bin/bash
 #$ -cwd
 #$ -N pipeline_ex
-#$ -o ./pipeline_ex.o.txt
-#$ -e ./pipeline_ex.e.txt
+#$ -o ./pipeline_ex.txt
+#$ -e ./pipeline_ex.txt
 #$ -m e
 echo "**** Job starts ****"
 date
@@ -26,6 +26,7 @@ cd ../paired_end
 bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "paired" --reference "mm10" --cores 1
 
 cd ../merge
+touch .send_emails
 bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "merge" --reference "hg38" --stranded --cores 2
 
 echo "**** Job ends ****"

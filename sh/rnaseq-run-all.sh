@@ -64,8 +64,8 @@ Rscript -e "Sys.time()" &> .try_load_R
 LOGNODE=$(grep force-quitting .try_load_R | wc -l)
 if [ ${LOGNODE} != "0" ]
 then
-    date
     echo "**** You are on the login node. Use qrsh to run this script ****"
+    date
     exit 1
 fi
 rm .try_load_R
@@ -75,8 +75,8 @@ rm .try_load_R
 mkdir -p logs
 
 ## Check dependencies
-date
 echo "**** checking that R packages are present ****"
+date
 if [ -f ".missing_R_packages" ]
 then
     echo "**** Installing R packages since some of them are missing ****"
@@ -84,46 +84,29 @@ then
     rm .missing_R_packages
 fi
 
-date
 echo "**** checking that RSeQC is installed ****"
+date
 module load python/2.7.9
 python -c 'from qcmodule import SAM' &> .check_python_rseqc
 RSEQC=$(cat .check_python_rseqc | wc -l)
 if [ ${RSEQC} != "0" ]
 then
-    date
     echo "**** Installing RSeQC: will take less than 5 minutes ****"
     echo "**** You can test that it successfully installed by running: python -c 'from qcmodule import SAM'    ****"
     pip install --user RSeQC
 fi
 rm .check_python_rseqc
 
-date
 echo "**** checking that checksumdir is installed ****"
+date
 python -c "import checksumdir" &> .check_checksumdir
 CHECKSUM=$(cat .check_checksumdir | wc -l)
 if [ ${CHECKSUM} != "0" ]
 then
-    date
     echo "**** Installing checksumdir ****"
     pip install --user checksumdir
 fi
 rm .check_checksumdir
-
-## Save the information about the pipeline version and annotation folder
-## for reproducibility purposes
-REPODIR=$(dirname $BASH_FOLDER)
-pipelineversion=$(git --git-dir=${REPODIR}/.git rev-parse origin/master)
-
-date
-echo "**** Computing the md5 for ${ANNO_FOLDER}, takes 2-3 minutes ****"
-annofoldermd5=$(~/.local/bin/checksumdir -a md5 ${ANNO_FOLDER})
-
-## Save the reproducibility info
-date
-echo "**** Saving the reproducibility information in logs/pipeline_information.txt ****"
-echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}\n**** BASH_FOLDER: ****\n${BASH_FOLDER}\n**** ANNO_FOLDER: ****\n${ANNO_FOLDER}\n**** md5sum for ANNO_FOLDER ****\n${annofoldermd5}\n**** ANNO_FOLDER contents ****" > logs/pipeline_information.txt
-ls -lhtR ${ANNO_FOLDER} >> logs/pipeline_information.txt
 
 # Set variables for desired genome version
 if [ $hgXX == "hg38" ]
@@ -151,16 +134,34 @@ then
 	CHRSIZES=${ANNO_FOLDER}/rn6.chrom.sizes.ensembl
     BED=${ANNO_FOLDER}/RSeQC/rn6.bed
 else
-    date
 	echo "Error: enter hg19 or hg38, mm10 for mouse, or rn6 for rat as the reference." >&2
+    date
 	exit 1
 fi
 
+## Save the information about the pipeline version and annotation folder
+## for reproducibility purposes
+REPODIR=$(dirname $BASH_FOLDER)
+pipelineversion=$(git --git-dir=${REPODIR}/.git rev-parse origin/master)
+
+echo "**** Computing the md5 for ${ANNO_FOLDER}, takes 2-3 minutes ****"
+date
+annofoldermd5=$(~/.local/bin/checksumdir -a md5 ${ANNO_FOLDER})
+
+## Save the reproducibility info
+echo "**** Saving the reproducibility information in logs/pipeline_information.txt ****"
+date
+echo -e "**** Pipeline version: GitHub sha ****\n${pipelineversion}\n**** BASH_FOLDER: ****\n${BASH_FOLDER}\n**** ANNO_FOLDER: ****\n${ANNO_FOLDER}\n**** md5sum for ANNO_FOLDER ****\n${annofoldermd5}\n**** ANNO_FOLDER contents ****" > logs/pipeline_information.txt
+ls -lhtR ${ANNO_FOLDER} >> logs/pipeline_information.txt
+
 ## Find extension of fastq file and whether to merge or not
 ## also add  full paths to samples.manifest if necessary
-date
 echo "**** Finding the sample information ****"
+date
 Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest
+
+
+echo "**** Creating bash scripts for every step ****"
 
 ## create and submit all scripts
 if [ -f ".requires_merging" ]
