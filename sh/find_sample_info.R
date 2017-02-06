@@ -46,6 +46,12 @@ ext_found <- sapply(files, function(file) {
 if(any(is.na(ext_found))) {
     stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
 }
+extensions <- split(ext_found, manifest[, ncol(manifest)])
+
+## Check that extensions are the same per group
+if(any(sapply(extensions, function(x) { length(unique(x)) }) != 1)) {
+    stop("For each sample name, the extensions of the fastq files to be merged have to be the same")
+}
 
 ## Is merging required?
 merged <- length(unique(manifest[, ncol(manifest)])) == nrow(manifest)
@@ -59,7 +65,7 @@ if(!merged) {
 
     ## Split according to the sample names
     file_groups <- split(manifest, manifest[, ncol(manifest)])
-    extensions <- sapply(split(ext_found, manifest[, ncol(manifest)]), '[', 1)
+    extensions <- sapply(extensions, '[', 1))
     
     if(paired) {
         new_manifest <- data.frame(
