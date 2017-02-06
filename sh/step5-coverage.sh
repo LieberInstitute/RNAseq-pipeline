@@ -4,7 +4,7 @@
 # bash step5-coverage.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:s:lh --long experiment:,prefix:,chrsizes:,large,help -n 'step5-coverage' -- "$@")
+TEMP=$(getopt -o x:p:s:l:h --long experiment:,prefix:,chrsizes:,large:,help -n 'step5-coverage' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
@@ -26,7 +26,11 @@ while true; do
                 "") shift 2 ;;
                 *) CHRSIZES=$2 ; shift 2;;
             esac;;
-        -l|--large) LARGE="TRUE"; shift ;;
+        -l|--large)
+            case "$2" in
+                "") LARGE="FALSE" ; shift 2;;
+                *) LARGE=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\nShort options:\n  bash step5-coverage.sh -x -p -s -l (default:FALSE)\nLong options:\n  bash step5-coverage.sh --experiment --prefix --chrsizes --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
@@ -89,7 +93,7 @@ then
 fi
 
 FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
-if [ $PE == "TRUE" ] 
+if [[ $PE == "TRUE" ]]
 then
     FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
 fi

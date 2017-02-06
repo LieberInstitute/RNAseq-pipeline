@@ -4,7 +4,7 @@
 # bash step1-fastqc.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:lh --long experiment:,prefix:,large,help -n 'step1-fastqc' -- "$@")
+TEMP=$(getopt -o x:p:l:h --long experiment:,prefix:,large:,help -n 'step1-fastqc' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
@@ -21,7 +21,11 @@ while true; do
                 "") shift 2 ;;
                 *) PREFIX=$2 ; shift 2;;
             esac;;
-        -l|--large) LARGE="TRUE"; shift ;;
+        -l|--large)
+            case "$2" in
+                "") LARGE="FALSE" ; shift 2;;
+                *) LARGE=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\nShort options:\n  bash step1-fastqc.sh -x -p -l (default:FALSE)\nLong options:\n  bash step1-fastqc.sh --experiment --prefix --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;

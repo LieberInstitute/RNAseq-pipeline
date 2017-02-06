@@ -4,7 +4,7 @@
 # bash step2-trim.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:c:lh --long experiment:,prefix:,cores:,large,help -n 'step2-trim' -- "$@")
+TEMP=$(getopt -o x:p:c:l:h --long experiment:,prefix:,cores:,large:,help -n 'step2-trim' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
@@ -27,7 +27,11 @@ while true; do
                 "") CORES="8" ; shift 2;;
                 *) CORES=$2; shift 2;;
             esac ;;
-        -l|--large) LARGE="TRUE"; shift ;;
+        -l|--large)
+            case "$2" in
+                "") LARGE="FALSE" ; shift 2;;
+                *) LARGE=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\nShort options:\n  bash step2-trim.sh -x -p -c (default:8) -l (default:FALSE)\nLong options:\n  bash step2-trim.sh --experiment --prefix --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;

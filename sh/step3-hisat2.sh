@@ -4,7 +4,7 @@
 # bash step3-hisat2.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:i:b:c:lh --long experiment:,prefix:,index:,bed:,cores:,large,help -n 'step3-hisat2' -- "$@")
+TEMP=$(getopt -o x:p:i:b:c:l:h --long experiment:,prefix:,index:,bed:,cores:,large:,help -n 'step3-hisat2' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
@@ -37,7 +37,11 @@ while true; do
                 "") CORES="8" ; shift 2;;
                 *) CORES=$2; shift 2;;
             esac ;;
-        -l|--large) LARGE="TRUE"; shift ;;
+        -l|--large)
+            case "$2" in
+                "") LARGE="FALSE" ; shift 2;;
+                *) LARGE=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -c (default:8) -l (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;

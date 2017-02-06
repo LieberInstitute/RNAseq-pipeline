@@ -4,7 +4,7 @@
 # bash step6-makeRobjects.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:r:ec:lfb:a:h --long experiment:,prefix:,reference:,ercc,cores:,large,fullcov,bashfolder:,annofolder:,help -n 'step6-makeRobjects' -- "$@")
+TEMP=$(getopt -o x:p:r:e:c:l:f:b:a:h --long experiment:,prefix:,reference:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,help -n 'step6-makeRobjects' -- "$@")
 eval set -- "$TEMP"
 
 ERCC="FALSE"
@@ -30,14 +30,26 @@ while true; do
                 "") shift 2 ;;
                 *) hgXX=$2 ; shift 2;;
             esac;;
-        -e|--ercc) ERCC="TRUE"; shift ;;
+        -e|--ercc)
+        case "$2" in
+            "") ERCC="FALSE" ; shift 2;;
+            *) ERCC=$2; shift 2;;
+        esac ;;
         -c|--cores)
             case "$2" in
                 "") CORES="8" ; shift 2;;
                 *) CORES=$2; shift 2;;
             esac ;;
-        -l|--large) LARGE="TRUE"; shift ;;
-        -f|--fullcov) FULLCOV="TRUE"; shift ;;
+        -l|--large)
+            case "$2" in
+                "") LARGE="FALSE" ; shift 2;;
+                *) LARGE=$2; shift 2;;
+            esac ;;
+        -f|--fullcov)
+            case "$2" in
+                "") FULLCOV="FALSE" ; shift 2;;
+                *) FULLCOV=$2; shift 2;;
+            esac ;;
         -b|--bashfolder)
             case "$2" in
                 "") BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"; shift 2;;

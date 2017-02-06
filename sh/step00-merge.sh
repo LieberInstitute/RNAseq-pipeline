@@ -4,7 +4,7 @@
 # bash step00-merge.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:c:lb:h --long experiment:,prefix:,cores:,large,bashfolder:,help -n 'step00-merge' -- "$@")
+TEMP=$(getopt -o x:p:c:l:b:h --long experiment:,prefix:,cores:,large:,bashfolder:,help -n 'step00-merge' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
@@ -28,7 +28,11 @@ while true; do
                 "") CORES="8" ; shift 2;;
                 *) CORES=$2; shift 2;;
             esac ;;
-        -l|--large) LARGE="TRUE"; shift ;;
+        -l|--large)
+            case "$2" in
+                "") LARGE="FALSE" ; shift 2;;
+                *) LARGE=$2; shift 2;;
+            esac ;;
         -b|--bashfolder)
             case "$2" in
                 "") BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"; shift 2;;
