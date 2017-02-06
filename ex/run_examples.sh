@@ -16,6 +16,7 @@ cat > .gitignore <<EOF
 */FastQC
 */HISAT2_out
 */Counts
+merge/example/merge/merged_fastq
 EOF
 
 ## Clean examples
