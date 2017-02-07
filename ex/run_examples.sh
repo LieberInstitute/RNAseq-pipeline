@@ -17,6 +17,7 @@ cat > .gitignore <<EOF
 */HISAT2_out
 */Counts
 merge/merged_fastq
+merge/.send_emails
 */*.txt
 */*.rda
 */*.csv
