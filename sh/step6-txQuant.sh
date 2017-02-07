@@ -9,7 +9,7 @@ eval set -- "$TEMP"
 
 STRANDED="FALSE"
 LARGE="FALSE"
-CORES=4
+CORES=2
 
 
 while true; do
@@ -58,9 +58,9 @@ sname="step6-${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=40G,h_vmem=48G,h_fsize=100G"
+    MEM="mem_free=45G,h_vmem=48G,h_fsize=100G"
 else
-    MEM="mem_free=20G,h_vmem=24G,h_fsize=100G"
+    MEM="mem_free=30G,h_vmem=32G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
