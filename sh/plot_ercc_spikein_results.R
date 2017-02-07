@@ -26,14 +26,15 @@ sampIDs <- manifest[, ncol(manifest)]
 
 ##observed kallisto tpm
 erccTPM = sapply(sampIDs, function(x) {
-  read.table(file.path(opt$maindir, "Ercc", x, "abundance.tsv"), header = TRUE)$tpm
+  read.table(file.path(opt$maindir, "Ercc", x, "abundance.tsv"),
+  header = TRUE)$tpm
 })
-rownames(erccTPM) = read.table(file.path(opt$maindir, "Ercc", sampIDs[1], "abundance.tsv"),
-						header = TRUE)$target_id
+rownames(erccTPM) = read.table(file.path(opt$maindir, "Ercc", sampIDs[1],
+    "abundance.tsv"), header = TRUE)$target_id
 
 #expected concentration
 spikeIns = read.delim("/users/ajaffe/Lieber/Projects/RNAseq/Ribozero_Compare/ercc_actual_conc.txt",
-							as.is=TRUE,row.names=2)
+    as.is=TRUE,row.names=2)
 
 ##match row order
 spikeIns = spikeIns[match(rownames(erccTPM),rownames(spikeIns)),]

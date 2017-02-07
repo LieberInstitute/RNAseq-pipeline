@@ -105,47 +105,49 @@ metrics$bamFile <- file.path(opt$maindir, "HISAT2_out", paste0(metrics$SAMPLE_ID
 
 ### get alignment metrics
 if (opt$paired == TRUE) {
-hisatStats = function(logFile) {
-	y = scan(logFile, what = "character", sep= "\n", 
-		quiet = TRUE, strip=TRUE)
+    hisatStats = function(logFile) {
+    	y = scan(logFile, what = "character", sep= "\n", 
+    		quiet = TRUE, strip=TRUE)
 		
-	if (as.numeric(ss(ss(y[2], "\\(",2), "%")) == 100) {
-	## 100% of reads paired
-	reads = as.numeric(ss(y[1], " "))*2
-	unaligned = as.numeric(ss(y[12], " "))
-	o = c(trimmed="FALSE",
-		numReads = reads,
-		numMapped = reads - unaligned,
-		numUnmapped = unaligned,
-		overallMapRate = as.numeric(ss(y[15], "\\%"))/100,
-		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)
-	} else {
-	## Combo of paired and unpaired (from trimming)
-	reads = as.numeric(ss(y[2], " "))*2 + as.numeric(ss(y[15], " "))
-	unaligned = as.numeric(ss(y[12], " ")) + as.numeric(ss(y[16], " "))
-	o = c(trimmed="TRUE",
-		numReads = reads,
-		numMapped = reads - unaligned,
-		numUnmapped = unaligned,
-		overallMapRate = as.numeric(ss(y[19], "\\%"))/100,
-		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100)	
-	}
-}
+    	if (as.numeric(ss(ss(y[2], "\\(",2), "%")) == 100) {
+        	## 100% of reads paired
+        	reads = as.numeric(ss(y[1], " "))*2
+        	unaligned = as.numeric(ss(y[12], " "))
+        	o = data.frame(trimmed = FALSE,
+        		numReads = reads,
+        		numMapped = reads - unaligned,
+        		numUnmapped = unaligned,
+        		overallMapRate = as.numeric(ss(y[15], "\\%"))/100,
+        		concordMapRate = as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100),
+                stringsAsFactors = FALSE)
+    	} else {
+        	## Combo of paired and unpaired (from trimming)
+        	reads = as.numeric(ss(y[2], " "))*2 + as.numeric(ss(y[15], " "))
+        	unaligned = as.numeric(ss(y[12], " ")) + as.numeric(ss(y[16], " "))
+        	o = data.frame(trimmed = TRUE,
+        		numReads = reads,
+        		numMapped = reads - unaligned,
+        		numUnmapped = unaligned,
+        		overallMapRate = as.numeric(ss(y[19], "\\%"))/100,
+        		concordMapRate = as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100),
+                stringsAsFactors = FALSE)
+    	}
+    }
 } else {
-## all reads unpaired
-hisatStats = function(logFile) {
-	y = scan(logFile, what = "character", sep= "\n", 
-		quiet = TRUE, strip=TRUE)
-	o = c(numReads = as.numeric(ss(y[1], " ")),
-		numMapped = as.numeric(ss(y[1], " ")) - as.numeric(ss(y[3], " ")),
-		numUnmapped = as.numeric(ss(y[3], " ")),
-		overallMapRate = as.numeric(ss(y[6], "\\%"))/100)
-}
+    ## all reads unpaired
+    hisatStats = function(logFile) {
+    	y = scan(logFile, what = "character", sep= "\n", 
+    		quiet = TRUE, strip=TRUE)
+    	o = data.frame(numReads = as.numeric(ss(y[1], " ")),
+    		numMapped = as.numeric(ss(y[1], " ")) - as.numeric(ss(y[3], " ")),
+    		numUnmapped = as.numeric(ss(y[3], " ")),
+    		overallMapRate = as.numeric(ss(y[6], "\\%"))/100)
+    }
 }
 
 logFiles = file.path(opt$maindir, 'HISAT2_out', 'align_summaries', paste0(metrics$SAMPLE_ID, '_summary.txt'))
 names(logFiles)  = metrics$SAMPLE_ID
-hiStats = t(sapply(logFiles, hisatStats))
+hiStats <- do.call(rbind, lapply(logFiles, hisatStats))
 
 metrics = cbind(metrics,hiStats)	
 
