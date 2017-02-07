@@ -33,7 +33,7 @@ bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "paired" --refer
 
 cd ../merge
 touch .send_emails
-bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "merge" --reference "hg38" --stranded --cores 2
+bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "merge" --reference "hg38" --stranded "TRUE" --cores 2
 
 echo "**** Job ends ****"
 date
