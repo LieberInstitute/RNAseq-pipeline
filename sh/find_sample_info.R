@@ -65,7 +65,7 @@ if(!merged) {
 
     ## Split according to the sample names
     file_groups <- split(manifest, manifest[, ncol(manifest)])
-    extensions <- sapply(extensions, '[', 1))
+    extensions <- sapply(extensions, '[', 1)
     
     if(paired) {
         new_manifest <- data.frame(
