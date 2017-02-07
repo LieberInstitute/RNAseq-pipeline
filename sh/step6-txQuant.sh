@@ -9,7 +9,7 @@ eval set -- "$TEMP"
 
 STRANDED="FALSE"
 LARGE="FALSE"
-CORES=8
+CORES=4
 
 
 while true; do
@@ -36,7 +36,7 @@ while true; do
             esac;;
         -c|--cores)
             case "$2" in
-                "") CORES="8" ; shift 2;;
+                "") CORES="4" ; shift 2;;
                 *) CORES=$2; shift 2;;
             esac ;;
         -l|--large)
@@ -45,7 +45,7 @@ while true; do
                 *) LARGE=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step6-txQuant.sh -x -p -s (default:FALSE) -i -c (default:8) -l (default:FALSE)\nLong options:\n  bash step6-txQuant.sh --experiment --prefix --stranded (default:FALSE) --index --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step6-txQuant.sh -x -p -s (default:FALSE) -i -c (default:4) -l (default:FALSE)\nLong options:\n  bash step6-txQuant.sh --experiment --prefix --stranded (default:FALSE) --index --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -58,9 +58,9 @@ sname="step6-${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=30G,h_vmem=32G,h_fsize=100G"
+    MEM="mem_free=40G,h_vmem=48G,h_fsize=100G"
 else
-    MEM="mem_free=15G,h_vmem=16G,h_fsize=100G"
+    MEM="mem_free=20G,h_vmem=24G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
