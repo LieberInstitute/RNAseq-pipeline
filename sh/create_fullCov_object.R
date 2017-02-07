@@ -28,10 +28,10 @@ EXPNAME <- paste0(opt$experiment, "_", opt$prefix)
 
 if(opt$fullcov) {
     ## read in pheno	
-    info <- data.frame(read.table(file.path(opt$maindir, 'SAMPLE_IDs.txt'),
-        as.is = TRUE, header = FALSE))
-    names(info)[1] <- "SAMPLE_ID"
-    info$SAMPLE_ID <- basename(info$SAMPLE_ID)
+    manifest <- read.table(file.path(opt$maindir, 'samples.manifest'),
+        sep = '\t', header = FALSE, stringsAsFactors = FALSE)
+    info <- data.frame('SAMPLE_ID' = manifest[, ncol(manifest)],
+        stringsAsFactors = FALSE)
     N <- length(info$SAMPLE_ID)
 
     ### add bigwig and bam files
