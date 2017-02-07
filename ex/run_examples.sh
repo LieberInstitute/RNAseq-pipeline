@@ -20,6 +20,7 @@ merge/merged_fastq
 */*.txt
 */*.rda
 */*.csv
+*/Salmon_tx
 EOF
 
 ## Clean examples

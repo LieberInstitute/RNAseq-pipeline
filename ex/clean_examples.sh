@@ -7,7 +7,7 @@ date
 mv merge/.samples_unmerged.manifest merge/samples.manifest
 
 rm */.*.sh */.*.R */.paired_end */.send_emails */*.txt */*.rda */*.csv
-rm -fr */Coverage */logs */FastQC */HISAT2_out */Counts merge/merged_fastq
+rm -fr */Coverage */logs */FastQC */HISAT2_out */Counts merge/merged_fastq */Salmon_tx
 
 echo "**** Cleaning job ends ****"
 date
