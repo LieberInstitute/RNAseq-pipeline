@@ -64,6 +64,13 @@ else
     SGEQUEUE=""
 fi
 
+if [ -f ".paired_end" ]
+then
+    PE="TRUE"
+else
+    PE="FALSE"
+fi
+
 # Directories
 mkdir -p ${MAINDIR}/Coverage
 
