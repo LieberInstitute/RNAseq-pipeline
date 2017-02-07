@@ -131,24 +131,31 @@ then
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/hisat2_GRCh38primary
 	CHRSIZES=${ANNO_FOLDER}/hg38.chrom.sizes.gencode
     BED=${ANNO_FOLDER}/RSeQC/hg38.bed
+	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/transcripts/salmon_index_gencode.v25.transcripts
+	STEP6=TRUE
 elif [ $hgXX == "hg19" ]
 then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/hisat2_GRCh37primary
 	CHRSIZES=${ANNO_FOLDER}/hg19.chrom.sizes.gencode
     BED=${ANNO_FOLDER}/RSeQC/hg19.bed
+	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/transcripts/salmon_index_gencode.v25lift37.transcripts
+	STEP6=TRUE
 elif [ $hgXX == "mm10" ]
 then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/hisat2_GRCm38primary
 	CHRSIZES=${ANNO_FOLDER}/mm10.chrom.sizes.gencode
     BED=${ANNO_FOLDER}/RSeQC/mm10.bed
+	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/transcripts/salmon_index_gencode.vM11.transcripts
+	STEP6=TRUE
 elif [ $hgXX == "rn6" ]
 then 
 	GTF=${ANNO_FOLDER}/ensembl/Rnor_6.0/Rattus_norvegicus.Rnor_6.0.86.gtf
 	HISATIDX=${ANNO_FOLDER}/ensembl/Rnor_6.0/hisat2_Rnor6.0toplevel
 	CHRSIZES=${ANNO_FOLDER}/rn6.chrom.sizes.ensembl
     BED=${ANNO_FOLDER}/RSeQC/rn6.bed
+	STEP6=FALSE
 else
 	echo "Error: enter hg19 or hg38, mm10 for mouse, or rn6 for rat as the reference." >&2
     date
@@ -197,4 +204,11 @@ sh ${BASH_FOLDER}/step3-hisat2.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} 
 sh ${BASH_FOLDER}/step4-featureCounts.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --stranded ${STRANDED} --gtf ${GTF} --reference ${hgXX} --cores ${CORES} --large ${LARGE}
 sh ${BASH_FOLDER}/step5-coverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
 sh ${BASH_FOLDER}/step5b-meanCoverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
-sh ${BASH_FOLDER}/step6-makeRobjects.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --ercc ${ERCC} --cores ${CORES} --large ${LARGE} --fullcov ${FULLCOV} --bashfolder ${BASH_FOLDER}
+
+if [ ${STEP6} == "TRUE" ]
+then
+    sh ${BASH_FOLDER}/step6-txQuant.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --stranded ${STRANDED} --index ${SALMONIDX} --cores ${CORES} --large ${LARGE}
+fi
+
+sh ${BASH_FOLDER}/step7-makeRobjects.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --ercc ${ERCC} --cores ${CORES} --large ${LARGE} --fullcov ${FULLCOV} --bashfolder ${BASH_FOLDER}
+
