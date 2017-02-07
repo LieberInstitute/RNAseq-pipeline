@@ -41,7 +41,7 @@ files <- manifest[, 1]
 extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')
 patterns <- paste0(extensions, '$')
 ext_found <- sapply(files, function(file) {
-    extensions[unlist(sapply(patterns, grep, file))[1]]
+    extensions[names(unlist(sapply(patterns, grep, file))) == patterns]
 })
 if(any(is.na(ext_found))) {
     stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")

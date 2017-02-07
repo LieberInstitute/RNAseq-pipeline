@@ -27,13 +27,18 @@ if(testing) {
         outdir = 'merged_fastq',
         cores = 1
     )
+    opt <- list(
+        sampleids = '/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/.samples_unmerged.manifest',
+        outdir = '/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/example/merge/merged_fastq',
+        cores = 1
+    )
 } 
 
 manifest <- read.table(opt$sampleids, sep = '\t', header = FALSE,
     stringsAsFactors = FALSE)
     
 if(testing) {
-    ## For testing
+    ## For testing (with the first test)
     manifest[, ncol(manifest)] <- rep('sample1', nrow(manifest))
 }
 
@@ -45,7 +50,7 @@ files <- manifest[, 1]
 extensions <- c('fastq.gz', 'fq.gz', 'fastq', 'fq')
 patterns <- paste0(extensions, '$')
 ext_found <- sapply(files, function(file) {
-    extensions[unlist(sapply(patterns, grep, file))[1]]
+    extensions[names(unlist(sapply(patterns, grep, file))) == patterns]
 })
 if(any(is.na(ext_found))) {
     stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
