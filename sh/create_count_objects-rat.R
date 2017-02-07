@@ -77,6 +77,8 @@ if (opt$ercc == TRUE ){
 						nc = ncol(erccTPM), nr = nrow(erccTPM), byrow=FALSE)
 	logErr = (log2(erccTPM+1) - log2(mix1conc+1))
 	metrics$ERCCsumLogErr = colSums(logErr)	
+	
+	erccTPM = t(erccTPM)
 	}
 ############################################################
 
@@ -344,11 +346,20 @@ jMap$rightSeq = getSeq(Rnorvegicus, right)
 
 ### save counts
 
-save(metrics, jMap, jCounts, geneCounts, geneMap, exonCounts, exonMap, compress=TRUE,
+tosaveCounts = c("metrics", "geneCounts", "geneMap", "exonCounts", "exonMap", "jCounts", "jMap" )
+tosaveRpkm = c("metrics", "geneRpkm", "geneMap", "exonRpkm", "exonMap", "jRpkm", "jMap")
+
+if (exists("erccTPM")) {
+	tosaveCounts = c("erccTPM", tosaveCounts)
+	tosaveRpkm = c("erccTPM", tosaveRpkm)
+}
+
+save(list=ls()[ls() %in% tosaveCounts], compress=TRUE,
 	file= file.path(opt$maindir, paste0('rawCounts_', EXPNAME, '_n', N, '.rda')))
-save(metrics, jMap, jRpkm, geneRpkm,	geneMap, exonRpkm, exonMap, compress=TRUE,
+save(list=ls()[ls() %in% tosaveRpkm], compress=TRUE,
 	file= file.path(opt$maindir, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
+	
 ## write out for coverage
 write.table(metrics[,c("SAMPLE_ID", "bamFile")], 
 	file.path(opt$maindir, 'samples_with_bams.txt'),
