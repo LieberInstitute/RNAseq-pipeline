@@ -111,14 +111,14 @@ if (opt$paired == TRUE) {
 		
     	if (as.numeric(ss(ss(y[2], "\\(",2), "%")) == 100) {
         	## 100% of reads paired
-        	reads = as.numeric(ss(y[1], " "))*2
+        	reads = as.numeric(ss(y[1], " ")) * 2
         	unaligned = as.numeric(ss(y[12], " "))
         	o = data.frame(trimmed = FALSE,
         		numReads = reads,
         		numMapped = reads - unaligned,
         		numUnmapped = unaligned,
         		overallMapRate = as.numeric(ss(y[15], "\\%"))/100,
-        		concordMapRate = as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100),
+		        concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100,
                 stringsAsFactors = FALSE)
     	} else {
         	## Combo of paired and unpaired (from trimming)
@@ -129,7 +129,7 @@ if (opt$paired == TRUE) {
         		numMapped = reads - unaligned,
         		numUnmapped = unaligned,
         		overallMapRate = as.numeric(ss(y[19], "\\%"))/100,
-        		concordMapRate = as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100),
+        		concordMapRate = (as.numeric(ss(ss(y[4], "\\(",2), "%"))+as.numeric(ss(ss(y[5], "\\(",2), "%")))/100,
                 stringsAsFactors = FALSE)
     	}
     }
