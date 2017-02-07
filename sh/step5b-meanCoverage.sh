@@ -100,7 +100,7 @@ STRANDRULE=\$(cat inferred_strandness_pattern.txt)
 if [ \${STRANDRULE} == "none" ]
 then
     ## Locate normalized BigWig files and concatenate them in a space separated list
-    BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/\${ID}.bw"; done < ${FILELIST} | paste -sd " ")
+    BIGWIGS=\$(cat ${FILELIST} | awk '{print "${MAINDIR}/Coverage/"\$NF".bw"}' | paste -sd " ")
     
     ## Create mean of normalized bigwigs
     wiggletools write ${MAINDIR}/Coverage/mean.wig mean \${BIGWIGS}
@@ -110,7 +110,7 @@ else
     do
         echo "Processing strand \${strand}"
         ## Locate normalized BigWig files and concatenate them in a space separated list
-        BIGWIGS=\$(while read line; do ID=\$(basename \${line}); echo "${MAINDIR}/Coverage/\${ID}.\${strand}.bw"; done < ${FILELIST} | paste -sd " ")
+        BIGWIGS=\$(cat ${FILELIST} | awk -v strand="\${strand}" '{print "${MAINDIR}/Coverage/"\$NF"."strand".bw"}' | paste -sd " ")
     
         ## Create mean of normalized bigwigs
         wiggletools write ${MAINDIR}/Coverage/mean.\${strand}.wig mean \${BIGWIGS}
