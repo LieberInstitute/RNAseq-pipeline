@@ -87,7 +87,7 @@ if(!merged) {
     colnames(new_manifest) <- paste0('V', seq_len(ncol(new_manifest)))
 
     write.table(new_manifest, file = opt$sampleids, row.names = FALSE,
-        col.names = FALSE, quote = FALSE)
+        col.names = FALSE, quote = FALSE, sep = '\t')
 }
 
 ## Reproducibility information
