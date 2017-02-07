@@ -29,7 +29,7 @@ if(testing) {
     )
     opt <- list(
         sampleids = '/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/.samples_unmerged.manifest',
-        outdir = '/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/example/merge/merged_fastq',
+        outdir = '/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/ex/merge/merged_fastq',
         cores = 1
     )
 } 

@@ -174,7 +174,7 @@ ls -lhtR ${ANNO_FOLDER} >> logs/pipeline_information.txt
 ## also add  full paths to samples.manifest if necessary
 echo "**** Finding the sample information ****"
 date
-Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest -o ${PWD}/${EXPERIMENT}/${PREFIX}/merged_fastq
+Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest -o ${PWD}/merged_fastq
 
 
 echo "**** Creating bash scripts for every step ****"
