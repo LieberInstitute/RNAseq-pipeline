@@ -1,3 +1,7 @@
+## In case this step crashes, assume that the data is not stranded
+write.table('none', file = 'inferred_strandness_pattern.txt',
+    row.names = FALSE, col.names = FALSE, quote = FALSE)
+
 ## Infer strandness
 strandfiles <- dir('HISAT2_out/infer_strandness', pattern = 'txt',
     full.names = TRUE)
