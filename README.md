@@ -44,8 +44,8 @@ qsub pipeline_R_setup.sh
   
   Note that you have to use __bash__ and not __sh__, otherwise you'll get an error like.
 
-  1. __experiment__: main identifier, experiment name
-  1. __prefix__: spurious additional identifier, date is a good thing use here
+  1. __experiment__: main identifier, experiment name.
+  1. __prefix__: additional identifier (could be date or reference genome used).
   1. __reference__: supported genomes are `hg19, hg38, mm10, rn6`
   1. __stranded__: `FALSE` by default and will be turned to `TRUE` if specified. Specify if samples are reverse-stranded (forward-stranded not compatible yet).
   1. __ercc__: `FALSE` by default and will be turned to `TRUE` if specified. Specify if ERCC mix 1 was added.
