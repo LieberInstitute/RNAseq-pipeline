@@ -58,9 +58,9 @@ sname="step6-${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=45G,h_vmem=48G,h_fsize=100G"
+    MEM="mem_free=160G,h_vmem=180G,h_fsize=100G"
 else
-    MEM="mem_free=30G,h_vmem=32G,h_fsize=100G"
+    MEM="mem_free=80G,h_vmem=90G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
