@@ -78,7 +78,6 @@ if (opt$ercc == TRUE ){
 	logErr = (log2(erccTPM+1) - log2(mix1conc+1))
 	metrics$ERCCsumLogErr = colSums(logErr)	
 	
-	erccTPM = t(erccTPM)
 	}
 ############################################################
 

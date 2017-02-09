@@ -61,9 +61,32 @@ N <- length(metrics$SAMPLE_ID)
 
 
 ############################################################ 
+###### salmon quantification
+
+sampIDs = as.vector(metrics$SAMPLE_ID)
+
+##observed tpm and number of reads
+txTpm = sapply(sampIDs, function(x) {
+  read.table(file.path(MAINDIR, "Salmon_tx", x, "quant.sf"),header = TRUE)$TPM
+})
+txNumReads = sapply(sampIDs, function(x) {
+  read.table(file.path(MAINDIR, "Salmon_tx", x, "quant.sf"),header = TRUE)$NumReads
+})
+##get names of transcripts
+txNames = read.table(file.path(MAINDIR, "Salmon_tx", sampIDs[1], "quant.sf"),
+						header = TRUE)$Name
+txNames = as.character(txNames)
+txMap = t(ss(txNames, "\\|",c(1,7,2,6,8)))
+txMap = as.data.frame(txMap)
+rm(txNames)
+colnames(txMap) = c("gencodeTx","txLength","gencodeID","Symbol","gene_type")
+
+rownames(txMap) = rownames(txTpm) = rownames(txNumReads) = txMap$gencodeTx
+
+
+############################################################ 
 ###### ercc plots
 if (opt$ercc == TRUE ){
-	sampIDs = as.vector(metrics$SAMPLE_ID)
 
 	##observed kallisto tpm
 	erccTPM = sapply(sampIDs, function(x) {
@@ -95,8 +118,7 @@ if (opt$ercc == TRUE ){
 						nc = ncol(erccTPM), nr = nrow(erccTPM), byrow=FALSE)
 	logErr = (log2(erccTPM+1) - log2(10*mix1conc+1))
 	metrics$ERCCsumLogErr = colSums(logErr)
-	
-	erccTPM = t(erccTPM)	
+
 	}
 ############################################################
 
@@ -292,7 +314,35 @@ widE = matrix(rep(exonMap$Length), nr = nrow(exonCounts),
 exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
 
-#############
+############################
+### add transcript maps ####
+if (opt$organism == "hg19") { 
+	load(file.path(RDIR, "feature_to_Tx_hg19_gencode_v25lift37.rda"))
+} else if (opt$organism == "hg38") { 
+	load(file.path(RDIR, "feature_to_Tx_hg38_gencode_v25.rda")) 
+}
+
+## gene annotation
+geneMap$Class = "InGen"
+geneMap$meanExprs = rowMeans(geneRpkm)
+mmTx = match(geneMap$gencodeID, names(allTx))
+tx = CharacterList(vector("list", nrow(geneMap)))
+tx[!is.na(mmTx)] = allTx[mmTx[!is.na(mmTx)]]
+geneMap$NumTx = elementNROWS(tx)
+geneMap$gencodeTx = sapply(tx,paste0,collapse=";")
+
+## exon annotation
+exonMap$Class = "InGen"
+exonMap$meanExprs = rowMeans(exonRpkm)
+mmTx = match(rownames(exonMap), names(allTx))
+tx = CharacterList(vector("list", nrow(exonMap)))
+tx[!is.na(mmTx)] = allTx[mmTx[!is.na(mmTx)]]
+exonMap$NumTx = elementNROWS(tx)
+exonMap$gencodeTx = sapply(tx,paste0,collapse=";")
+
+
+
+###################
 ##### junctions
 
 ## import theJunctions annotation
@@ -317,8 +367,6 @@ if (opt$paired == TRUE) {
 }
 anno = juncCounts$anno
 seqlevels(anno, force=TRUE) = paste0("chr", c(1:22,"X","Y","M"))
-#anno = anno[seqnames(anno) %in% paste0("chr", c(1:22,"X","Y","M"))]
-#seqlevels(anno) = paste0("chr", c(1:22,"X","Y","M"))
 
 ## add additional annotation
 anno$inGencode = countOverlaps(anno, theJunctions, type="equal") > 0
@@ -336,9 +384,6 @@ anno$gencodeStrand[queryHits(oo)] = as.character(strand(theJunctions)[subjectHit
 anno$gencodeTx = CharacterList(vector("list", length(anno)))
 anno$gencodeTx[queryHits(oo)] = theJunctions$tx[subjectHits(oo)]
 anno$numTx = elementNROWS(anno$gencodeTx)
-
-# clean up
-#anno$Symbol = geneMap$Symbol[match(anno$gencodeGeneID, rownames(geneMap))]
 
 ## junction code
 anno$code = ifelse(anno$inGencode, "InGen", 
@@ -402,43 +447,16 @@ start(right) = end(right) -1
 jMap$leftSeq  = getSeq(Hsapiens, left)
 jMap$rightSeq = getSeq(Hsapiens, right)
 
-############################
-### add transcript maps ####
-if (opt$organism == "hg19") { 
-	load(file.path(RDIR, "feature_to_Tx_hg19_gencode_v25lift37.rda"))
-} else if (opt$organism == "hg38") { 
-	load(file.path(RDIR, "feature_to_Tx_hg38_gencode_v25.rda")) 
-}
-
-## gene annotation
-geneMap$Class = "InGen"
-geneMap$meanExprs = rowMeans(geneRpkm)
-mmTx = match(geneMap$gencodeID, names(allTx))
-tx = CharacterList(vector("list", nrow(geneMap)))
-tx[!is.na(mmTx)] = allTx[mmTx[!is.na(mmTx)]]
-geneMap$NumTx = elementNROWS(tx)
-geneMap$gencodeTx = sapply(tx,paste0,collapse=";")
-
-## exon annotation
-exonMap$Class = "InGen"
-exonMap$meanExprs = rowMeans(exonRpkm)
-mmTx = match(rownames(exonMap), names(allTx))
-tx = CharacterList(vector("list", nrow(exonMap)))
-tx[!is.na(mmTx)] = allTx[mmTx[!is.na(mmTx)]]
-exonMap$NumTx = elementNROWS(tx)
-exonMap$gencodeTx = sapply(tx,paste0,collapse=";")
-
-## junctions
 jMap$meanExprs= rowMeans(jRpkm)
-#jMap$gencodeGeneID=NULL
-#jMap$Symbol=NULL
-#colnames(mcols(jMap))[c(8,11,12)] = c("Class", "gencodeID", "Symbol")
-colnames(mcols(jMap))[10] = "Class"
+colnames(mcols(jMap))[which(colnames(mcols(jMap))=="code")] = "Class"
+
+
 
 ### save counts
 
-tosaveCounts = c("metrics", "geneCounts", "geneMap", "exonCounts", "exonMap", "jCounts", "jMap" )
-tosaveRpkm = c("metrics", "geneRpkm", "geneMap", "exonRpkm", "exonMap", "jRpkm", "jMap")
+tosaveCounts = c("metrics", "geneCounts", "geneMap", "exonCounts", "exonMap", "jCounts", "jMap")
+tosaveRpkm = c("metrics", "geneRpkm", "geneMap", "exonRpkm", "exonMap", "jRpkm", "jMap", 
+					"txTpm", "txNumReads", "txMap" )
 
 if (exists("erccTPM")) {
 	tosaveCounts = c("erccTPM", tosaveCounts)

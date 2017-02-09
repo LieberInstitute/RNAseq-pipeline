@@ -43,9 +43,32 @@ N <- length(metrics$SAMPLE_ID)
 
 
 ############################################################ 
+###### salmon quantification
+
+sampIDs = as.vector(metrics$SAMPLE_ID)
+
+##observed tpm and number of reads
+txTpm = sapply(sampIDs, function(x) {
+  read.table(file.path(MAINDIR, "Salmon_tx", x, "quant.sf"),header = TRUE)$TPM
+})
+txNumReads = sapply(sampIDs, function(x) {
+  read.table(file.path(MAINDIR, "Salmon_tx", x, "quant.sf"),header = TRUE)$NumReads
+})
+##get names of transcripts
+txNames = read.table(file.path(MAINDIR, "Salmon_tx", sampIDs[1], "quant.sf"),
+						header = TRUE)$Name
+txNames = as.character(txNames)
+txMap = t(ss(txNames, "\\|",c(1,7,2,6,8)))
+txMap = as.data.frame(txMap)
+rm(txNames)
+colnames(txMap) = c("gencodeTx","txLength","gencodeID","Symbol","gene_type")
+
+rownames(txMap) = rownames(txTpm) = rownames(txNumReads) = txMap$gencodeTx
+
+
+############################################################ 
 ###### ercc plots
 if (opt$ercc == TRUE ){
-	sampIDs = as.vector(metrics$SAMPLE_ID)
 
 	##observed kallisto tpm
 	erccTPM = sapply(sampIDs, function(x) {
@@ -77,8 +100,7 @@ if (opt$ercc == TRUE ){
 						nc = ncol(erccTPM), nr = nrow(erccTPM), byrow=FALSE)
 	logErr = (log2(erccTPM+1) - log2(10*mix1conc+1))
 	metrics$ERCCsumLogErr = colSums(logErr)
-	
-	erccTPM = t(erccTPM)
+
 	}
 ############################################################
 
@@ -260,7 +282,7 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
 
 
-#############
+###################
 ##### junctions
 
 ## via primary alignments only
@@ -293,9 +315,6 @@ anno$gencodeStrand[queryHits(oo)] = as.character(strand(theJunctions)[subjectHit
 anno$gencodeTx = CharacterList(vector("list", length(anno)))
 anno$gencodeTx[queryHits(oo)] = theJunctions$tx[subjectHits(oo)]
 anno$numTx = elementNROWS(anno$gencodeTx)
-
-# clean up
-#anno$Symbol = geneMap$Symbol[match(anno$gencodeGeneID, rownames(geneMap))]
 
 ## junction code
 anno$code = ifelse(anno$inGencode, "InGen", 
@@ -364,12 +383,14 @@ jMap$rightSeq = getSeq(Hsapiens, right)
 geneMap$meanExprs = rowMeans(geneRpkm)
 exonMap$meanExprs = rowMeans(exonRpkm)
 jMap$meanExprs = rowMeans(jRpkm)
+colnames(mcols(jMap))[which(colnames(mcols(jMap))=="code")] = "Class"
 
 
 ### save counts
 
-tosaveCounts = c("metrics", "geneCounts", "geneMap", "exonCounts", "exonMap", "jCounts", "jMap" )
-tosaveRpkm = c("metrics", "geneRpkm", "geneMap", "exonRpkm", "exonMap", "jRpkm", "jMap")
+tosaveCounts = c("metrics", "geneCounts", "geneMap", "exonCounts", "exonMap", "jCounts", "jMap")
+tosaveRpkm = c("metrics", "geneRpkm", "geneMap", "exonRpkm", "exonMap", "jRpkm", "jMap", 
+					"txTpm", "txNumReads", "txMap" )
 
 if (exists("erccTPM")) {
 	tosaveCounts = c("erccTPM", tosaveCounts)
