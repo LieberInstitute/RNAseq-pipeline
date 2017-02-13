@@ -49,13 +49,13 @@ sampIDs = as.vector(metrics$SAMPLE_ID)
 
 ##observed tpm and number of reads
 txTpm = sapply(sampIDs, function(x) {
-  read.table(file.path(MAINDIR, "Salmon_tx", x, "quant.sf"),header = TRUE)$TPM
+  read.table(file.path(opt$maindir, "Salmon_tx", x, "quant.sf"),header = TRUE)$TPM
 })
 txNumReads = sapply(sampIDs, function(x) {
-  read.table(file.path(MAINDIR, "Salmon_tx", x, "quant.sf"),header = TRUE)$NumReads
+  read.table(file.path(opt$maindir, "Salmon_tx", x, "quant.sf"),header = TRUE)$NumReads
 })
 ##get names of transcripts
-txNames = read.table(file.path(MAINDIR, "Salmon_tx", sampIDs[1], "quant.sf"),
+txNames = read.table(file.path(opt$maindir, "Salmon_tx", sampIDs[1], "quant.sf"),
 						header = TRUE)$Name
 txNames = as.character(txNames)
 txMap = t(ss(txNames, "\\|",c(1,7,2,6,8)))
