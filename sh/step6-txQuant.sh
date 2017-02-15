@@ -58,7 +58,7 @@ sname="step6-${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=160G,h_vmem=180G,h_fsize=100G"
+    MEM="mem_free=100G,h_vmem=120G,h_fsize=100G"
 else
     MEM="mem_free=80G,h_vmem=90G,h_fsize=100G"
 fi
@@ -95,7 +95,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -pe local ${CORES}
+#$ -pe local 1
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
@@ -117,12 +117,12 @@ mkdir -p ${MAINDIR}/Salmon_tx/\${ID}
 
 if [ $PE == "TRUE" ] ; then 
 	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
-	-i $SALMONINDEX -p $CORES -l ISR \
+	-i $SALMONINDEX -p 1 -l ISR \
 	-1 \${FILE1} -2 \${FILE2} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
 else
 	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
-	-i $SALMONINDEX -p $CORES -l U \
+	-i $SALMONINDEX -p 1 -l U \
 	-r \${FILE1} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
 fi
