@@ -122,7 +122,7 @@ if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq ] ; then
 	RP=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_paired.fastq
 	RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fastq
 	
-	${SOFTWARE}/hisat2-2.0.5/hisat2 -p ${CORES} \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \$FP -2 \$RP -U \${FU},\${RU} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
@@ -130,7 +130,7 @@ if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq ] ; then
 elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq ] ; then
 	## Trimmed, single-end
 	echo "HISAT2 alignment run on trimmed single-end reads"
-	${SOFTWARE}/hisat2-2.0.5/hisat2 -p ${CORES} \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -U ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
@@ -138,7 +138,7 @@ elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq ] ; then
 elif [ $PE == "TRUE" ] ; then
 	## Untrimmed, pair-end
 	echo "HISAT2 alignment run on original untrimmed paired-end reads"
-	${SOFTWARE}/hisat2-2.0.5/hisat2 -p ${CORES} \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \${FILE1} -2 \${FILE2} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
@@ -146,7 +146,7 @@ elif [ $PE == "TRUE" ] ; then
 else
 	## Untrimmed, single-end
 	echo "HISAT2 alignment run on original untrimmed single-end reads"
-	${SOFTWARE}/hisat2-2.0.5/hisat2 -p ${CORES} \
+	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -U \${FILE1} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
