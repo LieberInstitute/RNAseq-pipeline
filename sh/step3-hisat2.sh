@@ -102,6 +102,13 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
+echo "**** JHPCE info ****"
+echo "User: ${USER}"
+echo "Job id: ${JOB_ID}"
+echo "Job name: ${JOB_NAME}"
+echo "Hostname: ${HOSTNAME}"
+echo "Task id: ${TASK_ID}"
+
 # Directories
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
 mkdir -p ${MAINDIR}/HISAT2_out/infer_strandness
@@ -194,6 +201,13 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
+
+echo "**** JHPCE info ****"
+echo "User: ${USER}"
+echo "Job id: ${JOB_ID}"
+echo "Job name: ${JOB_NAME}"
+echo "Hostname: ${HOSTNAME}"
+echo "Task id: ${TASK_ID}"
 
 ## Process the infer experiment info
 Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3b_infer_strandness.R

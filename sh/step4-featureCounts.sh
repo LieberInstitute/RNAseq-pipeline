@@ -119,6 +119,13 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 echo "**** Job starts ****"
 date
 
+echo "**** JHPCE info ****"
+echo "User: ${USER}"
+echo "Job id: ${JOB_ID}"
+echo "Job name: ${JOB_NAME}"
+echo "Hostname: ${HOSTNAME}"
+echo "Task id: ${TASK_ID}"
+
 
 # Directories
 mkdir -p ${MAINDIR}/Counts/gene
@@ -188,6 +195,13 @@ cat > ${MAINDIR}/.${sname}_clean.sh <<EOF
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
 date
+
+echo "**** JHPCE info ****"
+echo "User: ${USER}"
+echo "Job id: ${JOB_ID}"
+echo "Job name: ${JOB_NAME}"
+echo "Hostname: ${HOSTNAME}"
+echo "Task id: ${TASK_ID}"
 
 
 ## Delete temporary files after they have been used
