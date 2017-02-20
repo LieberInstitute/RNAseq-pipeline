@@ -119,7 +119,7 @@ if [ \${STRANDRULE} == "none" ]
 then
     STRANDOPTION=""
 else
-    STRANDOPTION="-d \${STRANDRULE}"
+    STRANDOPTION="-d \"\${STRANDRULE}\""
 fi
 
 ## Normalizing bigwigs to 40 million 100 bp reads
