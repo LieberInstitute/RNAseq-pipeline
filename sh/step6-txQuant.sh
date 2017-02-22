@@ -9,7 +9,7 @@ eval set -- "$TEMP"
 
 STRANDED="FALSE"
 LARGE="FALSE"
-CORES=2
+CORES=1
 
 
 while true; do
@@ -36,8 +36,8 @@ while true; do
             esac;;
         -c|--cores)
             case "$2" in
-                "") CORES="4" ; shift 2;;
-                *) CORES=$2; shift 2;;
+                "") CORES="1" ; shift 2;;
+                *) echo "Ignoring --cores $2 and will use 1 core"; CORES="1"; shift 2;;
             esac ;;
         -l|--large)
             case "$2" in
@@ -124,12 +124,12 @@ mkdir -p ${MAINDIR}/Salmon_tx/\${ID}
 
 if [ $PE == "TRUE" ] ; then 
 	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
-	-i $SALMONINDEX -p 1 -l ISR \
+	-i $SALMONINDEX -p ${CORES} -l ISR \
 	-1 \${FILE1} -2 \${FILE2} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
 else
 	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
-	-i $SALMONINDEX -p 1 -l U \
+	-i $SALMONINDEX -p ${CORES} -l U \
 	-r \${FILE1} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
 fi
