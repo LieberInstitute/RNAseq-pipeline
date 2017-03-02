@@ -57,9 +57,9 @@ Warning messages:
 extendedMapSeqlevels: sequence names mapped from NCBI to UCSC for species homo_sapiens
 'select()' returned 1:1 mapping between keys and columns
 [1] "Reproducibility information:"
-[1] "2017-03-02 15:44:37 EST"
+[1] "2017-03-02 17:31:08 EST"
    user  system elapsed 
-703.236   5.388 714.914 
+757.637  51.913 816.906 
 Session info -----------------------------------------------------------------------------------------------------------
  setting  value                                      
  version  R version 3.3.1 Patched (2016-09-30 r71426)
