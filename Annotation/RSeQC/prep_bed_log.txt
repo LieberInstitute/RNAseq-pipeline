@@ -1,0 +1,86 @@
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+Loading required package: colorout
+Loading required package: methods
+Loading required package: GenomicRanges
+Loading required package: stats4
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, cbind, colnames, do.call,
+    duplicated, eval, evalq, Filter, Find, get, grep, grepl, intersect,
+    is.unsorted, lapply, lengths, Map, mapply, match, mget, order,
+    paste, pmax, pmax.int, pmin, pmin.int, Position, rank, rbind,
+    Reduce, rownames, sapply, setdiff, sort, table, tapply, union,
+    unique, unsplit, which, which.max, which.min
+
+Loading required package: S4Vectors
+
+Attaching package: ‘S4Vectors’
+
+The following objects are masked from ‘package:base’:
+
+    colMeans, colSums, expand.grid, rowMeans, rowSums
+
+Loading required package: IRanges
+Loading required package: GenomeInfoDb
+2017-01-23 20:48:23 processing /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ensembl/Rnor_6.0/Rattus_norvegicus.Rnor_6.0.86.gtf
+2017-01-23 20:49:07 exporting rn6.bed
+2017-01-23 20:49:07 processing /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf
+2017-01-23 20:52:33 exporting hg19.bed
+2017-01-23 20:52:33 processing /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf
+2017-01-23 20:55:15 exporting hg38.bed
+2017-01-23 20:55:17 processing /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf
+2017-01-23 20:56:53 exporting mm10.bed
+   user  system elapsed 
+510.418  11.051 523.946 
+2017-01-23 20:56:53
+Session info -----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.1 Patched (2016-09-30 r71426)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-01-23                                 
+
+Packages ---------------------------------------------------------------------------------------------------------------
+ package              * version  date       source                            
+ Biobase                2.34.0   2016-10-20 Bioconductor                      
+ BiocGenerics         * 0.20.0   2016-11-17 Bioconductor                      
+ BiocParallel           1.8.1    2016-12-06 Bioconductor                      
+ Biostrings             2.42.1   2016-12-06 Bioconductor                      
+ bitops                 1.0-6    2013-08-17 CRAN (R 3.3.0)                    
+ colorout             * 1.1-2    2016-07-22 Github (jalvesaq/colorout@6d84420)
+ devtools             * 1.12.0   2016-12-05 CRAN (R 3.3.1)                    
+ digest                 0.6.11   2017-01-03 CRAN (R 3.3.1)                    
+ GenomeInfoDb         * 1.10.2   2017-01-17 Bioconductor                      
+ GenomicAlignments      1.10.0   2016-11-18 Bioconductor                      
+ GenomicRanges        * 1.26.2   2017-01-17 Bioconductor                      
+ IRanges              * 2.8.1    2016-11-18 Bioconductor                      
+ lattice                0.20-34  2016-09-06 CRAN (R 3.3.1)                    
+ Matrix                 1.2-7.1  2016-09-01 CRAN (R 3.3.1)                    
+ memoise                1.0.0    2016-01-29 CRAN (R 3.3.0)                    
+ RCurl                  1.95-4.8 2016-03-01 CRAN (R 3.3.0)                    
+ Rsamtools              1.26.1   2016-11-18 Bioconductor                      
+ rtracklayer          * 1.34.1   2016-11-18 Bioconductor                      
+ S4Vectors            * 0.12.1   2016-12-05 Bioconductor                      
+ SummarizedExperiment   1.4.0    2016-11-18 Bioconductor                      
+ withr                  1.0.2    2016-06-20 CRAN (R 3.3.1)                    
+ XML                    3.98-1.5 2016-11-10 CRAN (R 3.3.1)                    
+ XVector                0.14.0   2016-11-18 Bioconductor                      
+ zlibbioc               1.20.0   2016-10-20 Bioconductor                      
