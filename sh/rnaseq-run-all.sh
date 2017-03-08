@@ -93,6 +93,7 @@ mkdir -p logs
 ## Check dependencies
 echo "**** checking that R packages are present ****"
 date
+Rscript ${BASH_FOLDER}/check_R_packages.R
 if [ -f ".missing_R_packages" ]
 then
     echo "**** Installing R packages since some of them are missing ****"

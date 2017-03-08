@@ -78,3 +78,9 @@ qsub pipeline_R_setup.sh
   Do not save `shared` into `${DIR}/.queue`. Otherwise your jobs won't run.
 
 For reproducibility purposes, the information about the version of the pipeline and contents of `ANNO_FOLDER` will be stored in `logs/pipeline_information.txt`.
+
+
+## First time user
+
+Note that you will need the [jaffelab](https://github.com/LieberInstitute/jaffelab) package installed among other packages. Most of them can be installed automatically by scripts in the pipeline, but `jaffelab` requires you to create the `GITHUB_PAT` environment variable following the instructions by `devtools::install_github()`.
+
