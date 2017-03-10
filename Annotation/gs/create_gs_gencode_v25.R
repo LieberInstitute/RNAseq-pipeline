@@ -29,11 +29,11 @@ seqinfo(gencode_v25) <- si
 gencode_v25_txdb <- makeTxDbFromGRanges(gencode_v25)
 
 ## Create the genomic state object
-gs_gencode_v25 <- makeGenomicState(gencode_v25_txdb,
+gs_gencode_v25_hg38 <- makeGenomicState(gencode_v25_txdb,
         chrs = c(1:22, 'X', 'Y', 'M'))
 
 ## Save the genomic state object
-save(gs_gencode_v25, file = 'gs_gencode_v25.Rdata')
+save(gs_gencode_v25_hg38, file = 'gs_gencode_v25_hg38.Rdata')
 
 ## Reproducibility information
 print('Reproducibility information:')
