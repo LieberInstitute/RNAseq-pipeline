@@ -44,12 +44,14 @@ ext_found <- sapply(files, function(file) {
     extensions[names(unlist(sapply(patterns, grep, file))) == patterns]
 })
 if(any(is.na(ext_found))) {
+    system('touch find_sample_error')
     stop("Unrecognized fastq filename extension. Should be fastq.gz, fq.gz, fastq or fq")
 }
 extensions <- split(ext_found, manifest[, ncol(manifest)])
 
 ## Check that extensions are the same per group
 if(any(sapply(extensions, function(x) { length(unique(x)) }) != 1)) {
+    system('touch find_sample_error')
     stop("For each sample name, the extensions of the fastq files to be merged have to be the same")
 }
 

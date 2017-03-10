@@ -187,6 +187,15 @@ Rscript ${BASH_FOLDER}/find_sample_info.R -s samples.manifest -o ${PWD}/merged_f
 
 echo "**** Creating bash scripts for every step ****"
 
+## Check that find_sample_info.R worked.
+## It can fail in some situations that are checked by the R code.
+if [ -f "find_sample_error" ]
+then
+    echo "Fatal error when running: ${BASH_FOLDER}/find_sample_info.R -s samples.manifest -o ${PWD}/merged_fastq"
+    echo "Once you have fixed the error, manually remove the file find_sample_error before running this script again."
+    exit 1
+fi
+
 ## create and submit all scripts
 if [ -f ".requires_merging" ]
 then
