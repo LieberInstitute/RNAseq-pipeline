@@ -101,15 +101,17 @@ echo "Task id: \${SGE_TASK_ID}"
 
 ## Locate file and ids
 FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+FILEBASE1=\$(basename \${FILE1} | cut -d. -f1)
 if [ $PE == "TRUE" ] 
 then
     FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
+    FILEBASE2=\$(basename \${FILE2} | cut -d. -f1)
 fi
 ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 
 if [ $PE == "TRUE" ] ; then 
-	REPORT1=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_R1_fastqc/summary.txt
-	REPORT2=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_R2_fastqc/summary.txt
+	REPORT1=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${FILEBASE1}_fastqc/summary.txt
+	REPORT2=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${FILEBASE2}_fastqc/summary.txt
 	RESULT1=\$(grep "Adapter Content" \$REPORT1 | cut -c1-4)
 	RESULT2=\$(grep "Adapter Content" \$REPORT2 | cut -c1-4)
 
@@ -142,7 +144,7 @@ if [ $PE == "TRUE" ] ; then
 
 else
 	## reads are single-end
-	REPORT1=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${ID}_fastqc/summary.txt
+	REPORT1=${MAINDIR}/FastQC/Untrimmed/\${ID}/\${FILEBASE1}_fastqc/summary.txt
 	RESULT1=\$(grep "Adapter Content" \$REPORT1 | cut -c1-4)
 
 	if [[ \$RESULT1 == "FAIL" ]] ; then
