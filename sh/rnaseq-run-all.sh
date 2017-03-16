@@ -75,6 +75,20 @@ while true; do
     esac
 done
 
+if [ ${STRANDED} == "FALSE" ]
+then
+    STRANDOPTION=""
+elif [ ${STRANDED} == "forward" ]
+then
+    STRANDOPTION="forward"
+elif [ ${STRANDED} == "reverse" ]
+then
+    STRANDOPTION="reverse"
+else
+    echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+    exit 1
+fi
+
 ## Try running R. If it fails it means that the user is on the login node.
 Rscript -e "Sys.time()" &> .try_load_R
 LOGNODE=$(grep force-quitting .try_load_R | wc -l)

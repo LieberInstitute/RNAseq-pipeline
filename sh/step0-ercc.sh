@@ -4,11 +4,12 @@
 # bash step0-ercc.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:c:l:h --long experiment:,prefix:,cores:,large:,help -n 'step0-ercc' -- "$@")
+TEMP=$(getopt -o x:p:c:l:s:h --long experiment:,prefix:,cores:,large:,stranded:,help -n 'step0-ercc' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
 CORES=8
+STRANDED="FALSE"
 
 while true; do
     case "$1" in
@@ -31,7 +32,12 @@ while true; do
         case "$2" in
             "") LARGE="FALSE" ; shift 2;;
             *) LARGE=$2; shift 2;;
-        esac ;;
+            esac ;;
+        -s|--stranded)
+            case "$2" in
+                "") STRANDED="FALSE" ; shift 2;;
+                *) STRANDED=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\nShort options:\n  bash step0-ercc.sh -x -p -c (default:8) -l (default:FALSE)\nLong options:\n  bash step0-ercc.sh --experiment --prefix --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
@@ -70,6 +76,20 @@ then
     PE="TRUE"
 else
     PE="FALSE"
+fi
+
+if [ ${STRANDED} == "FALSE" ]
+then
+    STRANDOPTION=""
+elif [ ${STRANDED} == "forward" ]
+then
+    STRANDOPTION="--fr-stranded"
+elif [ ${STRANDED} == "reverse" ]
+then
+    STRANDOPTION="--rf-stranded"
+else
+    echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+    exit 1
 fi
 
 
@@ -113,12 +133,12 @@ if [ $PE == "TRUE" ]
 then 
     ${SOFTWARE}/kallisto quant \
     -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
-    -o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --rf-stranded \
+    -o ${MAINDIR}/Ercc/\${ID} -t ${CORES} ${STRANDOPTION} \
     \${FILE1} \${FILE2}
 else
     ${SOFTWARE}/kallisto quant \
     -i /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/ERCC/ERCC92.idx \
-    -o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --single \${FILE1}
+    -o ${MAINDIR}/Ercc/\${ID} -t ${CORES} --single ${STRANDOPTION} \${FILE1}
 fi
 
 echo "**** Job ends ****"

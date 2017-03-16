@@ -80,9 +80,36 @@ fi
 if [ -f ".paired_end" ]
 then
     PE="TRUE"
+    if [ ${STRANDED} == "FALSE" ]
+    then
+        STRANDOPTION="IU"
+    elif [ ${STRANDED} == "forward" ]
+    then
+        STRANDOPTION="ISF"
+    elif [ ${STRANDED} == "reverse" ]
+    then
+        STRANDOPTION="ISR"
+    else
+        echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+        exit 1
+    fi
 else
     PE="FALSE"
+    if [ ${STRANDED} == "FALSE" ]
+    then
+        STRANDOPTION="U"
+    elif [ ${STRANDED} == "forward" ]
+    then
+        STRANDOPTION="SF"
+    elif [ ${STRANDED} == "reverse" ]
+    then
+        STRANDOPTION="SR"
+    else
+        echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+        exit 1
+    fi
 fi
+
 
 
 # Construct shell files
@@ -124,12 +151,12 @@ mkdir -p ${MAINDIR}/Salmon_tx/\${ID}
 
 if [ $PE == "TRUE" ] ; then 
 	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
-	-i $SALMONINDEX -p ${CORES} -l ISR \
+	-i ${SALMONINDEX} -p ${CORES} -l ${STRANDOPTION} \
 	-1 \${FILE1} -2 \${FILE2} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
 else
 	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
-	-i $SALMONINDEX -p ${CORES} -l U \
+	-i ${SALMONINDEX} -p ${CORES} -l ${STRANDOPTION} \
 	-r \${FILE1} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
 fi

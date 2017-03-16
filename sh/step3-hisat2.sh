@@ -4,7 +4,7 @@
 # bash step3-hisat2.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:i:b:c:l:h --long experiment:,prefix:,index:,bed:,cores:,large:,help -n 'step3-hisat2' -- "$@")
+TEMP=$(getopt -o x:p:i:b:c:l:s:h --long experiment:,prefix:,index:,bed:,cores:,large:,stranded:,help -n 'step3-hisat2' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
@@ -42,6 +42,11 @@ while true; do
                 "") LARGE="FALSE" ; shift 2;;
                 *) LARGE=$2; shift 2;;
             esac ;;
+        -s|--stranded)
+            case "$2" in
+                "") STRANDED="FALSE" ; shift 2;;
+                *) STRANDED=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -c (default:8) -l (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
@@ -78,8 +83,34 @@ fi
 if [ -f ".paired_end" ]
 then
     PE="TRUE"
+    if [ ${STRANDED} == "FALSE" ]
+    then
+        STRANDOPTION=""
+    elif [ ${STRANDED} == "forward" ]
+    then
+        STRANDOPTION="--rna-strandess FR"
+    elif [ ${STRANDED} == "reverse" ]
+    then
+        STRANDOPTION="--rna-strandess RF"
+    else
+        echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+        exit 1
+    fi
 else
     PE="FALSE"
+    if [ ${STRANDED} == "FALSE" ]
+    then
+        STRANDOPTION=""
+    elif [ ${STRANDED} == "forward" ]
+    then
+        STRANDOPTION="--rna-strandess F"
+    elif [ ${STRANDED} == "reverse" ]
+    then
+        STRANDOPTION="--rna-strandess R"
+    else
+        echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+        exit 1
+    fi
 fi
 
 # Construct shell files
@@ -131,7 +162,7 @@ if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq ] ; then
 	
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \$FP -2 \$RP -U \${FU},\${RU} \
-	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
+	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 	
 elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq ] ; then
@@ -139,7 +170,7 @@ elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq ] ; then
 	echo "HISAT2 alignment run on trimmed single-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -U ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq \
-	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
+	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 
 elif [ $PE == "TRUE" ] ; then
@@ -147,7 +178,7 @@ elif [ $PE == "TRUE" ] ; then
 	echo "HISAT2 alignment run on original untrimmed paired-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \${FILE1} -2 \${FILE2} \
-	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --rna-strandness RF --phred33 \
+	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 
 else
@@ -155,7 +186,7 @@ else
 	echo "HISAT2 alignment run on original untrimmed single-end reads"
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -U \${FILE1} \
-	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam --phred33 \
+	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 fi
 

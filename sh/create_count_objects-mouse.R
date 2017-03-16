@@ -19,6 +19,7 @@ spec <- matrix(c(
     'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
     'ercc', 'c', 1, 'logical', 'Whether the reads include ERCC or not',
     'cores', 't', 1, 'integer', 'Number of cores to use',
+    'stranded', 's', 1, 'character', "Either 'FALSE', 'forward' or 'reverse'",
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -29,6 +30,8 @@ if (!is.null(opt$help)) {
 	cat(getopt(spec, usage=TRUE))
 	q(status=1)
 }
+
+stopifnot(opt$stranded %in% c('FALSE', 'forward', 'reverse'))
 
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
 EXPNAME = paste0(opt$experiment,"_",opt$prefix)

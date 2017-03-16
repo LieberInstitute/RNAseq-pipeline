@@ -88,6 +88,21 @@ else
     PE="FALSE"
 fi
 
+if [ ${STRANDED} == "FALSE" ]
+then
+    STRANDOPTION="0"
+elif [ ${STRANDED} == "forward" ]
+then
+    STRANDOPTION="1"
+elif [ ${STRANDED} == "reverse" ]
+then
+    STRANDOPTION="2"
+else
+    echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+    exit 1
+fi
+
+
 # File name of featureCounts output
 if [ $hgXX == "mm10" ] ; then 
 	FCFILE="\${ID}_Gencode.M11.${hgXX}"
@@ -143,20 +158,20 @@ BAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam
 if [ $PE == "TRUE" ] ; then 
 	# genes	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-s 2 -p -T ${CORES} -a $GTF \
+	-s ${STRANDOPTION} -p -T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/gene/${FCFILE}_Genes.counts \$BAM
 	# exons	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-s 2 -p -O -f -T ${CORES} -a $GTF \
+	-s ${STRANDOPTION} -p -O -f -T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/exon/${FCFILE}_Exons.counts \$BAM
 else
 	# genes	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-T ${CORES} -a $GTF \
+	-s ${STRANDOPTION} -T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/gene/${FCFILE}_Genes.counts \$BAM
 	# exons	
 	${SOFTWARE}/subread-1.5.0-p3-source/bin/featureCounts \
-	-O -f -T ${CORES} -a $GTF \
+	-s ${STRANDOPTION} -O -f -T ${CORES} -a $GTF \
 	-o ${MAINDIR}/Counts/exon/${FCFILE}_Exons.counts \$BAM
 fi
 	

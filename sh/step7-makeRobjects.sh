@@ -4,7 +4,7 @@
 # bash step7-makeRobjects.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:r:e:c:l:f:b:a:h --long experiment:,prefix:,reference:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,help -n 'step7-makeRobjects' -- "$@")
+TEMP=$(getopt -o x:p:r:e:c:l:f:b:a:s:h --long experiment:,prefix:,reference:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,stranded:help -n 'step7-makeRobjects' -- "$@")
 eval set -- "$TEMP"
 
 ERCC="FALSE"
@@ -55,6 +55,11 @@ while true; do
                 "") BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"; shift 2;;
                 *) BASH_FOLDER=$2; shift 2;;
             esac;;
+        -s|--stranded)
+            case "$2" in
+                "") STRANDED="FALSE" ; shift 2;;
+                *) STRANDED=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\nShort options:\n  bash step7-makeRobjects.sh -x -p -r (hg38, hg19, mm10, rn6) -e (default:FALSE) -c (default:8) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) \nLong options:\n  bash step7-makeRobjects.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --ercc (default:FALSE) --cores (default:8) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh)"; exit 0; shift ;;
             --) shift; break ;;
@@ -127,7 +132,7 @@ echo "Hostname: \${HOSTNAME}"
 echo "Task id: \${SGE_TASK_ID}"
 
 
-Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC} -t ${CORES}
+Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC} -t ${CORES} -s ${STRANDED}
 
 echo "**** Job ends ****"
 date
