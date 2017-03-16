@@ -253,8 +253,13 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 junctionFiles <- file.path(opt$maindir, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
-juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
- 	output = "Count", maxCores=12,strandSpecific=TRUE)
+if (opt$stranded == TRUE) {
+	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
+		output = "Count", maxCores=opt$cores,strandSpecific=TRUE)
+} else {
+	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
+		output = "Count", maxCores=opt$cores,strandSpecific=FALSE)
+}
 	
 ## annotate junctions
 load(file.path(RDIR, "junction_annotation_rn6_ensembl_v86.rda"))
@@ -338,13 +343,12 @@ countsM = DataFrame(mapply(function(x,d) x/d, jCounts , mappedPer10M))
 rownames(jCounts) = rownames(countsM) = names(jMap)
 jRpkm = as.data.frame(countsM)
 
-## sequence of acceptor/donor sites
-left = right = anno
-end(left) = start(left) +1
-start(right) = end(right) -1
-
-jMap$leftSeq  = getSeq(Rnorvegicus, left)
-jMap$rightSeq = getSeq(Rnorvegicus, right)
+# ## sequence of acceptor/donor sites
+# left = right = anno
+# end(left) = start(left) +1
+# start(right) = end(right) -1
+# jMap$leftSeq  = getSeq(Rnorvegicus, left)
+# jMap$rightSeq = getSeq(Rnorvegicus, right)
 
 ### save counts
 

@@ -295,9 +295,13 @@ stopifnot(all(file.exists(junctionFiles))) #  TRUE
 ## annotate junctions
 load(file.path(RDIR, "junction_annotation_mm10_gencode_vM11.rda"))
 
-
-juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
- 	output = "Count", maxCores=12,strandSpecific=TRUE)
+if (opt$stranded == TRUE) {
+	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
+		output = "Count", maxCores=opt$cores,strandSpecific=TRUE)
+} else {
+	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
+		output = "Count", maxCores=opt$cores,strandSpecific=FALSE)
+}
 	
 anno = juncCounts$anno
 seqlevels(anno, force=TRUE) = paste0("chr", c(1:19,"X","Y","M"))
@@ -373,13 +377,12 @@ jRpkm = as.data.frame(countsM)
 rownames(jRpkm) = names(jMap)
 colnames(jRpkm)  = colnames(geneRpkm)
 
-## sequence of acceptor/donor sites
-left = right = jMap
-end(left) = start(left) +1
-start(right) = end(right) -1
-
-jMap$leftSeq  = getSeq(Hsapiens, left)
-jMap$rightSeq = getSeq(Hsapiens, right)
+# ## sequence of acceptor/donor sites
+# left = right = jMap
+# end(left) = start(left) +1
+# start(right) = end(right) -1
+# jMap$leftSeq  = getSeq(Hsapiens, left)
+# jMap$rightSeq = getSeq(Hsapiens, right)
 
 
 ## Finish up
