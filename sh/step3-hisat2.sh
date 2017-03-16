@@ -9,6 +9,7 @@ eval set -- "$TEMP"
 
 LARGE="FALSE"
 CORES=8
+STRANDED="FALSE"
 
 while true; do
     case "$1" in

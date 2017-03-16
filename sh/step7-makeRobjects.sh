@@ -12,6 +12,7 @@ LARGE="FALSE"
 FULLCOV="FALSE"
 CORES=8
 BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"
+STRANDED="FALSE"
 
 while true; do
     case "$1" in

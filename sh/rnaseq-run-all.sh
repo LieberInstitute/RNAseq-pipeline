@@ -219,12 +219,12 @@ fi
 
 if [ ${ERCC} == "TRUE" ]
 then
-    sh ${BASH_FOLDER}/step0-ercc.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --cores ${CORES} --large ${LARGE}
+    sh ${BASH_FOLDER}/step0-ercc.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --cores ${CORES} --large ${LARGE} --stranded ${STRANDED}
 fi
 
 sh ${BASH_FOLDER}/step1-fastqc.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --large ${LARGE}
 sh ${BASH_FOLDER}/step2-trim.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --cores ${CORES} --large ${LARGE}
-sh ${BASH_FOLDER}/step3-hisat2.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --index ${HISATIDX} --bed ${BED} --cores ${CORES} --large ${LARGE}
+sh ${BASH_FOLDER}/step3-hisat2.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --index ${HISATIDX} --bed ${BED} --cores ${CORES} --large ${LARGE} --stranded ${STRANDED}
 sh ${BASH_FOLDER}/step4-featureCounts.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --stranded ${STRANDED} --gtf ${GTF} --reference ${hgXX} --cores ${CORES} --large ${LARGE}
 sh ${BASH_FOLDER}/step5-coverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
 sh ${BASH_FOLDER}/step5b-meanCoverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
@@ -234,5 +234,5 @@ then
     sh ${BASH_FOLDER}/step6-txQuant.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --stranded ${STRANDED} --index ${SALMONIDX} --cores ${CORES} --large ${LARGE}
 fi
 
-sh ${BASH_FOLDER}/step7-makeRobjects.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --ercc ${ERCC} --cores ${CORES} --large ${LARGE} --fullcov ${FULLCOV} --bashfolder ${BASH_FOLDER}
+sh ${BASH_FOLDER}/step7-makeRobjects.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --ercc ${ERCC} --cores ${CORES} --large ${LARGE} --fullcov ${FULLCOV} --bashfolder ${BASH_FOLDER} --stranded ${STRANDED}
 
