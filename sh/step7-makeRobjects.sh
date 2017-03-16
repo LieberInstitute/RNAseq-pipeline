@@ -100,6 +100,20 @@ else
     PE="FALSE"
 fi
 
+if [ ${STRANDED} == "FALSE" ]
+then
+    STRANDOPTION=""
+elif [ ${STRANDED} == "forward" ]
+then
+    STRANDOPTION="forward"
+elif [ ${STRANDED} == "reverse" ]
+then
+    STRANDOPTION="reverse"
+else
+    echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
+    exit 1
+fi
+
 if [ $hgXX == "mm10" ]; then SPEC="mouse";
 elif [ $hgXX == "rn6" ]; then SPEC="rat";
 else SPEC="human";
