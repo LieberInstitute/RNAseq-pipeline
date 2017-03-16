@@ -21,7 +21,7 @@ spec <- matrix(c(
     'paired', 'l', 1, 'logical', 'Whether the reads are paired-end or not',
     'ercc', 'c', 1, 'logical', 'Whether the reads include ERCC or not',
     'cores', 't', 1, 'integer', 'Number of cores to use',
-    'stranded', 's', 1, 'character', "Either 'FALSE', 'forward' or 'reverse'",
+    'stranded', 's', 1, 'character', "Strandedness of the data: Either 'FALSE', 'forward' or 'reverse'",
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
