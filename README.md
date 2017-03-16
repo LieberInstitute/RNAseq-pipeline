@@ -47,7 +47,7 @@ qsub pipeline_R_setup.sh
   1. __experiment__: main identifier, experiment name.
   1. __prefix__: additional identifier (could be date or reference genome used).
   1. __reference__: supported genomes are `hg19, hg38, mm10, rn6`
-  1. __stranded__: `FALSE` by default and will be turned to `TRUE` if specified. Specify if samples are reverse-stranded (forward-stranded not compatible yet).
+  1. __stranded__: `FALSE` by default. The other valid options are `forward` and `reverse`.
   1. __ercc__: `FALSE` by default and will be turned to `TRUE` if specified. Specify if ERCC mix 1 was added.
   1. __cores__: defaults to 8. Specifies how many cores to use per job for the jobs that are parallelized.
   1. __large__: `TRUE` if you want to use double the default memory settings. Useful for large projects (many samples and/or many reads). `FALSE` by default and doesn't need to be specified.
