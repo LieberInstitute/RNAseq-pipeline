@@ -4,7 +4,7 @@
 # bash step7-makeRobjects.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:r:e:c:l:f:b:a:s:h --long experiment:,prefix:,reference:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,stranded:help -n 'step7-makeRobjects' -- "$@")
+TEMP=$(getopt -o x:p:r:e:c:l:f:b:a:s:h --long experiment:,prefix:,reference:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,stranded:,help -n 'step7-makeRobjects' -- "$@")
 eval set -- "$TEMP"
 
 ERCC="FALSE"
