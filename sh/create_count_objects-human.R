@@ -39,7 +39,7 @@ if(FALSE){
         'experiment' = 'alzheimer',
         'prefix' = 'gsk_phaseII',
         'paired' = TRUE,
-		'stranded' = 'reverse'
+		'stranded' = 'reverse',
         'ercc' = FALSE,
 		'cores' = 1
     )
