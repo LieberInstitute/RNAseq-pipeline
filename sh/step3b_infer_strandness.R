@@ -1,12 +1,31 @@
+## Required libraries
+library('getopt')
+library('devtools')
+
+## Specify parameters
+spec <- matrix(c(
+	'outdir', 'o', 2, 'character', 'Path where the output of infer_experiment.py was saved. Defaults to HISAT2_out/infer_strandess',
+	'help' , 'h', 0, 'logical', 'Display help'
+), byrow=TRUE, ncol=5)
+opt <- getopt(spec)
+
+## if help was asked for print a friendly message
+## and exit with a non-zero error code
+if (!is.null(opt$help)) {
+	cat(getopt(spec, usage=TRUE))
+	q(status=1)
+}
+
+if(is.null(opt$outdir)) opt <- c(opt, list('outdir' = 'HISAT2_out/infer_strandness'))
+
+
 ## In case this step crashes, assume that the data is not stranded
 write.table('none', file = 'inferred_strandness_pattern.txt',
     row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 ## Infer strandness
-strandfiles <- dir('HISAT2_out/infer_strandness', pattern = 'txt',
-    full.names = TRUE)
-names(strandfiles) <- gsub('.txt', '', dir('HISAT2_out/infer_strandness',
-    pattern = 'txt'))
+strandfiles <- dir(opt$outdir, pattern = 'txt', full.names = TRUE)
+names(strandfiles) <- gsub('.txt', '', dir(opt$outdir, pattern = 'txt'))
 
 inferred_strandness <- do.call(rbind, lapply(strandfiles, function(sf) {
     message(paste(Sys.time(), 'processing', sf))
@@ -44,11 +63,11 @@ inferred_strandness <- do.call(rbind, lapply(strandfiles, function(sf) {
 lapply(inferred_strandness[, -grep('frac', colnames(inferred_strandness))], table, useNA = 'ifany')
 summary(inferred_strandness[, grep('frac', colnames(inferred_strandness))])
 
-save(inferred_strandness ,
-    file = 'HISAT2_out/infer_strandness/inferred_strandness.Rdata')
+save(inferred_strandness , 
+    file = file.path(opt$outdir, 'inferred_strandness.Rdata'))
 
 ## Explore visually the results
-pdf('HISAT2_out/infer_strandness/inferred_strandness.pdf')
+pdf(file.path(opt$outdir, 'inferred_strandness.pdf'))
 lims <- round(with(inferred_strandness, range(c(infer_frac_pattern1,
     infer_frac_pattern2), na.rm = TRUE)) + c(-0.05, 0.05), 1)
 lims[1] <- max(0, lims[1])
@@ -84,4 +103,4 @@ write.table(pattern, file = 'inferred_strandness_pattern.txt',
 proc.time()
 message(Sys.time())
 options(width = 120)
-devtools::session_info()
+session_info()
