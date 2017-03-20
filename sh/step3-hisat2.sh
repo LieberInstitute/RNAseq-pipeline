@@ -242,7 +242,7 @@ echo "Hostname: \${HOSTNAME}"
 echo "Task id: \${SGE_TASK_ID}"
 
 ## Process the infer experiment info
-Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3b_infer_strandness.R
+Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3b_infer_strandness.R -o "HISAT2_out/infer_strandess"
 
 echo "**** Job ends ****"
 date
