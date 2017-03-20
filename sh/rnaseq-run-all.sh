@@ -148,6 +148,7 @@ then
     BED=${ANNO_FOLDER}/RSeQC/hg38.bed
 	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/transcripts/salmon_index_gencode.v25.transcripts
 	STEP6=TRUE
+	STEP8=TRUE
 elif [ $hgXX == "hg19" ]
 then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/gencode.v25lift37.annotation.gtf
@@ -156,6 +157,7 @@ then
     BED=${ANNO_FOLDER}/RSeQC/hg19.bed
 	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/transcripts/salmon_index_gencode.v25lift37.transcripts
 	STEP6=TRUE
+	STEP8=FALSE
 elif [ $hgXX == "mm10" ]
 then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf
@@ -164,6 +166,7 @@ then
     BED=${ANNO_FOLDER}/RSeQC/mm10.bed
 	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/transcripts/salmon_index_gencode.vM11.transcripts
 	STEP6=TRUE
+	STEP8=FALSE
 elif [ $hgXX == "rn6" ]
 then 
 	GTF=${ANNO_FOLDER}/ensembl/Rnor_6.0/Rattus_norvegicus.Rnor_6.0.86.gtf
@@ -171,6 +174,7 @@ then
 	CHRSIZES=${ANNO_FOLDER}/rn6.chrom.sizes.ensembl
     BED=${ANNO_FOLDER}/RSeQC/rn6.bed
 	STEP6=FALSE
+	STEP8=FALSE
 else
 	echo "Error: enter hg19 or hg38, mm10 for mouse, or rn6 for rat as the reference." >&2
     date
@@ -235,4 +239,11 @@ then
 fi
 
 sh ${BASH_FOLDER}/step7-makeRobjects.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --ercc ${ERCC} --cores ${CORES} --large ${LARGE} --fullcov ${FULLCOV} --bashfolder ${BASH_FOLDER} --stranded ${STRANDED}
+
+if [ ${STEP8} == "TRUE" ]
+then
+    sh ${BASH_FOLDER}/step8-callVariants.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --cores ${CORES} --large ${LARGE}
+fi
+
+
 
