@@ -476,13 +476,6 @@ save(list=ls()[ls() %in% tosaveRpkm], compress=TRUE,
 	file= file.path(opt$maindir, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
 
-
-## write out for coverage
-write.table(metrics[,c("SAMPLE_ID", "bamFile")], 
-	file.path(opt$maindir, 'samples_with_bams.txt'),
-	row.names=FALSE, quote=FALSE, sep="\t")
-
-
 ## Reproducibility information
 print('Reproducibility information:')
 Sys.time()
