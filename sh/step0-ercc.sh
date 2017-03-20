@@ -39,7 +39,7 @@ while true; do
                 *) STRANDED=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step0-ercc.sh -x -p -c (default:8) -l (default:FALSE)\nLong options:\n  bash step0-ercc.sh --experiment --prefix --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step0-ercc.sh -x -p -c (default:8) -l (default:FALSE) -s (default:FALSE)\nLong options:\n  bash step0-ercc.sh --experiment --prefix --cores (default:8) --large (default:FALSE) --stranded (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
