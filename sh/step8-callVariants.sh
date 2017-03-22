@@ -53,7 +53,7 @@ if [[ $LARGE == "TRUE" ]]
 then
     MEM="mem_free=10G,h_vmem=12,h_fsize=100G"
 else
-    MEM="mem_free=5,h_vmem=8,h_fsize=100G"
+    MEM="mem_free=5G,h_vmem=8G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
@@ -119,8 +119,6 @@ SNPTMP=${MAINDIR}/Genotypes/\${ID}_calledVariants.tmp
 SNPOUT=${MAINDIR}/Genotypes/\${ID}_calledVariants.txt
 module load samtools
 samtools mpileup -l \${SNPBED} -AB -q0 -Q0 -d1000000 -t DP -f \${GENOME} \${BAM} | /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Genotyping/pileVar.pl > \${SNPOUT}
-rm \${SNPTMP}
-
 
 echo "**** Job ends ****"
 date
@@ -129,8 +127,3 @@ EOF
 call="qsub .${sname}.sh"
 echo $call
 $call
-
-
-
-
-
