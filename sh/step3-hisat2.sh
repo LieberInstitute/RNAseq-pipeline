@@ -89,10 +89,10 @@ then
         STRANDOPTION=""
     elif [ ${STRANDED} == "forward" ]
     then
-        STRANDOPTION="--rna-strandess FR"
+        STRANDOPTION="--rna-strandness FR"
     elif [ ${STRANDED} == "reverse" ]
     then
-        STRANDOPTION="--rna-strandess RF"
+        STRANDOPTION="--rna-strandness RF"
     else
         echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
         exit 1
@@ -104,10 +104,10 @@ else
         STRANDOPTION=""
     elif [ ${STRANDED} == "forward" ]
     then
-        STRANDOPTION="--rna-strandess F"
+        STRANDOPTION="--rna-strandness F"
     elif [ ${STRANDED} == "reverse" ]
     then
-        STRANDOPTION="--rna-strandess R"
+        STRANDOPTION="--rna-strandness R"
     else
         echo "The option --stranded has to either be 'FALSE', 'forward' or 'reverse'."
         exit 1
