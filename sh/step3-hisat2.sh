@@ -48,6 +48,7 @@ while true; do
             case "$2" in
                 "") STRANDED="FALSE" ; shift 2;;
                 *) STRANDED=$2; shift 2;;
+            esac ;;
         -u|--unaligned)
             case "$2" in
                 "") UNALIGNED="FALSE" ; shift 2;;
