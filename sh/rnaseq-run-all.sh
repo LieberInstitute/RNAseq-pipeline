@@ -69,6 +69,11 @@ while true; do
                 "") ANNO_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"; shift 2;;
                 *) ANNO_FOLDER=$2; shift 2;;
             esac;;
+        -u|--unaligned)
+            case "$2" in
+                "") UNALIGNED="FALSE" ; shift 2;;
+                *) UNALIGNED=$2; shift 2;;
+            esac ;;
         -h|--help)
             echo -e "Usage:\n  qrsh\nShort options:\n  bash rnaseq-run-all.sh -x -p -r (hg38, hg19, mm10, rn6) -s (default:FALSE) -e (default:FALSE) -c (default:8) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) -a (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation) -u (default:FALSE)\nLong options:\n  bash rnaseq-run-all.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --stranded (default:FALSE) --ercc (default:FALSE) --cores (default:8) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) --annofolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation) --unaligned (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
