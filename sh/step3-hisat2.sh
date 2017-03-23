@@ -4,12 +4,13 @@
 # bash step3-hisat2.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:i:b:c:l:s:h --long experiment:,prefix:,index:,bed:,cores:,large:,stranded:,help -n 'step3-hisat2' -- "$@")
+TEMP=$(getopt -o x:p:i:b:c:l:s:u:h --long experiment:,prefix:,index:,bed:,cores:,large:,stranded:,unaligned:,help -n 'step3-hisat2' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
 CORES=8
 STRANDED="FALSE"
+UNALIGNED="FALSE"
 
 while true; do
     case "$1" in
@@ -47,9 +48,13 @@ while true; do
             case "$2" in
                 "") STRANDED="FALSE" ; shift 2;;
                 *) STRANDED=$2; shift 2;;
+        -u|--unaligned)
+            case "$2" in
+                "") UNALIGNED="FALSE" ; shift 2;;
+                *) UNALIGNED=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -c (default:8) -l (default:FALSE) -s (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --cores (default:8) --large (default:FALSE) --stranded (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -c (default:8) -l (default:FALSE) -s (default:FALSE) -u (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --cores (default:8) --large (default:FALSE) --stranded (default:FALSE) --unaligned (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -114,6 +119,19 @@ else
     fi
 fi
 
+if [ ${UNALIGNED} == "FALSE" ]
+then
+    UNALIGNEDOPT=""
+elif [ ${UNALIGNED} == "TRUE" ]
+then
+    mkdir -p ${MAINDIR}/HISAT2_out/unaligned
+    UNALIGNEDOPT="--un-conc ${MAINDIR}/HISAT2_out/unaligned/\${ID}.fastq"
+else
+    echo "The option --unaligned has to either be 'FALSE' or 'TRUE'"
+    exit 1
+fi
+    
+
 # Construct shell files
 FILELIST=${MAINDIR}/samples.manifest
 NUM=$(cat $FILELIST | awk '{print $NF}' | uniq | wc -l)
@@ -164,6 +182,7 @@ if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq ] ; then
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \$FP -2 \$RP -U \${FU},\${RU} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
+    ${UNALIGNEDOPT}
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 	
 elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq ] ; then
@@ -180,6 +199,7 @@ elif [ $PE == "TRUE" ] ; then
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \${FILE1} -2 \${FILE2} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
+    ${UNALIGNEDOPT}
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 
 else

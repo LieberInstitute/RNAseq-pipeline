@@ -4,7 +4,7 @@
 # bash rnaseq-run-all.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:r:s:e:c:l:f:b:a:h --long experiment:,prefix:,reference:,stranded:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,help -n 'rnaseq-run-all' -- "$@")
+TEMP=$(getopt -o x:p:r:s:e:c:l:f:b:a:u:h --long experiment:,prefix:,reference:,stranded:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,unaligned:,help -n 'rnaseq-run-all' -- "$@")
 eval set -- "$TEMP"
 
 STRANDED="FALSE"
@@ -14,6 +14,7 @@ FULLCOV="FALSE"
 CORES=8
 BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"
 ANNO_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"
+UNALIGNED="FALSE"
 
 
 while true; do
@@ -69,7 +70,7 @@ while true; do
                 *) ANNO_FOLDER=$2; shift 2;;
             esac;;
         -h|--help)
-            echo -e "Usage:\n  qrsh\nShort options:\n  bash rnaseq-run-all.sh -x -p -r (hg38, hg19, mm10, rn6) -s (default:FALSE) -e (default:FALSE) -c (default:8) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) -a (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation)\nLong options:\n  bash rnaseq-run-all.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --stranded (default:FALSE) --ercc (default:FALSE) --cores (default:8) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) --annofolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation)"; exit 0; shift ;;
+            echo -e "Usage:\n  qrsh\nShort options:\n  bash rnaseq-run-all.sh -x -p -r (hg38, hg19, mm10, rn6) -s (default:FALSE) -e (default:FALSE) -c (default:8) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) -a (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation) -u (default:FALSE)\nLong options:\n  bash rnaseq-run-all.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --stranded (default:FALSE) --ercc (default:FALSE) --cores (default:8) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) --annofolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation) --unaligned (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -228,7 +229,7 @@ fi
 
 sh ${BASH_FOLDER}/step1-fastqc.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --large ${LARGE}
 sh ${BASH_FOLDER}/step2-trim.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --cores ${CORES} --large ${LARGE}
-sh ${BASH_FOLDER}/step3-hisat2.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --index ${HISATIDX} --bed ${BED} --cores ${CORES} --large ${LARGE} --stranded ${STRANDED}
+sh ${BASH_FOLDER}/step3-hisat2.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --index ${HISATIDX} --bed ${BED} --cores ${CORES} --large ${LARGE} --stranded ${STRANDED} --unaliged ${UNALIGNED}
 sh ${BASH_FOLDER}/step4-featureCounts.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --stranded ${STRANDED} --gtf ${GTF} --reference ${hgXX} --cores ${CORES} --large ${LARGE}
 sh ${BASH_FOLDER}/step5-coverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
 sh ${BASH_FOLDER}/step5b-meanCoverage.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
