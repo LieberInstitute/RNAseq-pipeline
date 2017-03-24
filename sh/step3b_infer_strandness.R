@@ -5,6 +5,7 @@ library('devtools')
 ## Specify parameters
 spec <- matrix(c(
 	'outdir', 'o', 2, 'character', 'Path where the output of infer_experiment.py was saved. Defaults to HISAT2_out/infer_strandess',
+    'pattern', 'p', 2, 'character', 'Name of the pattern file. Defaults to inferred_strandness_pattern.txt',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -17,11 +18,12 @@ if (!is.null(opt$help)) {
 }
 
 if(is.null(opt$outdir)) opt <- c(opt, list('outdir' = 'HISAT2_out/infer_strandness'))
+if(is.null(opt$outdir)) opt <- c(opt, list('pattern' = 'inferred_strandness_pattern.txt'))
 
 
 ## In case this step crashes, assume that the data is not stranded
-write.table('none', file = 'inferred_strandness_pattern.txt',
-    row.names = FALSE, col.names = FALSE, quote = FALSE)
+write.table('none', file = opt$pattern, row.names = FALSE,
+    col.names = FALSE, quote = FALSE)
 
 ## Infer strandness
 strandfiles <- dir(opt$outdir, pattern = 'txt', full.names = TRUE)
@@ -96,8 +98,8 @@ pattern <- ifelse(observed < 0 + cutoff,
         names(sort(table(inferred_strandness$infer_pattern1)))[1], 'none'))
 message(paste(Sys.time(), 'will use the following pattern for bam2wig:',
     pattern))
-write.table(pattern, file = 'inferred_strandness_pattern.txt',
-    row.names = FALSE, col.names = FALSE, quote = FALSE)
+write.table(pattern, file = opt$pattern, row.names = FALSE, col.names = FALSE,
+    quote = FALSE)
 
 ## Reproducibility info
 proc.time()

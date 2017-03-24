@@ -183,7 +183,7 @@ if [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed_forward_paired.fastq ] ; then
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \$FP -2 \$RP -U \${FU},\${RU} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
-    ${UNALIGNEDOPT}
+    ${UNALIGNEDOPT} \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 	
 elif  [ -f ${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq ] ; then
@@ -200,7 +200,7 @@ elif [ $PE == "TRUE" ] ; then
 	${SOFTWARE}/hisat2-2.0.4/hisat2 -p ${CORES} \
 	-x $HISATIDX -1 \${FILE1} -2 \${FILE2} \
 	-S ${MAINDIR}/HISAT2_out/\${ID}_hisat_out.sam ${STRANDOPTION} --phred33 \
-    ${UNALIGNEDOPT}
+    ${UNALIGNEDOPT} \
 	2>${MAINDIR}/HISAT2_out/align_summaries/\${ID}_summary.txt
 
 else
@@ -263,7 +263,7 @@ echo "Hostname: \${HOSTNAME}"
 echo "Task id: \${SGE_TASK_ID}"
 
 ## Process the infer experiment info
-Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3b_infer_strandness.R -o "HISAT2_out/infer_strandess"
+Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3b_infer_strandness.R -o "HISAT2_out/infer_strandess" -p "inferred_strandness_pattern.txt"
 
 echo "**** Job ends ****"
 date
