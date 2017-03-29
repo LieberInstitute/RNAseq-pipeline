@@ -253,7 +253,7 @@ exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 junctionFiles <- file.path(opt$maindir, 'Counts', 'junction', paste0(metrics$SAMPLE_ID, '_junctions_primaryOnly_regtools.count'))
 stopifnot(all(file.exists(junctionFiles))) #  TRUE
 
-if (opt$stranded == TRUE) {
+if (opt$stranded %in% c('forward', 'reverse')) {
 	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
 		output = "Count", maxCores=opt$cores,strandSpecific=TRUE)
 } else {

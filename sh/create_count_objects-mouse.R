@@ -295,7 +295,7 @@ stopifnot(all(file.exists(junctionFiles))) #  TRUE
 ## annotate junctions
 load(file.path(RDIR, "junction_annotation_mm10_gencode_vM11.rda"))
 
-if (opt$stranded == TRUE) {
+if (opt$stranded %in% c('forward', 'reverse')) {
 	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
 		output = "Count", maxCores=opt$cores,strandSpecific=TRUE)
 } else {
