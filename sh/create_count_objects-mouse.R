@@ -31,6 +31,20 @@ if (!is.null(opt$help)) {
 	q(status=1)
 }
 
+
+## For testing
+if(FALSE){
+    opt <- list('organism' = 'mm10',
+        'maindir' = '/dcl01/lieber/ajaffe/Keri/SoLo_032217',
+        'experiment' = 'SoLo_032217',
+        'prefix' = 'MiSeq',
+        'paired' = FALSE,
+		'stranded' = FALSE,
+        'ercc' = FALSE,
+		'cores' = 1
+    )
+}
+
 stopifnot(opt$stranded %in% c('FALSE', 'forward', 'reverse'))
 
 RDIR="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/junction_txdb"
@@ -203,8 +217,8 @@ geneMap$ensemblID = ss(geneMap$Geneid, "\\.")
 geneMap$Geneid = NULL
 geneMap$gene_type = gencodeGENES[geneMap$gencodeID,"gene_type"]
 
-geneMap$Symbol = sym$mgi_symbol[match(rownames(geneMap), sym$ensembl_gene_id)]
-geneMap$EntrezID = sym$entrezgene[match(rownames(geneMap), sym$ensembl_gene_id)]
+geneMap$Symbol = sym$mgi_symbol[geneMap$ensemblID, sym$ensembl_gene_id)]
+geneMap$EntrezID = sym$entrezgene[geneMap$ensemblID, sym$ensembl_gene_id)]
 	
 ## counts
 geneCountList = mclapply(geneFn, function(x) {
@@ -252,7 +266,7 @@ rownames(exonMap) = paste0("e", rownames(exonMap))
 exonMap$Geneid = NULL
 exonMap$gene_type = gencodeGENES[exonMap$gencodeID,"gene_type"]
 
-exonMap$Symbol = sym$hgnc_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
+exonMap$Symbol = sym$mgi_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 
 ## counts
