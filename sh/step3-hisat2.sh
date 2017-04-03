@@ -164,6 +164,11 @@ echo "Task id: \${SGE_TASK_ID}"
 mkdir -p ${MAINDIR}/HISAT2_out/align_summaries
 mkdir -p ${MAINDIR}/HISAT2_out/infer_strandness
 
+if [ ${UNALIGNED} == "TRUE" ]
+then
+    mkdir -p ${MAINDIR}/HISAT2_out/unaligned
+fi
+
 ## Locate file and ids
 FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
 if [ $PE == "TRUE" ] 
