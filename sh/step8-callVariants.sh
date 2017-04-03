@@ -91,7 +91,9 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -pe local 1
+## See thread with Mark about -pe local at
+## https://lists.johnshopkins.edu/sympa/arc/bithelp
+# -pe local 1
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
