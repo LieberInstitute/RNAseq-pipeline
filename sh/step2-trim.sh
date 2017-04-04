@@ -46,9 +46,9 @@ sname="step2-${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=20G,h_vmem=30G,h_fsize=100G"
+    MEM="mem_free=30G,h_vmem=35G,h_fsize=100G"
 else
-    MEM="mem_free=10G,h_vmem=15G,h_fsize=100G"
+    MEM="mem_free=20G,h_vmem=25G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
@@ -86,7 +86,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
-#$ -tc 8
+#$ -tc 5
 #$ -hold_jid pipeline_setup,step1-fastqc-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
@@ -128,7 +128,7 @@ if [ $PE == "TRUE" ] ; then
 		RU=${MAINDIR}/trimmed_fq/\${ID}_trimmed_reverse_unpaired.fastq
 		
 		## trim adapters
-		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar PE -threads ${CORES} -phred33 \
+		java -Xmx512M -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar PE -threads ${CORES} -phred33 \
 		\${FILE1} \${FILE2} \$FP \$FU \$RP \$RU \
 		ILLUMINACLIP:${SOFTWARE}/Trimmomatic-0.36/adapters/TruSeq2-PE.fa:2:30:10:1 \
 		LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:75
@@ -156,7 +156,7 @@ else
 		OUT=${MAINDIR}/trimmed_fq/\${ID}_trimmed.fastq
 		
 		## trim adapters
-		java -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar SE -threads ${CORES} -phred33 \
+		java -Xmx512M -jar ${SOFTWARE}/Trimmomatic-0.36/trimmomatic-0.36.jar SE -threads ${CORES} -phred33 \
 		\${FILE1} \$OUT \
 		ILLUMINACLIP:${SOFTWARE}/Trimmomatic-0.36/adapters/TruSeq2-SE.fa:2:30:10:1 \
 		LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
