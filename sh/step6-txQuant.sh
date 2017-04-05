@@ -37,7 +37,7 @@ while true; do
         -c|--cores)
             case "$2" in
                 "") CORES="1" ; shift 2;;
-                *) echo "Ignoring --cores $2 and will use 1 core"; CORES="1"; shift 2;;
+                *) echo "Ignoring --cores $2 and will use 2 cores"; CORES="1"; shift 2;;
             esac ;;
         -l|--large)
             case "$2" in
@@ -58,9 +58,9 @@ sname="step6-${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=100G,h_vmem=120G,h_fsize=100G"
+    MEM="mem_free=50G,h_vmem=60G,h_fsize=100G"
 else
-    MEM="mem_free=80G,h_vmem=90G,h_fsize=100G"
+    MEM="mem_free=40G,h_vmem=45G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
@@ -122,9 +122,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-## See thread with Mark about -pe local at
-## https://lists.johnshopkins.edu/sympa/arc/bithelp
-# -pe local 1
+#$ -pe local 2
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
