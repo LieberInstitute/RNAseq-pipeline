@@ -224,6 +224,8 @@ ORIGINALBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.bam
 SORTEDBAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted
 
 #filter unmapped segments
+echo "**** Filtering unmapped segments ****"
+date
 ${SOFTWARE}/samtools-1.2/samtools view -bh -F 4 \${SAM} > \${ORIGINALBAM}
 ${SOFTWARE}/samtools-1.2/samtools sort -@ ${CORES} \${ORIGINALBAM} \${SORTEDBAM}
 ${SOFTWARE}/samtools-1.2/samtools index \${SORTEDBAM}.bam
@@ -233,6 +235,8 @@ rm \${SAM}
 rm \${ORIGINALBAM}
 
 ## Run infer experiment
+echo "**** Inferring strandedness with infer_experiment.py ****"
+date
 module load python/2.7.9
 ~/.local/bin/infer_experiment.py -i \${SORTEDBAM}.bam -r ${BED} 1> ${MAINDIR}/HISAT2_out/infer_strandness/\${ID}.txt 2>&1
 
