@@ -74,7 +74,7 @@ fi
 
 # Reference genome files
 if [ $hgXX == "hg38" ] ; then 
-	BEDFILE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh38_hg38/coding_SNVs_hg38.bed
+	BEDFILE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Genotyping/common_missense_SNVs_hg38.bed
 	FAFILE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh38_hg38/GRCh38.primary_assembly.genome.fa
 elif [ $hgXX == "hg19" ] ; then 
 	BEDFILE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Genotyping/common_missense_SNVs_hg19.bed
