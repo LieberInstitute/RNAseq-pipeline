@@ -426,6 +426,11 @@ geneStatList = lapply(paste0(geneFn, ".summary"),
 geneStats = do.call("cbind", geneStatList)
 colnames(geneStats) = metrics$SAMPLE_ID
 metrics$totalAssignedGene = as.numeric(geneStats[1,] / colSums(geneStats))
+## Add all the other stats from featureCounts at the gene level
+geneStats <- t(geneStats)
+colnames(geneStats) <- paste0('gene_', colnames(geneStats))
+metrics <- cbind(metrics, geneStats)
+
 # rna Rate
 metrics$rRNA_rate = colSums(geneCounts[which(geneMap$gene_type == "rRNA"),])/colSums(geneCounts)
 
