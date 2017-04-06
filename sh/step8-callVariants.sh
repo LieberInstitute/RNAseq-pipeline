@@ -122,7 +122,7 @@ module load bcftools
 ${SOFTWARE}/samtools-1.2/samtools mpileup -l ${BEDFILE} -AB -q0 -Q13 -d1000000 -ufe ${FAFILE} ${BAM} -o ${SNPTMP}
 bcftools call -mv -Oz ${SNPTMP} > ${SNPOUTGZ}
 
-${SOFTWARE}/samtools-1.2/htslib-1.2.1/tabix -p vcf ${SNPOUTGZ}
+${SOFTWARE}/samtools-1.2/htslib-1.2.1/build/usr/local/bin/tabix -p vcf ${SNPOUTGZ}
 
 rm ${SNPTMP}
 
