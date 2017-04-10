@@ -113,13 +113,13 @@ echo "Task id: \${SGE_TASK_ID}"
 mkdir -p ${MAINDIR}/Genotypes/
 
 ID=$(cat ${MAINDIR}/samples.manifest | awk '{print $NF}' | awk "NR==${SGE_TASK_ID}")
-BAM=${MAINDIR}/HISAT2_out/${ID}_accepted_hits_sorted.bam
+BAM=${MAINDIR}/HISAT2_out/${ID}_accepted_hits.sorted.bam
 
 SNPTMP=${MAINDIR}/Genotypes/${ID}_tmp.vcf
 SNPOUTGZ=${MAINDIR}/Genotypes/${ID}.vcf.gz
 
 module load bcftools
-${SOFTWARE}/samtools-1.2/samtools mpileup -l ${BEDFILE} -AB -q0 -Q13 -d1000000 -ufe ${FAFILE} ${BAM} -o ${SNPTMP}
+${SOFTWARE}/samtools-1.2/samtools mpileup -l ${BEDFILE} -AB -q0 -Q13 -d1000000 -uf ${FAFILE} ${BAM} -o ${SNPTMP}
 bcftools call -mv -Oz ${SNPTMP} > ${SNPOUTGZ}
 
 ${SOFTWARE}/samtools-1.2/htslib-1.2.1/build/usr/local/bin/tabix -p vcf ${SNPOUTGZ}
