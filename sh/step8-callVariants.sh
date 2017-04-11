@@ -112,7 +112,7 @@ echo "Task id: \${SGE_TASK_ID}"
 
 mkdir -p ${MAINDIR}/Genotypes/
 
-ID=$(cat ${MAINDIR}/samples.manifest | awk '{print $NF}' | awk "NR==${SGE_TASK_ID}")
+ID=\$(cat ${MAINDIR}/samples.manifest | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 BAM=${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam
 
 SNPTMP=${MAINDIR}/Genotypes/\${ID}_tmp.vcf
