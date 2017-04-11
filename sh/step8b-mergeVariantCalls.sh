@@ -90,11 +90,10 @@ echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
 echo "Task id: \${SGE_TASK_ID}"
 
-VCFS=$(cat ${MAINDIR}/samples.manifest | awk '{print "${MAINDIR}/Genotypes/"$NF".vcf.gz"}' | paste -sd " ")
+VCFS=\$(cat ${MAINDIR}/samples.manifest | awk '{print "${MAINDIR}/Genotypes/"\$NF".vcf.gz"}' | paste -sd " ")
 
 module load vcftools
 vcf-merge \${VCFS} |bgzip -c > ${MAINDIR}/Genotypes/mergedVariants.vcf.gz
-
 
 echo "**** Job ends ****"
 date
