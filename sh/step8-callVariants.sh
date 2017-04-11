@@ -91,9 +91,6 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-## See thread with Mark about -pe local at
-## https://lists.johnshopkins.edu/sympa/arc/bithelp
-# -pe local 1
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
@@ -122,7 +119,8 @@ module load bcftools
 ${SOFTWARE}/samtools-1.2/samtools mpileup -l ${BEDFILE} -AB -q0 -Q13 -d1000000 -uf ${FAFILE} \${BAM} -o \${SNPTMP}
 bcftools call -mv -Oz \${SNPTMP} > \${SNPOUTGZ}
 
-${SOFTWARE}/samtools-1.2/htslib-1.2.1/build/usr/local/bin/tabix -p vcf \${SNPOUTGZ}
+module load htslib
+tabix -p vcf \${SNPOUTGZ}
 
 rm \${SNPTMP}
 
