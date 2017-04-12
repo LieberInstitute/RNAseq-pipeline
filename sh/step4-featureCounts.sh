@@ -140,7 +140,9 @@ echo "Job id: \${JOB_ID}"
 echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
 echo "Task id: \${SGE_TASK_ID}"
-
+echo "****"
+echo "Sample id: \$(cat ${MAINDIR}/samples.manifest | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")"
+echo "****"
 
 # Directories
 mkdir -p ${MAINDIR}/Counts/gene

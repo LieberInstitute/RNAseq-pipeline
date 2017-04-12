@@ -68,6 +68,7 @@ echo "User: \${USER}"
 echo "Job id: \${JOB_ID}"
 echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
+echo "****"
 
 VCFS=\$(cat ${MAINDIR}/samples.manifest | awk '{print "${MAINDIR}/Genotypes/"\$NF".vcf.gz"}' | paste -sd " ")
 
