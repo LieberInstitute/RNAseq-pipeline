@@ -272,7 +272,7 @@ echo "User: \${USER}"
 echo "Job id: \${JOB_ID}"
 echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
-echo "Task id: \${SGE_TASK_ID}"
+echo "****"
 
 ## Process the infer experiment info
 Rscript /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/step3b_infer_strandness.R -o "HISAT2_out/infer_strandness" -p "inferred_strandness_pattern.txt"

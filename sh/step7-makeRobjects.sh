@@ -144,7 +144,6 @@ echo "User: \${USER}"
 echo "Job id: \${JOB_ID}"
 echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
-echo "Task id: \${SGE_TASK_ID}"
 echo "****"
 
 Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC} -t ${CORES} -s ${STRANDED}
@@ -182,7 +181,7 @@ echo "User: \${USER}"
 echo "Job id: \${JOB_ID}"
 echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
-echo "Task id: \${SGE_TASK_ID}"
+echo "****"
 
 
 ## Don't create the fullCoverage object by default:
