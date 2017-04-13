@@ -192,9 +192,10 @@ fi
 REPODIR=$(dirname $BASH_FOLDER)
 pipelineversion=$(git --git-dir=${REPODIR}/.git rev-parse origin/master)
 
-echo "**** Computing the md5 for ${ANNO_FOLDER}, takes 2-3 minutes ****"
-date
-annofoldermd5=$(~/.local/bin/checksumdir -a md5 ${ANNO_FOLDER})
+#echo "**** Computing the md5 for ${ANNO_FOLDER}, takes 2-3 minutes ****"
+#date
+#annofoldermd5=$(~/.local/bin/checksumdir -a md5 ${ANNO_FOLDER})
+annofoldermd5="--skipped checksumdir--"
 
 ## Save the reproducibility info
 echo "**** Saving the reproducibility information in logs/pipeline_information.txt ****"
