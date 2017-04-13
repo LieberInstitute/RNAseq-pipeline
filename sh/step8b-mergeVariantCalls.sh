@@ -4,11 +4,8 @@
 # bash step8b-callVariants.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:r:c:l:h --long experiment:,prefix:,reference:,cores:,large:,help -n 'step8b-mergeVariantCalls' -- "$@")
+TEMP=$(getopt -o x:p:h --long experiment:,prefix:,help -n 'step8b-mergeVariantCalls' -- "$@")
 eval set -- "$TEMP"
-
-LARGE="FALSE"
-CORES=8
 
 while true; do
     case "$1" in
@@ -22,23 +19,8 @@ while true; do
                 "") shift 2 ;;
                 *) PREFIX=$2 ; shift 2;;
             esac;;
-		-r|--reference)
-            case "$2" in
-                "") shift 2 ;;
-                *) hgXX=$2 ; shift 2;;
-            esac;;
-        -c|--cores)
-            case "$2" in
-                "") CORES="8" ; shift 2;;
-                *) CORES=$2; shift 2;;
-            esac ;;
-	    -l|--large)
-            case "$2" in
-                "") LARGE="FALSE" ; shift 2;;
-                *) LARGE=$2; shift 2;;
-            esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step8-callVariants.sh -x -p -r (hg38, hg19, mm10, rn6) -c (default:8) -l (default:FALSE)\nLong options:\n  bash step8-callVariants.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step8-callVariants.sh -x -p \nLong options:\n  bash step8-callVariants.sh --experiment --prefix"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -72,12 +54,10 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${SGEQUEUE}${MEM}
+#$ -l ${SGEQUEUE}mem_free=8G,h_vmem=10G
 #$ -N ${sname}
-## See thread with Mark about -pe local at
-## https://lists.johnshopkins.edu/sympa/arc/bithelp
-#$ -o ./logs/${SHORT}.\$TASK_ID.txt
-#$ -e ./logs/${SHORT}.\$TASK_ID.txt
+#$ -o ./logs/${SHORT}.txt
+#$ -e ./logs/${SHORT}.txt
 #$ -hold_jid pipeline_setup,step8-callVariants-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
@@ -88,12 +68,13 @@ echo "User: \${USER}"
 echo "Job id: \${JOB_ID}"
 echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
-echo "Task id: \${SGE_TASK_ID}"
+echo "****"
 
 VCFS=\$(cat ${MAINDIR}/samples.manifest | awk '{print "${MAINDIR}/Genotypes/"\$NF".vcf.gz"}' | paste -sd " ")
 
 module load vcftools
-vcf-merge \${VCFS} |bgzip -c > ${MAINDIR}/Genotypes/mergedVariants.vcf.gz
+module load htslib
+vcf-merge \${VCFS} | bgzip -c > ${MAINDIR}/Genotypes/mergedVariants.vcf.gz
 
 echo "**** Job ends ****"
 date
