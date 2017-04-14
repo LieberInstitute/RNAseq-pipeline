@@ -223,8 +223,8 @@ geneMap$ensemblID = ss(geneMap$Geneid, "\\.")
 geneMap$Geneid = NULL
 geneMap$gene_type = gencodeGENES[geneMap$gencodeID,"gene_type"]
 
-geneMap$Symbol = sym$mgi_symbol[geneMap$ensemblID, sym$ensembl_gene_id)]
-geneMap$EntrezID = sym$entrezgene[geneMap$ensemblID, sym$ensembl_gene_id)]
+geneMap$Symbol = sym$mgi_symbol[match(geneMap$ensemblID, sym$ensembl_gene_id)]
+geneMap$EntrezID = sym$entrezgene[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 	
 ## counts
 geneCountList = mclapply(geneFn, function(x) {
