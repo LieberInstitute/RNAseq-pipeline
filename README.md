@@ -84,3 +84,44 @@ For reproducibility purposes, the information about the version of the pipeline 
 
 Note that you will need the [jaffelab](https://github.com/LieberInstitute/jaffelab) package installed among other packages. Most of them can be installed automatically by scripts in the pipeline, but `jaffelab` requires you to create the `GITHUB_PAT` environment variable following the instructions by `devtools::install_github()`.
 
+
+## Read and alignment metrics output
+
+  __FastQC Flags__ (pass/warn/fail)
+
+Flag | Description
+--- | ---
+FQCbasicStats | Composite statistic: overall pass/warn/fail
+perBaseQual | Quality values across all bases at each position in the FastQ file
+perTileQual | Quality scores from each tile across all bases to see if there was loss in quality associated with only one part of the flowcell
+perSeqQual | Report if a subset of sequences have universally low quality values
+perBaseContent | G, A, T, and C should have roughly equal proportions at each base position
+GCcontent | GC content across the length of each sequence
+Ncontent | Percentage of base calls at each position for which an N was called
+SeqLengthDist | Distribution of fragment sizes (should all be uniform length)
+SeqDuplication | Degree of duplication for every sequence in the library
+OverrepSeqs | Identical sequences that appear at a higher rate than expected
+AdapterContent | Proportion of your library which has adapter sequences at each position
+KmerContent | Measures the number of each kmer at each position in your library and then looks for significant deviations from an even coverage at all positions
+  
+  __FastQC metrics__ (There will be two sets of metrics for each sample if library is paired-end.)
+
+Metric | Description
+--- | ---
+SeqLength | Length of the shortest and longest sequence in the set
+percentGC | Overall %GC of all bases in all sequences
+phredXX-XX | Median Phred score at read positions XX (taken at different positions depending on sequence length)
+phredGT30 | Proportion of reads above Phred score of 30
+phredGT35 | Proportion of reads above Phred score of 35
+AdapterXX-XX | Adapter content for Illumina standard adapter at positions XX (taken at different positions depending on sequence length)
+ 
+  __HISAT2 metrics__
+
+Metric | Description
+--- | ---
+numReads | Total number of reads in fastq file
+numMapped | Number of reads that were aligned by HISAT2 to the reference genome
+numUnmapped | Number of reads that did not align to the reference genome
+overallMapRate | Proportion of total reads mapped (numMapped / numReads)
+concordMapRate | If library is paired-end, percentage of read pairs that mapped concordantly
+
