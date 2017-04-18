@@ -51,7 +51,7 @@ sname="step8-${SHORT}.${PREFIX}"
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=10G,h_vmem=12,h_fsize=100G"
+    MEM="mem_free=10G,h_vmem=12G,h_fsize=100G"
 else
     MEM="mem_free=5G,h_vmem=8G,h_fsize=100G"
 fi
