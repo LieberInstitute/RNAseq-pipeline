@@ -1,0 +1,23 @@
+PLINK v1.90b3a 64-bit (12 Jan 2015)
+8 arguments: --bfile /dcs01/ajaffe/Imputation/Merged/LIBD_Brain_Illumina_h650_1M_Omni5M_Omni2pt5_Macrogen_imputed_maf005_hwe1e6_geno10 --extract /dev/fd/63 --out LIBD_Brain_Illumina_h650_1M_Omni5M_Omni2pt5_Macrogen_GenotypingBarcode --recode A-transpose
+Hostname: compute-099
+Working directory: /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Genotyping
+Start time: Tue Apr 18 13:44:25 2017
+
+Random number seed: 1492537465
+258365 MB RAM detected; reserving 129182 MB for main workspace.
+Allocated 54498 MB successfully, after larger attempt(s) failed.
+13215924 variants loaded from .bim file.
+1462 people (930 males, 532 females) loaded from .fam.
+--extract: 698 variants remaining.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 1462 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.988798.
+698 variants and 1462 people pass filters and QC.
+Note: No phenotypes present.
+--recode A-transpose to
+LIBD_Brain_Illumina_h650_1M_Omni5M_Omni2pt5_Macrogen_GenotypingBarcode.traw ...
+done.
+
+End time: Tue Apr 18 13:44:34 2017
