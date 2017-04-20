@@ -1,0 +1,116 @@
+
+#################################################################
+## Sources and scripts for RNA-seq Pipeline annotation files
+#################################################################
+
+
+##################
+###### hg38 ######
+GENCODE  --  Release 25 (GRCh38.p7)
+http://www.gencodegenes.org/releases/25.html
+
+GTF: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_25/gencode.v25.annotation.gtf.gz
+FA: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_25/GRCh38.primary_assembly.genome.fa.gz
+transcript FA: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_25/gencode.v25.transcripts.fa.gz
+
+Create HISAT2 index:
+gunzip < ${FA.GZ} > ${FA}
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/hisat2-2.0.4/hisat2-build -p 6 ${FA} hisat2_GRCh38primary
+
+Create Salmon index:
+gunzip < ${txFA.GZ} > ${txFA}
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/Salmon-0.8.2_linux_x86_64/bin/salmon index \
+-t ${txFA} -i salmon_index_gencode.v25.transcripts -p 1 --type quasi -k 31
+
+
+
+##################
+###### hg19 ######
+GENCODE  --  Release 25 (mapped to GRCh37)
+http://www.gencodegenes.org/releases/25lift37.html
+
+GTF: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_25/GRCh37_mapping/gencode.v25lift37.annotation.gtf.gz
+FA: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_25/GRCh37_mapping/GRCh37.primary_assembly.genome.fa.gz
+transcript FA: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_25/GRCh37_mapping/gencode.v25lift37.transcripts.fa.gz
+
+Create HISAT2 index:
+gunzip < ${FA.GZ} > ${FA}
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/hisat2-2.0.4/hisat2-build -p 6 ${FA} hisat2_GRCh37primary
+
+Create Salmon index:
+gunzip < ${txFA.GZ} > ${txFA}
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/Salmon-0.8.2_linux_x86_64/bin/salmon index \
+-t ${txFA} -i salmon_index_gencode.v25lift37.transcripts -p 1 --type quasi -k 31
+
+
+
+##################
+###### mm10 ######
+GENCODE -- Release M11 (GRCm38.p4)
+http://www.gencodegenes.org/mouse_releases/11.html
+
+GTF: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_mouse/release_M11/gencode.vM11.annotation.gtf.gz
+FA: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_mouse/release_M11/GRCm38.primary_assembly.genome.fa.gz
+transcript FA: ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_mouse/release_M11/gencode.vM11.transcripts.fa.gz
+
+Create HISAT2 index:
+gunzip < ${FA.GZ} > ${FA}
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/hisat2-2.0.4/hisat2-build -p 6 ${FA} hisat2_GRCm38primary
+
+Create Salmon index:
+gunzip < ${txFA.GZ} > ${txFA}
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/Salmon-0.8.2_linux_x86_64/bin/salmon index \
+-t ${txFA} -i salmon_index_gencode.vM11.transcripts -p 1 --type quasi -k 31
+
+
+
+##################
+###### rn6 #######
+ensembl -- Release 86 (Rnor_6.0)
+http://oct2016.archive.ensembl.org/Rattus_norvegicus/Info/Index
+
+GTF: ftp://ftp.ensembl.org/pub/release-86/gtf/rattus_norvegicus/Rattus_norvegicus.Rnor_6.0.86.gtf.gz
+FA: ftp://ftp.ensembl.org/pub/release-86/fasta/rattus_norvegicus/dna/Rattus_norvegicus.Rnor_6.0.dna.toplevel.fa.gz
+
+Create HISAT2 index:
+gunzip < ${FA.GZ} > ${FA}
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/hisat2-2.0.4/hisat2-build -p 6 ${FA} hisat2_Rnor6.0toplevel
+
+
+
+##################
+###### ercc ######
+https://www.thermofisher.com/order/catalog/product/4456740
+
+FA: https://tools.thermofisher.com/content/sfs/manuals/cms_095047.txt
+Expected concentrations: https://tools.thermofisher.com/content/sfs/manuals/cms_095046.txt
+
+Create kallisto index:
+/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software/kallisto index -i ERCC92.idx -k 31 ${FA}
+
+
+
+##################
+### Chr sizes ####
+Note - hg38,hg19,mm10: sizes downloaded from UCSC, must convert chromosome names to GENCODE names
+
+hg38
+https://genome.ucsc.edu/goldenpath/help/hg38.chrom.sizes
+chr name map: https://github.com/dpryan79/ChromosomeMappings/blob/master/GRCh38_UCSC2gencode.txt
+
+hg19
+https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes
+chr name map: https://github.com/dpryan79/ChromosomeMappings/blob/master/GRCh37_UCSC2gencode.txt
+
+mm10
+https://github.com/igvteam/igv/blob/master/genomes/sizes/mm10.chrom.sizes
+chr name map: https://github.com/dpryan79/ChromosomeMappings/blob/master/GRCm38_UCSC2gencode.txt
+
+rn6
+ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/895/GCF_000001895.5_Rnor_6.0/GCF_000001895.5_Rnor_6.0_assembly_report.txt
+chr name = GenBank-Accn column (except 1:20,X,Y,MT)
+chr size = Sequence-Length column
+Note: Canonical chromosome names are not taken from GenBank-Accn column. They are simply 1:20, X, Y, and MT.
+For all other chromosomes, use GenBank-Accn as chromosome name.
+
+
