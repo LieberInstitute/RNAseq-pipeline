@@ -92,25 +92,7 @@ Create kallisto index:
 
 ##################
 ### Chr sizes ####
-Note - hg38,hg19,mm10: sizes downloaded from UCSC, must convert chromosome names to GENCODE names
 
-hg38
-https://genome.ucsc.edu/goldenpath/help/hg38.chrom.sizes
-chr name map: https://github.com/dpryan79/ChromosomeMappings/blob/master/GRCh38_UCSC2gencode.txt
-
-hg19
-https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes
-chr name map: https://github.com/dpryan79/ChromosomeMappings/blob/master/GRCh37_UCSC2gencode.txt
-
-mm10
-https://github.com/igvteam/igv/blob/master/genomes/sizes/mm10.chrom.sizes
-chr name map: https://github.com/dpryan79/ChromosomeMappings/blob/master/GRCm38_UCSC2gencode.txt
-
-rn6
-ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/895/GCF_000001895.5_Rnor_6.0/GCF_000001895.5_Rnor_6.0_assembly_report.txt
-chr name = GenBank-Accn column (except 1:20,X,Y,MT)
-chr size = Sequence-Length column
-Note: Canonical chromosome names are not taken from GenBank-Accn column. They are simply 1:20, X, Y, and MT.
-For all other chromosomes, use GenBank-Accn as chromosome name.
-
+See code in get.chrom.sizes.R
+Parses chromosome names and widths from FASTA file for each genome.
 
