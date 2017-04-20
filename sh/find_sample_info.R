@@ -10,7 +10,7 @@ spec <- matrix(c(
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
 
-## if help was asked for print a friendly message
+## If help was asked for print a friendly message
 ## and exit with a non-zero error code
 if (!is.null(opt$help)) {
 	cat(getopt(spec, usage=TRUE))
