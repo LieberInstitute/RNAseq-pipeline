@@ -249,7 +249,7 @@ sh ${BASH_FOLDER}/step7-makeRobjects.sh --experiment ${EXPERIMENT} --prefix ${PR
 
 if [ ${STEP8} == "TRUE" ]
 then
-    sh ${BASH_FOLDER}/step8-callVariants.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX} --cores ${CORES} --large ${LARGE}
+    sh ${BASH_FOLDER}/step8-callVariants.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --reference ${hgXX}
 	sh ${BASH_FOLDER}/step8b-mergeVariantCalls.sh --experiment ${EXPERIMENT} --prefix ${PREFIX}
 fi
 

@@ -4,7 +4,7 @@
 # bash step8-callVariants.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:r:c:l:h --long experiment:,prefix:,reference:,cores:,large:,help -n 'step8-callVariants' -- "$@")
+TEMP=$(getopt -o x:p:r:h --long experiment:,prefix:,reference:,help -n 'step8-callVariants' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
@@ -27,18 +27,8 @@ while true; do
                 "") shift 2 ;;
                 *) hgXX=$2 ; shift 2;;
             esac;;
-        -c|--cores)
-            case "$2" in
-                "") CORES="8" ; shift 2;;
-                *) CORES=$2; shift 2;;
-            esac ;;
-	    -l|--large)
-            case "$2" in
-                "") LARGE="FALSE" ; shift 2;;
-                *) LARGE=$2; shift 2;;
-            esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step8-callVariants.sh -x -p -r (hg38, hg19, mm10, rn6) -c (default:8) -l (default:FALSE)\nLong options:\n  bash step8-callVariants.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step8-callVariants.sh -x -p -r (hg38, hg19, mm10, rn6) \nLong options:\n  bash step8-callVariants.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -49,12 +39,6 @@ MAINDIR=${PWD}
 SHORT="callVariants-${EXPERIMENT}"
 sname="step8-${SHORT}.${PREFIX}"
 
-if [[ $LARGE == "TRUE" ]]
-then
-    MEM="mem_free=10G,h_vmem=12G,h_fsize=100G"
-else
-    MEM="mem_free=5G,h_vmem=8G,h_fsize=100G"
-fi
 
 if [ -f ".send_emails" ]
 then
@@ -89,12 +73,12 @@ echo "Creating script ${sname}"
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -l ${SGEQUEUE}${MEM}
+#$ -l ${SGEQUEUE}mem_free=2G,h_vmem=3G,h_fsize=100G
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
-#$ -tc 50
+#$ -tc 100
 #$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"
