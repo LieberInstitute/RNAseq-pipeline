@@ -39,7 +39,7 @@ qsub pipeline_R_setup.sh
   ## You need a compute node to run this script!
   qrsh
   ## Change the path if you cloned this repo elsewhere!
-  bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq_run_all.sh --help
+  bash /dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh/rnaseq-run-all.sh --help
   ```
   
   Note that you have to use __bash__ and not __sh__, otherwise you'll get an error like.
