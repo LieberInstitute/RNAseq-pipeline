@@ -286,7 +286,17 @@ exonCounts = exonCounts[,metrics$SAMPLE_ID] # put in order
 
 ## remove duplicated
 eMap = GRanges(exonMap$Chr, IRanges(exonMap$Start, exonMap$End))
-keepIndex= which(!duplicated(eMap))
+
+## drop runthrough exons with duplicated exons
+i = grepl('-', exonMap$Symbol)
+j = countOverlaps(eMap[i], eMap[!i], type = 'equal') > 0
+dropIndex = which(i)[j]
+exonCounts = exonCounts[-dropIndex,]
+exonMap = exonMap[-dropIndex,]
+eMap = eMap[-dropIndex,]
+
+## drop duplicated exons
+keepIndex = which(!duplicated(eMap))
 exonCounts = exonCounts[keepIndex,]
 exonMap = exonMap[keepIndex,]
 
