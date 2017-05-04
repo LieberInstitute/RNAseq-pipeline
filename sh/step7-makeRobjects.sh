@@ -4,13 +4,12 @@
 # bash step7-makeRobjects.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:r:e:c:l:f:b:a:s:h --long experiment:,prefix:,reference:,ercc:,cores:,large:,fullcov:,bashfolder:,annofolder:,stranded:,help -n 'step7-makeRobjects' -- "$@")
+TEMP=$(getopt -o x:p:r:e:l:f:b:a:s:h --long experiment:,prefix:,reference:,ercc:,large:,fullcov:,bashfolder:,annofolder:,stranded:,help -n 'step7-makeRobjects' -- "$@")
 eval set -- "$TEMP"
 
 ERCC="FALSE"
 LARGE="FALSE"
 FULLCOV="FALSE"
-CORES=8
 BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"
 STRANDED="FALSE"
 
@@ -36,11 +35,6 @@ while true; do
             "") ERCC="FALSE" ; shift 2;;
             *) ERCC=$2; shift 2;;
         esac ;;
-        -c|--cores)
-            case "$2" in
-                "") CORES="8" ; shift 2;;
-                *) CORES=$2; shift 2;;
-            esac ;;
         -l|--large)
             case "$2" in
                 "") LARGE="FALSE" ; shift 2;;
@@ -62,7 +56,7 @@ while true; do
                 *) STRANDED=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step7-makeRobjects.sh -x -p -r (hg38, hg19, mm10, rn6) -e (default:FALSE) -c (default:8) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) -s (default:FALSE)\nLong options:\n  bash step7-makeRobjects.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --ercc (default:FALSE) --cores (default:8) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) --stranded (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step7-makeRobjects.sh -x -p -r (hg38, hg19, mm10, rn6) -e (default:FALSE) -l (default:FALSE) -f (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) -s (default:FALSE)\nLong options:\n  bash step7-makeRobjects.sh --experiment --prefix --reference (hg38, hg19, mm10, rn6) --ercc (default:FALSE) --large (default:FALSE) --fullcov (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh) --stranded (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -72,12 +66,13 @@ SHORT="Rcounts-${EXPERIMENT}"
 sname="step7-${SHORT}.${PREFIX}"
 SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
+CORES=5
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=20G,h_vmem=24G,h_fsize=200G"
+    MEM="mem_free=28G,h_vmem=30G,h_fsize=200G"
 else
-    MEM="mem_free=5G,h_vmem=6G,h_fsize=200G"
+    MEM="mem_free=18G,h_vmem=20G,h_fsize=200G"
 fi
 
 if [ -f ".send_emails" ]

@@ -4,12 +4,11 @@
 # bash step4-featureCounts.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:s:g:r:c:l:h --long experiment:,prefix:,stranded:,gtf:,reference:,cores:,large:,help -n 'step4-featureCounts' -- "$@")
+TEMP=$(getopt -o x:p:s:g:r:l:h --long experiment:,prefix:,stranded:,gtf:,reference:,large:,help -n 'step4-featureCounts' -- "$@")
 eval set -- "$TEMP"
 
 STRANDED="FALSE"
 LARGE="FALSE"
-CORES=8
 
 while true; do
     case "$1" in
@@ -38,18 +37,13 @@ while true; do
                 "") shift 2 ;;
                 *) hgXX=$2 ; shift 2;;
             esac;;
-        -c|--cores)
-            case "$2" in
-                "") CORES="8" ; shift 2;;
-                *) CORES=$2; shift 2;;
-            esac ;;
         -l|--large)
             case "$2" in
                 "") LARGE="FALSE" ; shift 2;;
                 *) LARGE=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step4-featureCounts.sh -x -p -s (default:FALSE) -g -r (hg38, hg19, mm10, rn6) -c (default:8) -l (default:FALSE)\nLong options:\n  bash step4-featureCounts.sh --experiment --prefix --stranded (default:FALSE) --gtf --reference (hg38, hg19, mm10, rn6) --cores (default:8) --large (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step4-featureCounts.sh -x -p -s (default:FALSE) -g -r (hg38, hg19, mm10, rn6) -l (default:FALSE)\nLong options:\n  bash step4-featureCounts.sh --experiment --prefix --stranded (default:FALSE) --gtf --reference (hg38, hg19, mm10, rn6) --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -59,12 +53,13 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="featCounts-${EXPERIMENT}"
 sname="step4-${SHORT}.${PREFIX}"
+CORES=8
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=20G,h_vmem=24G,h_fsize=100G"
+    MEM="mem_free=2G,h_vmem=3G,h_fsize=100G"
 else
-    MEM="mem_free=10G,h_vmem=12G,h_fsize=100G"
+    MEM="mem_free=1G,h_vmem=2G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
@@ -128,7 +123,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
-#$ -tc 10
+#$ -tc 30
 #$ -hold_jid pipeline_setup,step3-hisat2-${EXPERIMENT}.${PREFIX}
 #$ -m ${EMAIL}
 echo "**** Job starts ****"

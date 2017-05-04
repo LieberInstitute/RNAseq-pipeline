@@ -8,7 +8,6 @@ TEMP=$(getopt -o x:p:r:h --long experiment:,prefix:,reference:,help -n 'step8-ca
 eval set -- "$TEMP"
 
 LARGE="FALSE"
-CORES=8
 
 while true; do
     case "$1" in

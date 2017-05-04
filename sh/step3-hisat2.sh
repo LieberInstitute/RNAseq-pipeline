@@ -4,11 +4,10 @@
 # bash step3-hisat2.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:i:b:c:l:s:u:h --long experiment:,prefix:,index:,bed:,cores:,large:,stranded:,unaligned:,help -n 'step3-hisat2' -- "$@")
+TEMP=$(getopt -o x:p:i:b:l:s:u:h --long experiment:,prefix:,index:,bed:,large:,stranded:,unaligned:,help -n 'step3-hisat2' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
-CORES=8
 STRANDED="FALSE"
 UNALIGNED="FALSE"
 
@@ -34,11 +33,6 @@ while true; do
                 "") shift 2 ;;
                 *) BED=$2 ; shift 2;;
             esac;;
-        -c|--cores)
-            case "$2" in
-                "") CORES="8" ; shift 2;;
-                *) CORES=$2; shift 2;;
-            esac ;;
         -l|--large)
             case "$2" in
                 "") LARGE="FALSE" ; shift 2;;
@@ -55,7 +49,7 @@ while true; do
                 *) UNALIGNED=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -c (default:8) -l (default:FALSE) -s (default:FALSE) -u (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --cores (default:8) --large (default:FALSE) --stranded (default:FALSE) --unaligned (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -l (default:FALSE) -s (default:FALSE) -u (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --large (default:FALSE) --stranded (default:FALSE) --unaligned (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -65,12 +59,13 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="hisat2-${EXPERIMENT}"
 sname="step3-${SHORT}.${PREFIX}"
+CORES=8
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=10G,h_vmem=14G,h_fsize=200G"
+    MEM="mem_free=12G,h_vmem=14G,h_fsize=200G"
 else
-    MEM="mem_free=5G,h_vmem=7G,h_fsize=200G"
+    MEM="mem_free=5G,h_vmem=6G,h_fsize=200G"
 fi
 
 if [ -f ".send_emails" ]
