@@ -314,6 +314,27 @@ widE = matrix(rep(exonMap$Length), nr = nrow(exonCounts),
 exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
 
+## Create gene,exon RangedSummarizedExperiment objects
+gr_genes <- GRanges(seqnames = geneMap$Chr,
+    IRanges(geneMap$Start, geneMap$End), strand = geneMap$Strand)
+names(gr_genes) <- rownames(geneMap)
+mcols(gr_genes) <- DataFrame(geneMap[, - which(colnames(geneMap) %in%
+    c('Chr', 'Start', 'End', 'Strand'))])
+
+rse_gene <- SummarizedExperiment(assays = list('counts' = geneCounts),
+    rowRanges = gr_genes, colData = metrics)
+save(rse_gene, file = paste0('rse_gene_', EXPNAME, '_n', N, '.Rdata'))
+
+gr_exons <- GRanges(seqnames = exonMap$Chr,
+    IRanges(exonMap$Start, exonMap$End), strand = exonMap$Strand)
+names(gr_exons) <- rownames(exonMap)
+mcols(gr_exons) <- DataFrame(exonMap[, - which(colnames(exonMap) %in%
+    c('Chr', 'Start', 'End', 'Strand'))])
+
+rse_exon <- SummarizedExperiment(assays = list('counts' = exonCounts),
+    rowRanges = gr_exons, colData = metrics)
+save(rse_exon, file = paste0('rse_exon_', EXPNAME, '_n', N, '.Rdata'))
+
 
 ###################
 ##### junctions
@@ -438,27 +459,8 @@ save(list=ls()[ls() %in% tosaveCounts], compress=TRUE,
 save(list=ls()[ls() %in% tosaveRpkm], compress=TRUE,
 	file= file.path(opt$maindir, paste0('rpkmCounts_', EXPNAME, '_n', N, '.rda')))
 
+	
 ## Create RangedSummarizedExperiment objects
-gr_genes <- GRanges(seqnames = geneMap$Chr,
-    IRanges(geneMap$Start, geneMap$End), strand = geneMap$Strand)
-names(gr_genes) <- rownames(geneMap)
-mcols(gr_genes) <- DataFrame(geneMap[, - which(colnames(geneMap) %in%
-    c('Chr', 'Start', 'End', 'Strand'))])
-
-rse_gene <- SummarizedExperiment(assays = list('counts' = geneCounts),
-    rowRanges = gr_genes, colData = metrics)
-save(rse_gene, file = paste0('rse_gene_', EXPNAME, '_n', N, '.Rdata'))
-
-gr_exons <- GRanges(seqnames = exonMap$Chr,
-    IRanges(exonMap$Start, exonMap$End), strand = exonMap$Strand)
-names(gr_exons) <- rownames(exonMap)
-mcols(gr_exons) <- DataFrame(exonMap[, - which(colnames(exonMap) %in%
-    c('Chr', 'Start', 'End', 'Strand'))])
-
-rse_exon <- SummarizedExperiment(assays = list('counts' = exonCounts),
-    rowRanges = gr_exons, colData = metrics)
-save(rse_exon, file = paste0('rse_exon_', EXPNAME, '_n', N, '.Rdata'))
-
 rse_jx <- SummarizedExperiment(assays = list('counts' = jCounts),
     rowRanges = jMap, colData = metrics)
 save(rse_jx, file = paste0('rse_jx_', EXPNAME, '_n', N, '.Rdata'))
