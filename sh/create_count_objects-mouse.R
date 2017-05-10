@@ -9,6 +9,7 @@ library('BSgenome.Mmusculus.UCSC.mm10')
 library('jaffelab')
 library('getopt')
 library('devtools')
+library('SummarizedExperiment')
 
 ## Specify parameters
 spec <- matrix(c(
