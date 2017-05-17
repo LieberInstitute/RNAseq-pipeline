@@ -314,6 +314,9 @@ widE = matrix(rep(exonMap$Length), nr = nrow(exonCounts),
 	nc = nrow(metrics),	byrow=FALSE)
 exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
+## add mean expression
+geneMap$meanExprs = rowMeans(geneRpkm)
+exonMap$meanExprs = rowMeans(exonRpkm)
 
 ## Create gene,exon RangedSummarizedExperiment objects
 gr_genes <- GRanges(seqnames = geneMap$Chr,
@@ -354,7 +357,14 @@ if (opt$stranded %in% c('forward', 'reverse')) {
 	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
 		output = "Count", maxCores=opt$cores,strandSpecific=FALSE)
 }
-	
+## filter junction counts - drop jxns in <1% of samples
+n = max(1, floor(N/100))
+jCountsLogical = DataFrame(sapply(juncCounts$countDF, function(x) x > 0))
+jIndex = which(rowSums(as.data.frame(jCountsLogical)) >= n) 
+juncCounts = lapply(juncCounts, function(x) x[jIndex,])
+
+
+############ anno/jMap	
 anno = juncCounts$anno
 seqlevels(anno, force=TRUE) = paste0("chr", c(1:19,"X","Y","M"))
 
@@ -417,17 +427,26 @@ anno$isFusion = grepl("-", anno$newGeneID)
 
 anno$newGeneSymbol[anno$code =="InGen"] = anno$Symbol[anno$code =="InGen"]
 anno$newGeneID[anno$code =="InGen"] = anno$gencodeGeneID[anno$code =="InGen"]
-## extract out
-jMap = anno
-jCounts = juncCounts$countDF
-jCounts = jCounts[names(jMap),gsub("-",".",metrics$SAMPLE_ID)]
 
-mappedPer10M = sapply(jCounts, sum)/10e6
-countsM = DataFrame(mapply(function(x,d) x/d, jCounts , mappedPer10M))
-rownames(jCounts) = rownames(countsM) = names(jMap)
-jRpkm = as.data.frame(countsM)
-rownames(jRpkm) = names(jMap)
-colnames(jRpkm)  = colnames(geneRpkm)
+## extract out jMap
+jMap = anno
+colnames(mcols(jMap))[which(colnames(mcols(jMap))=="code")] = "Class"
+rm(anno)
+
+############ jCounts
+jCounts = as.matrix(as.data.frame(juncCounts$countDF))
+jCounts = jCounts[names(jMap),gsub("-",".",metrics$SAMPLE_ID)] # ensure lines up
+colnames(jCounts) = metrics$SAMPLE_ID  # change from '.' to hyphens if needed
+
+############ jRpkm
+bgJ = matrix(rep(colSums(jCounts)), nc = nrow(metrics), 
+	nr = nrow(jCounts),	byrow=TRUE)
+jRpkm = jCounts/(bgJ/10e6)
+
+rownames(jCounts) = rownames(jRpkm) = names(jMap)
+colnames(jRpkm)  = metrics$SAMPLE_ID 
+jMap$meanExprs = rowMeans(jRpkm)
+
 
 # ## sequence of acceptor/donor sites
 # left = right = jMap
@@ -437,16 +456,11 @@ colnames(jRpkm)  = colnames(geneRpkm)
 # jMap$rightSeq = getSeq(Hsapiens, right)
 
 
-## Finish up
-geneMap$meanExprs = rowMeans(geneRpkm)
-exonMap$meanExprs = rowMeans(exonRpkm)
-jMap$meanExprs = rowMeans(jRpkm)
-colnames(mcols(jMap))[which(colnames(mcols(jMap))=="code")] = "Class"
-
 
 ### save counts
 
-tosaveCounts = c("metrics", "geneCounts", "geneMap", "exonCounts", "exonMap", "jCounts", "jMap")
+tosaveCounts = c("metrics", "geneCounts", "geneMap", "exonCounts", "exonMap", "jCounts", "jMap", 
+					"txNumReads", "txMap" )
 tosaveRpkm = c("metrics", "geneRpkm", "geneMap", "exonRpkm", "exonMap", "jRpkm", "jMap", 
 					"txTpm", "txNumReads", "txMap" )
 

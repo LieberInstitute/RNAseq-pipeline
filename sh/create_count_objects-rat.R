@@ -254,6 +254,9 @@ widE = matrix(rep(exonMap$Length), nr = nrow(exonCounts),
 	nc = nrow(metrics),	byrow=FALSE)
 exonRpkm = exonCounts/(widE/1000)/(bgE/1e6)
 
+## add mean expression
+geneMap$meanExprs = rowMeans(geneRpkm)
+exonMap$meanExprs = rowMeans(exonRpkm)
 
 ## Create gene,exon RangedSummarizedExperiment objects
 gr_genes <- GRanges(seqnames = geneMap$Chr,
@@ -291,10 +294,16 @@ if (opt$stranded %in% c('forward', 'reverse')) {
 	juncCounts = junctionCount(junctionFiles, metrics$SAMPLE_ID,
 		output = "Count", maxCores=opt$cores,strandSpecific=FALSE)
 }
+## filter junction counts - drop jxns in <1% of samples
+n = max(1, floor(N/100))
+jCountsLogical = DataFrame(sapply(juncCounts$countDF, function(x) x > 0))
+jIndex = which(rowSums(as.data.frame(jCountsLogical)) >= n) 
+juncCounts = lapply(juncCounts, function(x) x[jIndex,])
 	
 ## annotate junctions
 load(file.path(RDIR, "junction_annotation_rn6_ensembl_v86.rda"))
 
+############ anno/jMap	
 anno = juncCounts$anno
 seqlevels(anno,force=TRUE) = c(1:20,"X","Y","MT")
 seqlevels(anno) = paste0("chr", c(1:20,"X","Y","M"))
@@ -358,21 +367,29 @@ anno$newGeneID = g$newGene
 anno$newGeneSymbol = g$newGeneSym
 anno$isFusion = grepl("-", anno$newGeneID)
 
-## extract out
+## extract out jMap
 jMap = anno
-jCounts = juncCounts$countDF
-jCounts = jCounts[names(jMap),paste0('X',gsub("-",".",metrics$SAMPLE_ID))]
-
+colnames(mcols(jMap))[which(colnames(mcols(jMap))=="code")] = "Class"
+rm(anno)
 ## rename chr to gencode
 names(jMap) = paste0(as.character(seqnames(jMap)),":",
                      start(jMap),"-",end(jMap),"(",as.character(strand(jMap)),")")
-rownames(jCounts) = names(jMap)
 
-# MAPPED PER 10 MILLION
-mappedPer10M = sapply(jCounts, sum)/10e6
-countsM = DataFrame(mapply(function(x,d) x/d, jCounts , mappedPer10M))
-rownames(jCounts) = rownames(countsM) = names(jMap)
-jRpkm = as.data.frame(countsM)
+############ jCounts
+jCounts = as.matrix(as.data.frame(juncCounts$countDF))
+jCounts = jCounts[names(jMap),gsub("-",".",metrics$SAMPLE_ID)] # ensure lines up
+colnames(jCounts) = metrics$SAMPLE_ID  # change from '.' to hyphens if needed
+
+############ jRpkm
+bgJ = matrix(rep(colSums(jCounts)), nc = nrow(metrics), 
+	nr = nrow(jCounts),	byrow=TRUE)
+jRpkm = jCounts/(bgJ/10e6)
+
+rownames(jCounts) = rownames(jRpkm) = names(jMap)
+colnames(jRpkm)  = metrics$SAMPLE_ID
+jMap$meanExprs = rowMeans(jRpkm)
+
+
 
 # ## sequence of acceptor/donor sites
 # left = right = anno
@@ -380,6 +397,7 @@ jRpkm = as.data.frame(countsM)
 # start(right) = end(right) -1
 # jMap$leftSeq  = getSeq(Rnorvegicus, left)
 # jMap$rightSeq = getSeq(Rnorvegicus, right)
+
 
 ### save counts
 
