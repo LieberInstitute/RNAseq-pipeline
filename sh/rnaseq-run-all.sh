@@ -152,7 +152,7 @@ then
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/hisat2_GRCh38primary
 	CHRSIZES=${ANNO_FOLDER}/hg38.chrom.sizes.gencode
     BED=${ANNO_FOLDER}/RSeQC/hg38.bed
-	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/transcripts/salmon_index_gencode.v25.transcripts
+	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh38_hg38/transcripts/salmon_0.8.2_index_gencode.v25.transcripts
 	STEP6=TRUE
 	STEP8=TRUE
 elif [ $hgXX == "hg19" ]
@@ -161,7 +161,7 @@ then
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/hisat2_GRCh37primary
 	CHRSIZES=${ANNO_FOLDER}/hg19.chrom.sizes.gencode
     BED=${ANNO_FOLDER}/RSeQC/hg19.bed
-	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/transcripts/salmon_index_gencode.v25lift37.transcripts
+	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/transcripts/salmon_0.8.2_index_gencode.v25lift37.transcripts
 	STEP6=TRUE
 	STEP8=FALSE
 elif [ $hgXX == "mm10" ]
@@ -170,7 +170,7 @@ then
 	HISATIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/hisat2_GRCm38primary
 	CHRSIZES=${ANNO_FOLDER}/mm10.chrom.sizes.gencode
     BED=${ANNO_FOLDER}/RSeQC/mm10.bed
-	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/transcripts/salmon_index_gencode.vM11.transcripts
+	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/transcripts/salmon_0.8.2_index_gencode.vM11.transcripts
 	STEP6=TRUE
 	STEP8=FALSE
 elif [ $hgXX == "rn6" ]

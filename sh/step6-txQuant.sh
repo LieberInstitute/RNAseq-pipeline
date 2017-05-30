@@ -153,12 +153,12 @@ ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 mkdir -p ${MAINDIR}/Salmon_tx/\${ID}
 
 if [ $PE == "TRUE" ] ; then 
-	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
+	${SOFTWARE}/Salmon-0.8.2_linux_x86_64/bin/salmon quant \
 	-i ${SALMONINDEX} -p ${CORES} -l ${STRANDOPTION} \
 	-1 \${FILE1} -2 \${FILE2} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
 else
-	${SOFTWARE}/Salmon-0.7.2_linux_x86_64/bin/salmon quant \
+	${SOFTWARE}/Salmon-0.8.2_linux_x86_64/bin/salmon quant \
 	-i ${SALMONINDEX} -p ${CORES} -l ${STRANDOPTION} \
 	-r \${FILE1} \
 	-o ${MAINDIR}/Salmon_tx/\${ID}
