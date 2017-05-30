@@ -122,7 +122,7 @@ cat > ${MAINDIR}/.${sname}.sh <<EOF
 #$ -cwd
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
-#$ -pe local 2
+#$ -pe local ${CORES}
 #$ -o ./logs/${SHORT}.\$TASK_ID.txt
 #$ -e ./logs/${SHORT}.\$TASK_ID.txt
 #$ -t 1-${NUM}
