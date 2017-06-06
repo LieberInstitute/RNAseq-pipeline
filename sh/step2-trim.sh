@@ -104,11 +104,11 @@ echo "****"
 
 ## Locate file and ids
 FILE1=\$(awk 'BEGIN {FS="\t"} {print \$1}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
-FILEBASE1=\$(basename \${FILE1} | cut -d. -f1)
+FILEBASE1=\$(basename \${FILE1} | sed 's/.fq.gz//; s/.fq//; s/.fastq//; s/fastq.gz//')
 if [ $PE == "TRUE" ] 
 then
     FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
-    FILEBASE2=\$(basename \${FILE2} | cut -d. -f1)
+    FILEBASE2=\$(basename \${FILE2} | sed 's/.fq.gz//; s/.fq//; s/.fastq//; s/fastq.gz//')
 fi
 ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 
