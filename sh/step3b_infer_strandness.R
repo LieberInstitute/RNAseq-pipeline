@@ -18,7 +18,7 @@ if (!is.null(opt$help)) {
 }
 
 if(is.null(opt$outdir)) opt <- c(opt, list('outdir' = 'HISAT2_out/infer_strandness'))
-if(is.null(opt$outdir)) opt <- c(opt, list('pattern' = 'inferred_strandness_pattern.txt'))
+if(is.null(opt$pattern)) opt <- c(opt, list('pattern' = 'inferred_strandness_pattern.txt'))
 
 
 ## In case this step crashes, assume that the data is not stranded
