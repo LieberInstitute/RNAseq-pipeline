@@ -108,7 +108,7 @@ FILEBASE1=\$(basename \${FILE1} | sed 's/.fq.gz//; s/.fq//; s/.fastq.gz//; s/.fa
 if [ $PE == "TRUE" ] 
 then
     FILE2=\$(awk 'BEGIN {FS="\t"} {print \$3}' ${FILELIST} | awk "NR==\${SGE_TASK_ID}")
-    FILEBASE2=$(basename ${FILE2} | sed 's/.fq.gz//; s/.fq//; s/.fastq.gz//; s/.fastq//')
+    FILEBASE2=\$(basename \${FILE2} | sed 's/.fq.gz//; s/.fq//; s/.fastq.gz//; s/.fastq//')
 fi
 ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 
