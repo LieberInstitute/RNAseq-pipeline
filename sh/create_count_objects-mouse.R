@@ -231,7 +231,7 @@ geneMap$EntrezID = sym$entrezgene[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 geneCountList = mclapply(geneFn, function(x) {
 	cat(".")
 	read.delim(pipe(paste("cut -f7", x)), as.is=TRUE,skip=1)[,1]
-}, mc.cores=12)
+}, mc.cores=opt$cores)
 geneCounts = do.call("cbind", geneCountList)
 rownames(geneCounts) = rownames(geneMap)
 geneCounts = geneCounts[,metrics$SAMPLE_ID] # put in order
@@ -280,7 +280,7 @@ exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 exonCountList = mclapply(exonFn, function(x) {
 	cat(".")
 	read.delim(pipe(paste("cut -f7", x)), as.is=TRUE,skip=1)[,1]
-}, mc.cores=12)
+}, mc.cores=opt$cores)
 exonCounts = do.call("cbind", exonCountList)
 rownames(exonCounts) = rownames(exonMap)
 exonCounts = exonCounts[,metrics$SAMPLE_ID] # put in order
