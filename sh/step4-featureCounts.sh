@@ -57,9 +57,9 @@ CORES=8
 
 if [[ $LARGE == "TRUE" ]]
 then
-    MEM="mem_free=2G,h_vmem=3G,h_fsize=100G"
+    MEM="mem_free=12G,h_vmem=12G,h_fsize=100G"
 else
-    MEM="mem_free=1G,h_vmem=2G,h_fsize=100G"
+    MEM="mem_free=8G,h_vmem=8G,h_fsize=100G"
 fi
 
 if [ -f ".send_emails" ]
