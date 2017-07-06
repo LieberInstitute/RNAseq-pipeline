@@ -68,12 +68,26 @@ N <- length(metrics$SAMPLE_ID)
 
 ############################################################ 
 ###### FastQC results
-flags = c("FQCbasicStats","perBaseQual","perTileQual","perSeqQual",
+flagNames = c("FQCbasicStats","perBaseQual","perTileQual","perSeqQual",
 			"perBaseContent","GCcontent","Ncontent","SeqLengthDist",
 			"SeqDuplication","OverrepSeqs","AdapterContent","KmerContent")
 fastqcdata = c("SeqLength","percentGC","phred1","phred2","phred3","phred4",
 				"phredGT30","phredGT35","Adapter1","Adapter2","Adapter3")
 splitAt = function(x, pos) unname(split(x, cumsum(seq_along(x) %in% pos)))
+
+
+flagRows = c("Basic Statistics",
+			"Per base sequence quality",
+			"Per tile sequence quality",
+			"Per sequence quality scores",
+			"Per base sequence content",
+			"Per sequence GC content",
+			"Per base N content",
+			"Sequence Length Distribution",
+			"Sequence Duplication Levels",
+			"Overrepresented sequences",
+			"Adapter Content",
+			"Kmer Content")
 
 if (opt$paired==TRUE) {
 	fileNames = data.frame('read1' = basename(manifest[,1]), 
@@ -86,21 +100,28 @@ if (opt$paired==TRUE) {
 	qcFlagsR2 = file.path(opt$maindir, "FastQC/Untrimmed", metrics$SAMPLE_ID, 
 				paste0(fileNames$read2,"_fastqc"),"summary.txt")
 				
-	R1 = lapply(qcFlagsR1, function(x) scan(x, what="character", sep="\n", quiet=TRUE, strip=TRUE) )
-	R2 = lapply(qcFlagsR2, function(x) scan(x, what="character", sep="\n", quiet=TRUE, strip=TRUE) )	
-	o1 = lapply(R1, function(x) ss(x, "\t"))	
-	o1 = matrix(unlist(o1), ncol = 12, byrow = TRUE)
-	o2 = lapply(R2, function(x) ss(x, "\t"))	
-	o2 = matrix(unlist(o2), ncol = 12, byrow = TRUE)
-	
+				
+	R1 = lapply(qcFlagsR1, function(x) scan(x, what="character", sep="\n", quiet=TRUE, strip=TRUE) )		
+	R1 = lapply(R1, function(x) {data.frame(a = ss(x, "\t"), row.names=ss(x,"\t",2)) } )
+	R1 = lapply(R1, function(x) {x[flagRows,]} )
+	R1 = matrix(unlist(R1), ncol = 12, byrow = TRUE)
+
+	R2 = lapply(qcFlagsR2, function(x) scan(x, what="character", sep="\n", quiet=TRUE, strip=TRUE) )		
+	R2 = lapply(R2, function(x) {data.frame(a = ss(x, "\t"), row.names=ss(x,"\t",2)) } )
+	R2 = lapply(R2, function(x) {x[flagRows,]} )
+	R2 = matrix(unlist(R2), ncol = 12, byrow = TRUE)	
+
 	## combine
-	o3 = paste0(o1,"/",o2)
+	o3 = paste0(R1,"/",R2)
 	dim(o3) = c(N,12)
 	o3[o3=="PASS/PASS"] = "PASS"
 	o3[o3=="WARN/WARN"] = "WARN"
 	o3[o3=="FAIL/FAIL"] = "FAIL"
-	colnames(o3)=paste0(flags)
+	o3[o3=="NA/NA"] = "NA"
+	colnames(o3) = flagNames
 	metrics = cbind(metrics,o3)
+	
+	rm(qcFlagsR1,qcFlagsR2,R1,R2,o3)
 	
 	#### FastQC metrics/data ####
 	for (i in c(1:2)) {
@@ -130,7 +151,10 @@ if (opt$paired==TRUE) {
 		phred = matrix(unlist(phred), ncol=4,byrow=T)
 		
 		# proportion of reads above phred 30 and 35
-		phred2 = lapply(zz, function(x) x[[4]][3:(length(x[[4]])-1)])
+		ind = sapply(zz, function(x) {grep("Per sequence quality scores", x) } )
+		sc = mapply(function(i, x) { x[[i]] }, ind, zz)	
+		if (class(sc)=="matrix") { sc = as.list(as.data.frame(sc, stringsAsFactors=FALSE)) }		
+		phred2 = lapply(sc, function(x) x[3:(length(x)-1)])
 		phred2 = lapply(phred2, function(x) 
 				data.frame(score=ss(x, "\t", 1),count=ss(x, "\t", 2)))
 		phred2 = lapply(phred2, function(x) 
@@ -142,11 +166,14 @@ if (opt$paired==TRUE) {
 		
 		# Illumina adapter content
 		# get positions 
-		len = round((length(zz[[1]][[11]])-3) / 5)
-		pos = c(3*len+2, 4*len+2, length(zz[[1]][[11]])-1)
-		nameSuf = ss(zz[[1]][[11]][pos], "\t", 1)
+		ind = sapply(zz, function(x) {grep("Adapter Content", x) } )
+		ac = mapply(function(i, x) { x[[i]] }, ind, zz)
+		if (class(ac)=="matrix") { ac = as.list(as.data.frame(ac, stringsAsFactors=FALSE)) }
+		len = round((length(ac[[1]])-3) / 5)
+		pos = c(3*len+2, 4*len+2, length(ac[[1]])-1)
+		nameSuf = ss(ac[[1]][pos], "\t", 1)
 		fastqcdata[9:11] = paste0("Adapter", nameSuf)
-		adap = lapply(zz, function(x) x[[11]][pos])
+		adap = lapply(ac, function(x) x[pos])
 		adap = lapply(adap, function(x) ss(x, "\t", 2))
 		adap = matrix(unlist(adap), ncol=3, byrow=T)
 		adap = matrix(as.numeric(adap), ncol=3, byrow=F)
@@ -155,6 +182,8 @@ if (opt$paired==TRUE) {
 		rownames(combined)=NULL
 		names(combined) = paste0(fastqcdata,"_R",i)
 		metrics = cbind(metrics,combined)
+		
+		rm(zz,ind,sc,ac,seqlen,gcp,phred,phred2,adap,qcData,R)
 	}
 
 ## single-end:	
@@ -164,14 +193,15 @@ if (opt$paired==TRUE) {
 
 	qcFlags = file.path(opt$maindir, "FastQC/Untrimmed", metrics$SAMPLE_ID,
 				paste0(fileNames, "_fastqc"), "summary.txt")
-	## summary flags
-	y = lapply(qcFlags, function(x) scan(x, what = "character", sep= "\n", 
-		quiet = TRUE, strip=TRUE) )	
-	o1 = lapply(y, function(x) ss(x, "\t"))	
-	o1 = matrix(unlist(o1), ncol = 12, byrow = TRUE)
-	colnames(o1) = flags
-	metrics = cbind(metrics,o1)
+				
+	y = lapply(qcFlags, function(x) scan(x, what="character", sep="\n", quiet=TRUE, strip=TRUE) )		
+	y = lapply(y, function(x) {data.frame(a = ss(x, "\t"), row.names=ss(x,"\t",2)) } )
+	y = lapply(y, function(x) {x[flagRows,]} )
+	y = matrix(unlist(y), ncol = 12, byrow = TRUE)	
 
+	colnames(y) = flagNames
+	metrics = cbind(metrics,y)
+	
 	### Phred scores / GC & adapter content fastqcdata 
 	qcData = file.path(opt$maindir, "FastQC/Untrimmed", metrics$SAMPLE_ID,
 				paste0(fileNames, "_fastqc"), "fastqc_data.txt")			
@@ -199,7 +229,10 @@ if (opt$paired==TRUE) {
 	phred = matrix(unlist(phred), ncol=4,byrow=T)
 
 	# proportion of reads above phred 30 and 35
-	phred2 = lapply(zz, function(x) x[[3]][3:(length(x[[3]])-1)])
+	ind = sapply(zz, function(x) {grep("Per sequence quality scores", x) } )
+	sc = mapply(function(i, x) { x[[i]] }, ind, zz)	
+	if (class(sc)=="matrix") { sc = as.list(as.data.frame(sc, stringsAsFactors=FALSE)) }
+	phred2 = lapply(sc, function(x) x[3:(length(x)-1)])
 	phred2 = lapply(phred2, function(x) 
 			data.frame(score=ss(x, "\t", 1),count=ss(x, "\t", 2)))
 	phred2 = lapply(phred2, function(x) 
@@ -208,14 +241,18 @@ if (opt$paired==TRUE) {
 			data.frame(x, prop = x$cumulRev/x$cumulRev[1] ))
 	phred2 = lapply(phred2, function(x) x[which(x$score%in%c(30,35)),4] )
 	phred2 = matrix(unlist(phred2), ncol=2, byrow=T)
+
 	
 	# Illumina adapter content (at roughly 1/2, 3/4, and end of seq length)
 	# get positions 
-	len = round((length(zz[[1]][[10]])-3) / 5)
-	pos = c(3*len+2, 4*len+2, length(zz[[1]][[10]])-1)
-	nameSuf = ss(zz[[1]][[10]][pos], "\t", 1)
+	ind = sapply(zz, function(x) {grep("Adapter Content", x) } )
+	ac = mapply(function(i, x) { x[[i]] }, ind, zz)	
+	if (class(ac)=="matrix") { ac = as.list(as.data.frame(ac, stringsAsFactors=FALSE)) }	
+	len = round((length(ac[[1]])-3) / 5)
+	pos = c(3*len+2, 4*len+2, length(ac[[1]])-1)
+	nameSuf = ss(ac[[1]][pos], "\t", 1)
 	fastqcdata[9:11] = paste0("Adapter", nameSuf)
-	adap = lapply(zz, function(x) x[[10]][pos])
+	adap = lapply(ac, function(x) x[pos])
 	adap = lapply(adap, function(x) ss(x, "\t", 2))
 	adap = matrix(unlist(adap), ncol=3, byrow=T)
 	adap = matrix(as.numeric(adap), ncol=3, byrow=F)
@@ -223,7 +260,9 @@ if (opt$paired==TRUE) {
 	combined = data.frame(SeqLen=unlist(seqlen), GCprec=unlist(gcp), phred, phred2, adap)
 	rownames(combined)=NULL
 	names(combined) = fastqcdata
-	metrics = cbind(metrics,combined)			
+	metrics = cbind(metrics,combined)
+	
+	rm(qcFlags,y,zz,ind,sc,ac,seqlen,gcp,phred,phred2,adap,qcData,R)	
 }
 ############################################################ 
 
