@@ -11,6 +11,7 @@ library('getopt')
 library('rafalib')
 library('devtools')
 library('SummarizedExperiment')
+library('plyr')
 
 ## Specify parameters
 spec <- matrix(c(
@@ -36,9 +37,9 @@ if (!is.null(opt$help)) {
 ## For testing
 if(FALSE){
     opt <- list('organism' = 'hg38',
-        'maindir' = '/dcl01/lieber/ajaffe/lab/dg_hippo/preprocessed_data/paired_end_n292',
-        'experiment' = 'DG',
-        'prefix' = 'paired',
+        'maindir' = '/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Projects/Mae_RNAseq',
+        'experiment' = 'Mae',
+        'prefix' = 'may17',
         'paired' = TRUE,
 		'stranded' = 'reverse',
         'ercc' = TRUE,
@@ -407,8 +408,16 @@ if (opt$organism == "hg19") {
 	filename = "_Gencode.v25.hg38"
 	gencodeGTF = import(con="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf", format="gtf")
 }
-gencodeGENES = mcols(gencodeGTF)[which(gencodeGTF$type=="gene"),c("gene_id","type","gene_type")]
+gencodeGENES = mcols(gencodeGTF)[which(gencodeGTF$type=="gene"),c("gene_id","type","gene_type","gene_name")]
 rownames(gencodeGENES) = gencodeGENES$gene_id
+
+gencodeEXONS = as.data.frame(gencodeGTF)[which(gencodeGTF$type=="exon"),c("seqnames","start","end","gene_id","exon_id")]
+names(gencodeEXONS) = c("Chr","Start","End","gene_id","exon_gencodeID")
+### exons in PAR regions
+par_y = grep("PAR_Y",gencodeEXONS$gene_id)
+gencodeEXONS$exon_gencodeID[par_y] = paste0(gencodeEXONS$exon_gencodeID[par_y],"_PAR_Y")
+gencodeEXONS = gencodeEXONS[,-4]
+
 rm(gencodeGTF)
 
 ###############
@@ -431,6 +440,7 @@ geneMap$gencodeID = geneMap$Geneid
 geneMap$ensemblID = ss(geneMap$Geneid, "\\.")
 geneMap$Geneid = NULL
 geneMap$gene_type = gencodeGENES[geneMap$gencodeID,"gene_type"]
+geneMap$Symbol = gencodeGENES[geneMap$gencodeID,"gene_name"]
 
 ######### biomart 
 if (opt$organism=="hg19") {
@@ -448,7 +458,7 @@ if (opt$organism=="hg19") {
 }
 #########
 
-geneMap$Symbol = sym$hgnc_symbol[match(geneMap$ensemblID, sym$ensembl_gene_id)]
+# geneMap$Symbol = sym$hgnc_symbol[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 geneMap$EntrezID = sym$entrezgene[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 
 ## counts
@@ -501,9 +511,14 @@ exonMap$ensemblID = ss(exonMap$Geneid, "\\.")
 rownames(exonMap) = paste0("e", rownames(exonMap))
 exonMap$Geneid = NULL
 exonMap$gene_type = gencodeGENES[exonMap$gencodeID,"gene_type"]
+exonMap$Symbol = gencodeGENES[exonMap$gencodeID,"gene_name"]
 
-exonMap$Symbol = sym$hgnc_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
+# exonMap$Symbol = sym$hgnc_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
+
+## add gencode exon id
+exonMap = join(exonMap, gencodeEXONS, type="left", match="first")
+names(exonMap)[ncol(exonMap)] = "exon_gencodeID"
 
 ## counts
 exonCountList = mclapply(exonFn, function(x) {
@@ -529,6 +544,10 @@ eMap = eMap[-dropIndex,]
 keepIndex = which(!duplicated(eMap))
 exonCounts = exonCounts[keepIndex,]
 exonMap = exonMap[keepIndex,]
+
+## change rownames
+exonMap$exon_libdID = rownames(exonMap)
+rownames(exonMap) = rownames(exonCounts) = exonMap$exon_gencodeID
 
 # number of reads assigned
 exonStatList = lapply(paste0(exonFn, ".summary"), 
@@ -564,7 +583,7 @@ geneMap$gencodeTx = sapply(tx,paste0,collapse=";")
 ## exon annotation
 exonMap$Class = "InGen"
 exonMap$meanExprs = rowMeans(exonRpkm)
-mmTx = match(rownames(exonMap), names(allTx))
+mmTx = match(exonMap$exon_libdID, names(allTx))
 tx = CharacterList(vector("list", nrow(exonMap)))
 tx[!is.na(mmTx)] = allTx[mmTx[!is.na(mmTx)]]
 exonMap$NumTx = elementNROWS(tx)
