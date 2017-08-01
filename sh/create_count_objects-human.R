@@ -518,7 +518,6 @@ exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 
 ## add gencode exon id
 exonMap = join(exonMap, gencodeEXONS, type="left", match="first")
-names(exonMap)[ncol(exonMap)] = "exon_gencodeID"
 
 ## counts
 exonCountList = mclapply(exonFn, function(x) {

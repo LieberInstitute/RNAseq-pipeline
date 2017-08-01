@@ -10,6 +10,7 @@ library('jaffelab')
 library('getopt')
 library('devtools')
 library('SummarizedExperiment')
+library('plyr')
 
 ## Specify parameters
 spec <- matrix(c(
@@ -193,6 +194,10 @@ metrics$mitoRate <- metrics$mitoMapped / (metrics$mitoMapped +  metrics$totalMap
 gencodeGTF = import(con="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf", format="gtf")
 gencodeGENES = mcols(gencodeGTF)[which(gencodeGTF$type=="gene"),c("gene_id","type","gene_type")]
 rownames(gencodeGENES) = gencodeGENES$gene_id
+
+gencodeEXONS = as.data.frame(gencodeGTF)[which(gencodeGTF$type=="exon"),c("seqnames","start","end","exon_id")]
+names(gencodeEXONS) = c("Chr","Start","End","exon_gencodeID")
+
 rm(gencodeGTF)
 
 ###############
@@ -276,6 +281,9 @@ exonMap$gene_type = gencodeGENES[exonMap$gencodeID,"gene_type"]
 exonMap$Symbol = sym$mgi_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 
+## add gencode exon id
+exonMap = join(exonMap, gencodeEXONS, type="left", match="first")
+
 ## counts
 exonCountList = mclapply(exonFn, function(x) {
 	cat(".")
@@ -300,6 +308,10 @@ eMap = eMap[-dropIndex,]
 keepIndex = which(!duplicated(eMap))
 exonCounts = exonCounts[keepIndex,]
 exonMap = exonMap[keepIndex,]
+
+## change rownames
+exonMap$exon_libdID = rownames(exonMap)
+rownames(exonMap) = rownames(exonCounts) = exonMap$exon_gencodeID
 
 # number of reads assigned
 exonStatList = lapply(paste0(exonFn, ".summary"), 
