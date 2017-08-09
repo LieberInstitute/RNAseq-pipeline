@@ -34,12 +34,26 @@ EOF
 ## Clean examples
 bash clean_examples.sh
 
+## Add queue files
+#echo "bluejay" > single_end/.queue
+#echo "bluejay" > paired_end/.queue
+#echo "bluejay" > merge/.queue
+
+echo "**************************"
+echo "Running single end example"
+echo "**************************"
 cd single_end
 bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "single" --reference "hg19" --cores 1 --fullcov "TRUE"
 
+echo "**************************"
+echo "Running paired end example"
+echo "**************************"
 cd ../paired_end
 bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "paired" --reference "mm10" --cores 1
 
+echo "**************************"
+echo "Running merging example"
+echo "**************************"
 cd ../merge
 touch .send_emails
 bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "merge" --reference "hg38" --stranded "reverse" --cores 2
