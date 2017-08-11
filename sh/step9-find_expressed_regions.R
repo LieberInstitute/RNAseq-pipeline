@@ -50,6 +50,7 @@ getRegChr <- function(cutoff, chr, meanCov, strand) {
     suppressPackageStartupMessages(library('derfinder'))
     suppressPackageStartupMessages(library('GenomicRanges'))
     message(paste(Sys.time(), 'processing', chr, 'with cutoff', cutoff))
+    if(strand == '-') meanCov$coverage[[1]] <- meanCov$coverage[[1]] * (-1)
     regs <- findRegions(position = Rle(TRUE, length(meanCov$coverage[[1]])),
         fstats = meanCov$coverage[[1]], chr = chr, maxClusterGap = 300L,
         cutoff = cutoff, verbose = FALSE)
