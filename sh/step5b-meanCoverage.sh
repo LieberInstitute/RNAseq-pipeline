@@ -106,6 +106,10 @@ STRANDRULE=\$(cat inferred_strandness_pattern.txt)
 
 if [ \${STRANDRULE} == "none" ]
 then
+    echo "*****************************"
+    date
+    echo "Processing unstranded data"
+    echo "*****************************"
     ## Locate normalized BigWig files and concatenate them in a space separated list
     BIGWIGS=\$(cat ${FILELIST} | awk '{print "${MAINDIR}/Coverage/"\$NF".bw"}' | paste -sd " ")
     
@@ -115,7 +119,10 @@ then
 else
     for strand in Forward Reverse
     do
+        echo "*****************************"
+        date
         echo "Processing strand \${strand}"
+        echo "*****************************"
         ## Locate normalized BigWig files and concatenate them in a space separated list
         BIGWIGS=\$(cat ${FILELIST} | awk -v strand="\${strand}" '{print "${MAINDIR}/Coverage/"\$NF"."strand".bw"}' | paste -sd " ")
     

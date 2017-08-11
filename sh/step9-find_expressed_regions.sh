@@ -4,10 +4,11 @@
 # bash step9-find_expressed_regions.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:s:l:h --long experiment:,prefix:,chrsizes:,large:,help -n 'step9-find_expressed_regions' -- "$@")
+TEMP=$(getopt -o x:p:s:l:b:h --long experiment:,prefix:,chrsizes:,large:,bashfolder:,help -n 'step9-find_expressed_regions' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
+BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"
 
 while true; do
     case "$1" in
@@ -31,8 +32,13 @@ while true; do
                 "") LARGE="FALSE" ; shift 2;;
                 *) LARGE=$2; shift 2;;
             esac ;;
+        -b|--bashfolder)
+            case "$2" in
+                "") BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"; shift 2;;
+                *) BASH_FOLDER=$2; shift 2;;
+            esac;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step9-find_expressed_regions.sh -x -p -s -l (default:FALSE)\nLong options:\n  bash step9-find_expressed_regions.sh --experiment --prefix --chrsizes --large (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step9-find_expressed_regions.sh -x -p -s -l (default:FALSE) -b (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh)\nLong options:\n  bash step9-find_expressed_regions.sh --experiment --prefix --chrsizes --large (default:FALSE) --bashfolder (default:/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -90,12 +96,12 @@ echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
 echo "****"
 
-## Locate mean files
-meanFiles=Coverage/mean*.bw
-
-for meanFile in meanFiles
+for meanFile in Coverage/mean*.bw
 do
+    echo "************************************"
+    date
     echo "Initializing script for \${meanFile}"
+    echo "************************************"
     Rscript ${MAINDIR}/.step9-find_expressed_regions.R -m \${meanFile} -o ${MAINDIR}/Coverage -i ${CHRSIZES} -c 10
 done
 

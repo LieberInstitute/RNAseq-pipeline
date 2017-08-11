@@ -253,5 +253,5 @@ then
 	sh ${BASH_FOLDER}/step8b-mergeVariantCalls.sh --experiment ${EXPERIMENT} --prefix ${PREFIX}
 fi
 
-sh ${BASH_FOLDER}/step9-find_expressed_regions.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE}
+sh ${BASH_FOLDER}/step9-find_expressed_regions.sh --experiment ${EXPERIMENT} --prefix ${PREFIX} --chrsizes ${CHRSIZES} --large ${LARGE} --bashfolder ${BASH_FOLDER}
 

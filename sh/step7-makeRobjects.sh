@@ -115,8 +115,8 @@ elif [ $hgXX == "rn6" ]; then SPEC="rat";
 else SPEC="human";
 fi
 
-cp ${BASH_FOLDER}/create_count_objects-${SPEC}.R ${MAINDIR}/.create_count_objects-${SPEC}.R
-cp ${BASH_FOLDER}/create_fullCov_object.R ${MAINDIR}/.create_fullCov_object.R
+cp ${BASH_FOLDER}/create_count_objects-${SPEC}.R ${MAINDIR}/.step7-create_count_objects-${SPEC}.R
+cp ${BASH_FOLDER}/create_fullCov_object.R ${MAINDIR}/.step7-create_fullCov_object.R
 
 # Construct shell files
 echo "Creating script ${sname}"
@@ -141,7 +141,7 @@ echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
 echo "****"
 
-Rscript ${MAINDIR}/.create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC} -t ${CORES} -s ${STRANDED}
+Rscript ${MAINDIR}/.step7-create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC} -t ${CORES} -s ${STRANDED}
 
 echo "**** Job ends ****"
 date
@@ -186,7 +186,7 @@ echo "****"
 ## derfinder::getRegionCoverage(fullCov = NULL, files = bigWigs, regions = outputFrom_findRegions)
 ## or alternatively write the regions to a BED file with rtracklayer,
 ## create the counts with bwtool and then read them into R manually
-Rscript ${MAINDIR}/.create_fullCov_object.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -f ${FULLCOV} -c ${CORES}
+Rscript ${MAINDIR}/.step7-create_fullCov_object.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -f ${FULLCOV} -c ${CORES}
 
 
 echo "**** Job ends ****"
