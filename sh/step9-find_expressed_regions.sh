@@ -73,6 +73,7 @@ fi
 
 # Directories
 mkdir -p ${MAINDIR}/Coverage
+mkdir -p ${MAINDIR}/ERs
 
 cp ${BASH_FOLDER}/step9-find_expressed_regions.R ${MAINDIR}/.step9-find_expressed_regions.R
 
@@ -102,7 +103,7 @@ do
     date
     echo "Initializing script for \${meanFile}"
     echo "************************************"
-    Rscript ${MAINDIR}/.step9-find_expressed_regions.R -m \${meanFile} -o ${MAINDIR}/Coverage -i ${CHRSIZES} -c 10
+    Rscript ${MAINDIR}/.step9-find_expressed_regions.R -m \${meanFile} -o ${MAINDIR}/ERs -i ${CHRSIZES} -c 10
 done
 
 echo "**** Job ends ****"

@@ -31,7 +31,7 @@ dir.create(opt$outdir, recursive = TRUE, showWarnings = FALSE)
 
 ## Determine the strand based on the name of the file
 strand <- ifelse(grepl('Forward.bw', opt$mean), 'forward',
-    ifelse(grepl('Reverse.bw', opt$mean, 'reverse', 'unstranded')))
+    ifelse(grepl('Reverse.bw', opt$mean), 'reverse', 'unstranded'))
 strand_sign <- c('forward' = '+', 'reverse' = '-', 'unstranded' = '*')[strand]
 
 
@@ -39,7 +39,7 @@ chrInfo <- read.table(opt$chrinfo,
     header = FALSE, stringsAsFactors = FALSE, col.names = c('chr', 'length'))
     
 
-chrInfo <- subset(chrInfo, chr %in% seqnames(seqinfo(BigWigFileInfo(opt$mean))))
+chrInfo <- subset(chrInfo, chr %in% seqnames(seqinfo(BigWigFile(opt$mean))))
 cuts <- seq(from = 0.2, to = 7, by = 0.1)
 
 ## Parallel environment to use
