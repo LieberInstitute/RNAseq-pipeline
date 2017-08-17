@@ -240,7 +240,7 @@ if (opt$paired==TRUE) {
 			data.frame(x, cumulRev = rev(cumsum(rev(as.numeric(levels(x$count))[x$count]))) ))
 	phred2 = lapply(phred2, function(x) 
 			data.frame(x, prop = x$cumulRev/x$cumulRev[1] ))
-	phred2 = lapply(phred2, function(x) x[which(x$score%in%c(30,35)),4] )
+	phred2 = lapply(phred2, function(x) c(x[which(x$score%in%c(30,35)),4],0,0)[1:2] )
 	phred2 = matrix(unlist(phred2), ncol=2, byrow=T)
 
 	
@@ -486,7 +486,7 @@ metrics$rRNA_rate = colSums(geneCounts[which(geneMap$gene_type == "rRNA"),])/col
 
 
 # make RPKM
-bg = matrix(rep(colSums(geneStats)), nc = nrow(metrics), 
+bg = matrix(rep(as.numeric(geneStats["Assigned",])), nc = nrow(metrics), 
 	nr = nrow(geneCounts),	byrow=TRUE)
 widG = matrix(rep(geneMap$Length), nr = nrow(geneCounts), 
 	nc = nrow(metrics),	byrow=FALSE)
@@ -546,7 +546,7 @@ exonMap = exonMap[keepIndex,]
 
 ## change rownames
 exonMap$exon_libdID = rownames(exonMap)
-rownames(exonMap) = rownames(exonCounts) = exonMap$exon_gencodeID
+# rownames(exonMap) = rownames(exonCounts) = exonMap$exon_gencodeID # not always unique
 
 # number of reads assigned
 exonStatList = lapply(paste0(exonFn, ".summary"), 
@@ -555,7 +555,7 @@ exonStats = do.call("cbind", exonStatList)
 colnames(exonStats) = metrics$SAMPLE_ID
 
 ## make RPKM
-bgE = matrix(rep(colSums(exonStats)), nc = nrow(metrics), 
+bgE = matrix(rep(colSums(exonCounts)), nc = nrow(metrics), 
 	nr = nrow(exonCounts),	byrow=TRUE)
 widE = matrix(rep(exonMap$Length), nr = nrow(exonCounts), 
 	nc = nrow(metrics),	byrow=FALSE)
@@ -590,6 +590,16 @@ exonMap$gencodeTx = sapply(tx,paste0,collapse=";")
 
 
 ## Create gene,exon RangedSummarizedExperiment objects
+
+## recount getRPKM version
+getRPKM <- function(rse, length_var = 'Length', mapped_var = NULL) {
+    mapped <- if(!is.null(mapped_var)) colData(rse)[, mapped_var] else colSums(assays(rse)$counts)      
+    bg <- matrix(mapped, ncol = ncol(rse), nrow = nrow(rse), byrow = TRUE)   
+    len <- if(!is.null(length_var)) rowData(rse)[, length_var] else width(rowRanges(rse))   
+    wid <- matrix(len, nrow = nrow(rse), ncol = ncol(rse), byrow = FALSE)
+    assays(rse)$counts / (wid/1000) / (bg/1e6)
+}
+
 gr_genes <- GRanges(seqnames = geneMap$Chr,
     IRanges(geneMap$Start, geneMap$End), strand = geneMap$Strand)
 names(gr_genes) <- rownames(geneMap)
@@ -598,7 +608,7 @@ mcols(gr_genes) <- DataFrame(geneMap[, - which(colnames(geneMap) %in%
 
 rse_gene <- SummarizedExperiment(assays = list('counts' = geneCounts),
     rowRanges = gr_genes, colData = metrics)
-save(rse_gene, file = paste0('rse_gene_', EXPNAME, '_n', N, '.Rdata'))
+save(rse_gene, getRPKM, file = paste0('rse_gene_', EXPNAME, '_n', N, '.Rdata'))
 
 gr_exons <- GRanges(seqnames = exonMap$Chr,
     IRanges(exonMap$Start, exonMap$End), strand = exonMap$Strand)
@@ -608,7 +618,7 @@ mcols(gr_exons) <- DataFrame(exonMap[, - which(colnames(exonMap) %in%
     
 rse_exon <- SummarizedExperiment(assays = list('counts' = exonCounts),
     rowRanges = gr_exons, colData = metrics)
-save(rse_exon, file = paste0('rse_exon_', EXPNAME, '_n', N, '.Rdata'))
+save(rse_exon, getRPKM, file = paste0('rse_exon_', EXPNAME, '_n', N, '.Rdata'))
 
 
 
@@ -751,9 +761,16 @@ save(list=ls()[ls() %in% tosaveRpkm], compress=TRUE,
 
 	
 ## Create RangedSummarizedExperiment objects
+getRPM = function(rse, target = 80e6) {
+	require(SummarizedExperiment)
+	mapped <- colSums(assays(rse)$counts) 
+	bg = matrix(rep(mapped/target), 
+		nc = ncol(rse), nr = nrow(rse),	byrow=TRUE)
+	assays(rse)$counts/bg
+} 
 rse_jx <- SummarizedExperiment(assays = list('counts' = jCounts),
     rowRanges = jMap, colData = metrics)
-save(rse_jx, file = paste0('rse_jx_', EXPNAME, '_n', N, '.Rdata'))
+save(rse_jx, getRPM, file = paste0('rse_jx_', EXPNAME, '_n', N, '.Rdata'))
 
 
 ## Reproducibility information
