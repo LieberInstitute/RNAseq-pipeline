@@ -30,8 +30,9 @@ dirs <- c('single_end_unstranded', 'single_end_stranded')
 fasta_files <- dir(dirs, pattern = '.fasta', full.names = TRUE)
 
 write_myfastq <- function(reads, ff) {
+    #id <- BStringSet(paste0('read', seq_len(length(reads))))
     fastq <- ShortReadQ(sread(reads), quality = BStringSet(rep(paste(rep('I', max(width(reads))), collapse = ''), length(reads))), id = id(reads))
-    writeFastq(fastq, gsub('fasta', 'fastq', ff))
+    writeFastq(fastq, gsub('fasta', 'fastq.gz', ff))
 }
 
 ## Create fastq files (all with quality I which should be = 40)
@@ -69,9 +70,9 @@ unlink(c(fasta_files_1, fasta_files_2))
 dirs <- c('single_end_unstranded', 'paired_end_unstranded', 'single_end_stranded', 'paired_end_stranded')
 xx <- sapply(dirs, function(d) {
     if(grepl('paired', d)) {
-        df <- data.frame(path = dir(d, pattern = '_1.fastq'), md5sum = 0, path = dir(d, pattern = '_2.fastq'), md5sum2 = 0, name = gsub('_2.fastq|_', '', dir(d, pattern = '_2.fastq')))
+        df <- data.frame(path = dir(d, pattern = '_1.fastq'), md5sum = 0, path = dir(d, pattern = '_2.fastq'), md5sum2 = 0, name = gsub('_2.fastq.gz|_', '', dir(d, pattern = '_2.fastq')))
     } else {
-        df <- data.frame(path = dir(d, pattern = 'fastq'), md5sum = 0, name = gsub('.fastq|_', '', dir(d, pattern = 'fastq')))
+        df <- data.frame(path = dir(d, pattern = 'fastq'), md5sum = 0, name = gsub('.fastq.gz|_', '', dir(d, pattern = 'fastq')))
     }
     write.table(df, file = file.path(d, 'samples.manifest'), col.names = FALSE, quote = FALSE, row.names = FALSE, sep = '\t')
     

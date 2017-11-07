@@ -80,8 +80,8 @@ The following object is masked from ‘package:base’:
     apply
 
    user  system elapsed 
- 60.357   4.093  82.185 
-2017-11-07 15:58:21
+ 60.479   4.149  73.889 
+2017-11-07 16:40:23
 Session info ----------------------------------------------------------------------------------------------------------
  setting  value                       
  version  R version 3.4.2 (2017-09-28)
