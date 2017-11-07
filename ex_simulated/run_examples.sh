@@ -35,10 +35,10 @@ EOF
 bash clean_examples.sh
 
 ## Add queue files
-#echo "bluejay" > paired_end_stranded/.queue
-#echo "bluejay" > paired_end_unstranded/.queue
-#echo "bluejay" > single_end_stranded/.queue
-#echo "bluejay" > single_end_unstranded/.queue
+echo "bluejay" > paired_end_stranded/.queue
+echo "bluejay" > paired_end_unstranded/.queue
+echo "bluejay" > single_end_stranded/.queue
+echo "bluejay" > single_end_unstranded/.queue
 
 echo "**************************"
 echo "Running single end unstranded example"
