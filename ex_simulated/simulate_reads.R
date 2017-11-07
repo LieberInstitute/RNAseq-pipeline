@@ -1,4 +1,6 @@
 # Rscript simulate_reads.R  > simulate_reads_log.txt 2>&1
+## Check read lengths
+# for i in */*fastq.gz; do echo $i; gunzip -c $i | wc -l; done
 library('polyester')
 library('Biostrings')
 library('ShortRead')
