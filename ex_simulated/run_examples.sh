@@ -29,6 +29,8 @@ merge/.send_emails
 */*.rda
 */*.csv
 */Salmon_tx
+*/ERs
+*/Genotypes
 EOF
 
 ## Clean examples
