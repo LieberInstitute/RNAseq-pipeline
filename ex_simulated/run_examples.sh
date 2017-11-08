@@ -55,7 +55,7 @@ bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "paired_unstrand
 echo "**************************"
 echo "Running single end stranded example"
 echo "**************************"
-cd single_end_stranded
+cd ../single_end_stranded
 bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "single_stranded" --reference "hg38" --cores 1 --stranded "reverse"
 
 echo "**************************"
