@@ -58,13 +58,13 @@ echo "**************************"
 echo "Running single end stranded example"
 echo "**************************"
 cd ../single_end_stranded
-bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "single_stranded" --reference "hg38" --cores 1 --stranded "reverse"
+bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "single_stranded" --reference "hg38" --cores 1 --stranded "forward"
 
 echo "**************************"
 echo "Running paired end stranded example"
 echo "**************************"
 cd ../paired_end_stranded
-bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "paired_stranded" --reference "hg38" --cores 1  --stranded "reverse"
+bash ../../sh/rnaseq-run-all.sh --experiment "example" --prefix "paired_stranded" --reference "hg38" --cores 1  --stranded "forward"
 
 echo "**** Job ends ****"
 date

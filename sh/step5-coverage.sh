@@ -117,20 +117,29 @@ fi
 ID=\$(cat ${FILELIST} | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")
 STRANDRULE=\$(cat inferred_strandness_pattern.txt)
 
-## Can only use -d when the data is stranded
-if [ \${STRANDRULE} == "none" ]
-then
-    STRANDPARAM=""
-    STRANDOPTION=""
-else
-    STRANDPARAM="-d "
-    STRANDOPTION="\"\${STRANDRULE}\""
-fi
-
 ## Normalizing bigwigs to 40 million 100 bp reads
 module load python/2.7.9
 module load ucsctools
-python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID} ${STRANDPARAM} ${STRANDOPTION}
+
+## Can only use -d when the data is stranded
+if [ "\${STRANDRULE}" == "none" ]
+then
+    python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID}
+elif [ "\${STRANDRULE}" == "1++,1--,2+-,2-+" ]
+then
+    python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID} -d "1++,1--,2+-,2-+"
+elif [ "\${STRANDRULE}" == "1+-,1-+,2++,2–" ]
+then
+    python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID} -d "1+-,1-+,2++,2–"
+elif [ "\${STRANDRULE}" == "++,--" ]
+then
+    python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID} -d "++,--"
+elif [ "\${STRANDRULE}" == "+-,-+" ]
+then
+    python ~/.local/bin/bam2wig.py -s ${CHRSIZES} -i ${MAINDIR}/HISAT2_out/\${ID}_accepted_hits.sorted.bam -t 4000000000 -o ${MAINDIR}/Coverage/\${ID} -d "+-,-+"
+else
+    echo "Found unexpected value in inferred_strandness_pattern.txt: \${STRANDRULE}"
+fi
 
 ## Remove temp files
 rm ${MAINDIR}/Coverage/\${ID}*.wig
