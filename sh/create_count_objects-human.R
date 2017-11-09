@@ -162,7 +162,7 @@ if (opt$paired==TRUE) {
 				data.frame(x, cumulRev = rev(cumsum(rev(as.numeric(levels(x$count))[x$count]))) ))
 		phred2 = lapply(phred2, function(x) 
 				data.frame(x, prop = x$cumulRev/x$cumulRev[1] ))
-		phred2 = lapply(phred2, function(x) x[which(x$score%in%c(30,35)),4] )
+		phred2 = lapply(phred2, function(x) c(x[which(x$score%in%c(30,35)),4],0,0)[1:2] )
 		phred2 = matrix(unlist(phred2), ncol=2, byrow=T)
 		
 		# Illumina adapter content
