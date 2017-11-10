@@ -27,17 +27,20 @@ merge/merged_fastq
 merge/.send_emails
 */*.txt
 */*.rda
+*/*.Rdata
 */*.csv
 */Salmon_tx
+*/ERs
+*/Genotypes
 EOF
 
 ## Clean examples
 bash clean_examples.sh
 
 ## Add queue files
-#echo "bluejay" > single_end/.queue
-#echo "bluejay" > paired_end/.queue
-#echo "bluejay" > merge/.queue
+echo "bluejay" > single_end/.queue
+echo "bluejay" > paired_end/.queue
+echo "bluejay" > merge/.queue
 
 echo "**************************"
 echo "Running single end example"
