@@ -1,0 +1,16 @@
+*/.*.R
+*/.*.sh
+*/.paired_end
+*/Coverage
+*/logs
+*/FastQC
+*/HISAT2_out
+*/Counts
+merge/merged_fastq
+merge/.send_emails
+*/*.txt
+*/*.rda
+*/*.csv
+*/Salmon_tx
+*/ERs
+*/Genotypes
