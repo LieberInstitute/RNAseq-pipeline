@@ -1,0 +1,1089 @@
+**** Job starts ****
+Wed Nov  8 14:02:41 EST 2017
+**** JHPCE info ****
+User: lcollado
+Job id: 3838179
+Job name: pipeline_ex_simulated
+Hostname: compute-065
+Task id: 
+**** Cleaning job starts ****
+Wed Nov  8 14:02:42 EST 2017
+rm: cannot remove `*/.*.sh': No such file or directory
+rm: cannot remove `*/.*.R': No such file or directory
+rm: cannot remove `*/.paired_end': No such file or directory
+rm: cannot remove `*/.send_emails': No such file or directory
+rm: cannot remove `*/*.txt': No such file or directory
+rm: cannot remove `*/*.rda': No such file or directory
+rm: cannot remove `*/*.Rdata': No such file or directory
+rm: cannot remove `*/*.csv': No such file or directory
+rm: cannot remove `*/.queue': No such file or directory
+**** Cleaning job ends ****
+Wed Nov  8 14:02:42 EST 2017
+**************************
+Running single end unstranded example
+**************************
+**** checking that R packages are present ****
+Wed Nov  8 14:02:43 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Wed Nov  8 14:03:20 EST 2017
+**** checking that checksumdir is installed ****
+Wed Nov  8 14:03:24 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Wed Nov  8 14:03:25 EST 2017
+**** Finding the sample information ****
+Wed Nov  8 14:04:32 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-08 14:04:34 EST"
+   user  system elapsed 
+  0.774   0.584   1.481 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-08                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.single_unstranded
+qsub .step1-fastqc-example.single_unstranded.sh
+Your job-array 3838181.1-10:1 ("step1-fastqc-example.single_unstranded") has been submitted
+Creating script step2-trim-example.single_unstranded
+qsub .step2-trim-example.single_unstranded.sh
+Your job-array 3838182.1-10:1 ("step2-trim-example.single_unstranded") has been submitted
+Creating script step3-hisat2-example.single_unstranded
+qsub .step3-hisat2-example.single_unstranded.sh
+Your job-array 3838183.1-10:1 ("step3-hisat2-example.single_unstranded") has been submitted
+Creating script step3b-infer-strandness-example.single_unstranded
+qsub .step3b-infer-strandness-example.single_unstranded.sh
+Your job 3838184 ("step3b-infer-strandness-example.single_unstranded") has been submitted
+Creating script step4-featCounts-example.single_unstranded
+qsub .step4-featCounts-example.single_unstranded.sh
+Your job-array 3838185.1-10:1 ("step4-featCounts-example.single_unstranded") has been submitted
+qsub .step4-featCounts-example.single_unstranded_clean.sh
+Your job 3838186 ("step4-featCounts-example.single_unstranded_clean") has been submitted
+Creating script step5-coverage-example.single_unstranded
+qsub .step5-coverage-example.single_unstranded.sh
+Your job-array 3838187.1-10:1 ("step5-coverage-example.single_unstranded") has been submitted
+Creating script step5b-meanCoverage-example.single_unstranded
+qsub .step5b-meanCoverage-example.single_unstranded.sh
+Your job 3838188 ("step5b-meanCoverage-example.single_unstranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.single_unstranded
+qsub .step6-txQuant-example.single_unstranded.sh
+Your job-array 3838189.1-10:1 ("step6-txQuant-example.single_unstranded") has been submitted
+Creating script step7-Rcounts-example.single_unstranded
+qsub .step7-Rcounts-example.single_unstranded.sh
+Your job 3838190 ("step7-Rcounts-example.single_unstranded") has been submitted
+Creating script step8-callVariants-example.single_unstranded
+qsub .step8-callVariants-example.single_unstranded.sh
+Your job-array 3838191.1-10:1 ("step8-callVariants-example.single_unstranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.single_unstranded
+qsub .step8b-mergeVariantCalls-example.single_unstranded.sh
+Your job 3838192 ("step8b-mergeVariantCalls-example.single_unstranded") has been submitted
+qsub .step9-findERs-example.single_unstranded.sh
+Your job 3838193 ("step9-findERs-example.single_unstranded") has been submitted
+**************************
+Running paired end unstranded example
+**************************
+**** checking that R packages are present ****
+Wed Nov  8 14:04:41 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Wed Nov  8 14:05:14 EST 2017
+**** checking that checksumdir is installed ****
+Wed Nov  8 14:05:17 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Wed Nov  8 14:05:19 EST 2017
+**** Finding the sample information ****
+Wed Nov  8 14:05:28 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-08 14:05:30 EST"
+   user  system elapsed 
+  0.829   0.678   2.423 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-08                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.paired_unstranded
+qsub .step1-fastqc-example.paired_unstranded.sh
+Your job-array 3838194.1-10:1 ("step1-fastqc-example.paired_unstranded") has been submitted
+Creating script step2-trim-example.paired_unstranded
+qsub .step2-trim-example.paired_unstranded.sh
+Your job-array 3838195.1-10:1 ("step2-trim-example.paired_unstranded") has been submitted
+Creating script step3-hisat2-example.paired_unstranded
+qsub .step3-hisat2-example.paired_unstranded.sh
+Your job-array 3838196.1-10:1 ("step3-hisat2-example.paired_unstranded") has been submitted
+Creating script step3b-infer-strandness-example.paired_unstranded
+qsub .step3b-infer-strandness-example.paired_unstranded.sh
+Your job 3838197 ("step3b-infer-strandness-example.paired_unstranded") has been submitted
+Creating script step4-featCounts-example.paired_unstranded
+qsub .step4-featCounts-example.paired_unstranded.sh
+Your job-array 3838198.1-10:1 ("step4-featCounts-example.paired_unstranded") has been submitted
+qsub .step4-featCounts-example.paired_unstranded_clean.sh
+Your job 3838199 ("step4-featCounts-example.paired_unstranded_clean") has been submitted
+Creating script step5-coverage-example.paired_unstranded
+qsub .step5-coverage-example.paired_unstranded.sh
+Your job-array 3838200.1-10:1 ("step5-coverage-example.paired_unstranded") has been submitted
+Creating script step5b-meanCoverage-example.paired_unstranded
+qsub .step5b-meanCoverage-example.paired_unstranded.sh
+Your job 3838201 ("step5b-meanCoverage-example.paired_unstranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.paired_unstranded
+qsub .step6-txQuant-example.paired_unstranded.sh
+Your job-array 3838202.1-10:1 ("step6-txQuant-example.paired_unstranded") has been submitted
+Creating script step7-Rcounts-example.paired_unstranded
+qsub .step7-Rcounts-example.paired_unstranded.sh
+Your job 3838203 ("step7-Rcounts-example.paired_unstranded") has been submitted
+Creating script step8-callVariants-example.paired_unstranded
+qsub .step8-callVariants-example.paired_unstranded.sh
+Your job-array 3838204.1-10:1 ("step8-callVariants-example.paired_unstranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.paired_unstranded
+qsub .step8b-mergeVariantCalls-example.paired_unstranded.sh
+Your job 3838205 ("step8b-mergeVariantCalls-example.paired_unstranded") has been submitted
+qsub .step9-findERs-example.paired_unstranded.sh
+Your job 3838206 ("step9-findERs-example.paired_unstranded") has been submitted
+**************************
+Running single end stranded example
+**************************
+**** checking that R packages are present ****
+Wed Nov  8 14:05:38 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Wed Nov  8 14:06:10 EST 2017
+**** checking that checksumdir is installed ****
+Wed Nov  8 14:06:13 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Wed Nov  8 14:06:15 EST 2017
+**** Finding the sample information ****
+Wed Nov  8 14:06:26 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-08 14:06:28 EST"
+   user  system elapsed 
+  0.872   0.604   1.481 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-08                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.single_stranded
+qsub .step1-fastqc-example.single_stranded.sh
+Your job-array 3838208.1-10:1 ("step1-fastqc-example.single_stranded") has been submitted
+Creating script step2-trim-example.single_stranded
+qsub .step2-trim-example.single_stranded.sh
+Your job-array 3838209.1-10:1 ("step2-trim-example.single_stranded") has been submitted
+Creating script step3-hisat2-example.single_stranded
+qsub .step3-hisat2-example.single_stranded.sh
+Your job-array 3838210.1-10:1 ("step3-hisat2-example.single_stranded") has been submitted
+Creating script step3b-infer-strandness-example.single_stranded
+qsub .step3b-infer-strandness-example.single_stranded.sh
+Your job 3838211 ("step3b-infer-strandness-example.single_stranded") has been submitted
+Creating script step4-featCounts-example.single_stranded
+qsub .step4-featCounts-example.single_stranded.sh
+Your job-array 3838212.1-10:1 ("step4-featCounts-example.single_stranded") has been submitted
+qsub .step4-featCounts-example.single_stranded_clean.sh
+Your job 3838213 ("step4-featCounts-example.single_stranded_clean") has been submitted
+Creating script step5-coverage-example.single_stranded
+qsub .step5-coverage-example.single_stranded.sh
+Your job-array 3838214.1-10:1 ("step5-coverage-example.single_stranded") has been submitted
+Creating script step5b-meanCoverage-example.single_stranded
+qsub .step5b-meanCoverage-example.single_stranded.sh
+Your job 3838215 ("step5b-meanCoverage-example.single_stranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.single_stranded
+qsub .step6-txQuant-example.single_stranded.sh
+Your job-array 3838216.1-10:1 ("step6-txQuant-example.single_stranded") has been submitted
+Creating script step7-Rcounts-example.single_stranded
+qsub .step7-Rcounts-example.single_stranded.sh
+Your job 3838217 ("step7-Rcounts-example.single_stranded") has been submitted
+Creating script step8-callVariants-example.single_stranded
+qsub .step8-callVariants-example.single_stranded.sh
+Your job-array 3838218.1-10:1 ("step8-callVariants-example.single_stranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.single_stranded
+qsub .step8b-mergeVariantCalls-example.single_stranded.sh
+Your job 3838219 ("step8b-mergeVariantCalls-example.single_stranded") has been submitted
+qsub .step9-findERs-example.single_stranded.sh
+Your job 3838220 ("step9-findERs-example.single_stranded") has been submitted
+**************************
+Running paired end stranded example
+**************************
+**** checking that R packages are present ****
+Wed Nov  8 14:06:36 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Wed Nov  8 14:07:13 EST 2017
+**** checking that checksumdir is installed ****
+Wed Nov  8 14:07:16 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Wed Nov  8 14:07:18 EST 2017
+**** Finding the sample information ****
+Wed Nov  8 14:07:30 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-08 14:07:32 EST"
+   user  system elapsed 
+  0.929   0.678   1.950 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-08                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.paired_stranded
+qsub .step1-fastqc-example.paired_stranded.sh
+Your job-array 3838222.1-10:1 ("step1-fastqc-example.paired_stranded") has been submitted
+Creating script step2-trim-example.paired_stranded
+qsub .step2-trim-example.paired_stranded.sh
+Your job-array 3838224.1-10:1 ("step2-trim-example.paired_stranded") has been submitted
+Creating script step3-hisat2-example.paired_stranded
+qsub .step3-hisat2-example.paired_stranded.sh
+Your job-array 3838225.1-10:1 ("step3-hisat2-example.paired_stranded") has been submitted
+Creating script step3b-infer-strandness-example.paired_stranded
+qsub .step3b-infer-strandness-example.paired_stranded.sh
+Your job 3838226 ("step3b-infer-strandness-example.paired_stranded") has been submitted
+Creating script step4-featCounts-example.paired_stranded
+qsub .step4-featCounts-example.paired_stranded.sh
+Your job-array 3838227.1-10:1 ("step4-featCounts-example.paired_stranded") has been submitted
+qsub .step4-featCounts-example.paired_stranded_clean.sh
+Your job 3838228 ("step4-featCounts-example.paired_stranded_clean") has been submitted
+Creating script step5-coverage-example.paired_stranded
+qsub .step5-coverage-example.paired_stranded.sh
+Your job-array 3838229.1-10:1 ("step5-coverage-example.paired_stranded") has been submitted
+Creating script step5b-meanCoverage-example.paired_stranded
+qsub .step5b-meanCoverage-example.paired_stranded.sh
+Your job 3838230 ("step5b-meanCoverage-example.paired_stranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.paired_stranded
+qsub .step6-txQuant-example.paired_stranded.sh
+Your job-array 3838231.1-10:1 ("step6-txQuant-example.paired_stranded") has been submitted
+Creating script step7-Rcounts-example.paired_stranded
+qsub .step7-Rcounts-example.paired_stranded.sh
+Your job 3838232 ("step7-Rcounts-example.paired_stranded") has been submitted
+Creating script step8-callVariants-example.paired_stranded
+qsub .step8-callVariants-example.paired_stranded.sh
+Your job-array 3838233.1-10:1 ("step8-callVariants-example.paired_stranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.paired_stranded
+qsub .step8b-mergeVariantCalls-example.paired_stranded.sh
+Your job 3838234 ("step8b-mergeVariantCalls-example.paired_stranded") has been submitted
+qsub .step9-findERs-example.paired_stranded.sh
+Your job 3838235 ("step9-findERs-example.paired_stranded") has been submitted
+**** Job ends ****
+Wed Nov  8 14:07:39 EST 2017
+**** Job starts ****
+Thu Nov  9 16:40:43 EST 2017
+**** JHPCE info ****
+User: lcollado
+Job id: 3881677
+Job name: pipeline_ex_simulated
+Hostname: compute-088
+Task id: 
+**** Cleaning job starts ****
+Thu Nov  9 16:40:43 EST 2017
+rm: cannot remove `*/.*.sh': No such file or directory
+rm: cannot remove `*/.*.R': No such file or directory
+rm: cannot remove `*/.paired_end': No such file or directory
+rm: cannot remove `*/.send_emails': No such file or directory
+rm: cannot remove `*/*.txt': No such file or directory
+rm: cannot remove `*/*.rda': No such file or directory
+rm: cannot remove `*/*.Rdata': No such file or directory
+rm: cannot remove `*/*.csv': No such file or directory
+rm: cannot remove `*/.queue': No such file or directory
+**** Cleaning job ends ****
+Thu Nov  9 16:40:43 EST 2017
+**************************
+Running single end unstranded example
+**************************
+**** checking that R packages are present ****
+Thu Nov  9 16:40:43 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Thu Nov  9 16:41:03 EST 2017
+**** checking that checksumdir is installed ****
+Thu Nov  9 16:41:05 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Thu Nov  9 16:41:05 EST 2017
+**** Finding the sample information ****
+Thu Nov  9 16:41:40 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-09 16:41:41 EST"
+   user  system elapsed 
+  0.556   0.046   0.665 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-09                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.single_unstranded
+qsub .step1-fastqc-example.single_unstranded.sh
+Your job-array 3881678.1-10:1 ("step1-fastqc-example.single_unstranded") has been submitted
+Creating script step2-trim-example.single_unstranded
+qsub .step2-trim-example.single_unstranded.sh
+Your job-array 3881679.1-10:1 ("step2-trim-example.single_unstranded") has been submitted
+Creating script step3-hisat2-example.single_unstranded
+qsub .step3-hisat2-example.single_unstranded.sh
+Your job-array 3881680.1-10:1 ("step3-hisat2-example.single_unstranded") has been submitted
+Creating script step3b-infer-strandness-example.single_unstranded
+qsub .step3b-infer-strandness-example.single_unstranded.sh
+Your job 3881681 ("step3b-infer-strandness-example.single_unstranded") has been submitted
+Creating script step4-featCounts-example.single_unstranded
+qsub .step4-featCounts-example.single_unstranded.sh
+Your job-array 3881682.1-10:1 ("step4-featCounts-example.single_unstranded") has been submitted
+qsub .step4-featCounts-example.single_unstranded_clean.sh
+Your job 3881683 ("step4-featCounts-example.single_unstranded_clean") has been submitted
+Creating script step5-coverage-example.single_unstranded
+qsub .step5-coverage-example.single_unstranded.sh
+Your job-array 3881684.1-10:1 ("step5-coverage-example.single_unstranded") has been submitted
+Creating script step5b-meanCoverage-example.single_unstranded
+qsub .step5b-meanCoverage-example.single_unstranded.sh
+Your job 3881685 ("step5b-meanCoverage-example.single_unstranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.single_unstranded
+qsub .step6-txQuant-example.single_unstranded.sh
+Your job-array 3881686.1-10:1 ("step6-txQuant-example.single_unstranded") has been submitted
+Creating script step7-Rcounts-example.single_unstranded
+qsub .step7-Rcounts-example.single_unstranded.sh
+Your job 3881687 ("step7-Rcounts-example.single_unstranded") has been submitted
+Creating script step8-callVariants-example.single_unstranded
+qsub .step8-callVariants-example.single_unstranded.sh
+Your job-array 3881688.1-10:1 ("step8-callVariants-example.single_unstranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.single_unstranded
+qsub .step8b-mergeVariantCalls-example.single_unstranded.sh
+Your job 3881689 ("step8b-mergeVariantCalls-example.single_unstranded") has been submitted
+qsub .step9-findERs-example.single_unstranded.sh
+Your job 3881690 ("step9-findERs-example.single_unstranded") has been submitted
+**************************
+Running paired end unstranded example
+**************************
+**** checking that R packages are present ****
+Thu Nov  9 16:41:42 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Thu Nov  9 16:41:54 EST 2017
+**** checking that checksumdir is installed ****
+Thu Nov  9 16:41:55 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Thu Nov  9 16:41:55 EST 2017
+**** Finding the sample information ****
+Thu Nov  9 16:42:00 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-09 16:42:01 EST"
+   user  system elapsed 
+  0.566   0.071   0.677 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-09                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.paired_unstranded
+qsub .step1-fastqc-example.paired_unstranded.sh
+Your job-array 3881691.1-10:1 ("step1-fastqc-example.paired_unstranded") has been submitted
+Creating script step2-trim-example.paired_unstranded
+qsub .step2-trim-example.paired_unstranded.sh
+Your job-array 3881692.1-10:1 ("step2-trim-example.paired_unstranded") has been submitted
+Creating script step3-hisat2-example.paired_unstranded
+qsub .step3-hisat2-example.paired_unstranded.sh
+Your job-array 3881693.1-10:1 ("step3-hisat2-example.paired_unstranded") has been submitted
+Creating script step3b-infer-strandness-example.paired_unstranded
+qsub .step3b-infer-strandness-example.paired_unstranded.sh
+Your job 3881694 ("step3b-infer-strandness-example.paired_unstranded") has been submitted
+Creating script step4-featCounts-example.paired_unstranded
+qsub .step4-featCounts-example.paired_unstranded.sh
+Your job-array 3881695.1-10:1 ("step4-featCounts-example.paired_unstranded") has been submitted
+qsub .step4-featCounts-example.paired_unstranded_clean.sh
+Your job 3881696 ("step4-featCounts-example.paired_unstranded_clean") has been submitted
+Creating script step5-coverage-example.paired_unstranded
+qsub .step5-coverage-example.paired_unstranded.sh
+Your job-array 3881697.1-10:1 ("step5-coverage-example.paired_unstranded") has been submitted
+Creating script step5b-meanCoverage-example.paired_unstranded
+qsub .step5b-meanCoverage-example.paired_unstranded.sh
+Your job 3881698 ("step5b-meanCoverage-example.paired_unstranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.paired_unstranded
+qsub .step6-txQuant-example.paired_unstranded.sh
+Your job-array 3881699.1-10:1 ("step6-txQuant-example.paired_unstranded") has been submitted
+Creating script step7-Rcounts-example.paired_unstranded
+qsub .step7-Rcounts-example.paired_unstranded.sh
+Your job 3881700 ("step7-Rcounts-example.paired_unstranded") has been submitted
+Creating script step8-callVariants-example.paired_unstranded
+qsub .step8-callVariants-example.paired_unstranded.sh
+Your job-array 3881701.1-10:1 ("step8-callVariants-example.paired_unstranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.paired_unstranded
+qsub .step8b-mergeVariantCalls-example.paired_unstranded.sh
+Your job 3881702 ("step8b-mergeVariantCalls-example.paired_unstranded") has been submitted
+qsub .step9-findERs-example.paired_unstranded.sh
+Your job 3881703 ("step9-findERs-example.paired_unstranded") has been submitted
+**************************
+Running single end stranded example
+**************************
+**** checking that R packages are present ****
+Thu Nov  9 16:42:03 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Thu Nov  9 16:42:15 EST 2017
+**** checking that checksumdir is installed ****
+Thu Nov  9 16:42:16 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Thu Nov  9 16:42:16 EST 2017
+**** Finding the sample information ****
+Thu Nov  9 16:42:21 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-09 16:42:22 EST"
+   user  system elapsed 
+  0.544   0.047   0.613 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-09                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.single_stranded
+qsub .step1-fastqc-example.single_stranded.sh
+Your job-array 3881704.1-10:1 ("step1-fastqc-example.single_stranded") has been submitted
+Creating script step2-trim-example.single_stranded
+qsub .step2-trim-example.single_stranded.sh
+Your job-array 3881705.1-10:1 ("step2-trim-example.single_stranded") has been submitted
+Creating script step3-hisat2-example.single_stranded
+qsub .step3-hisat2-example.single_stranded.sh
+Your job-array 3881706.1-10:1 ("step3-hisat2-example.single_stranded") has been submitted
+Creating script step3b-infer-strandness-example.single_stranded
+qsub .step3b-infer-strandness-example.single_stranded.sh
+Your job 3881707 ("step3b-infer-strandness-example.single_stranded") has been submitted
+Creating script step4-featCounts-example.single_stranded
+qsub .step4-featCounts-example.single_stranded.sh
+Your job-array 3881708.1-10:1 ("step4-featCounts-example.single_stranded") has been submitted
+qsub .step4-featCounts-example.single_stranded_clean.sh
+Your job 3881709 ("step4-featCounts-example.single_stranded_clean") has been submitted
+Creating script step5-coverage-example.single_stranded
+qsub .step5-coverage-example.single_stranded.sh
+Your job-array 3881710.1-10:1 ("step5-coverage-example.single_stranded") has been submitted
+Creating script step5b-meanCoverage-example.single_stranded
+qsub .step5b-meanCoverage-example.single_stranded.sh
+Your job 3881711 ("step5b-meanCoverage-example.single_stranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.single_stranded
+qsub .step6-txQuant-example.single_stranded.sh
+Your job-array 3881712.1-10:1 ("step6-txQuant-example.single_stranded") has been submitted
+Creating script step7-Rcounts-example.single_stranded
+qsub .step7-Rcounts-example.single_stranded.sh
+Your job 3881713 ("step7-Rcounts-example.single_stranded") has been submitted
+Creating script step8-callVariants-example.single_stranded
+qsub .step8-callVariants-example.single_stranded.sh
+Your job-array 3881714.1-10:1 ("step8-callVariants-example.single_stranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.single_stranded
+qsub .step8b-mergeVariantCalls-example.single_stranded.sh
+Your job 3881715 ("step8b-mergeVariantCalls-example.single_stranded") has been submitted
+qsub .step9-findERs-example.single_stranded.sh
+Your job 3881716 ("step9-findERs-example.single_stranded") has been submitted
+**************************
+Running paired end stranded example
+**************************
+**** checking that R packages are present ****
+Thu Nov  9 16:42:23 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Thu Nov  9 16:42:35 EST 2017
+**** checking that checksumdir is installed ****
+Thu Nov  9 16:42:35 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Thu Nov  9 16:42:35 EST 2017
+**** Finding the sample information ****
+Thu Nov  9 16:42:40 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-09 16:42:41 EST"
+   user  system elapsed 
+  0.546   0.047   0.614 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-09                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.paired_stranded
+qsub .step1-fastqc-example.paired_stranded.sh
+Your job-array 3881717.1-10:1 ("step1-fastqc-example.paired_stranded") has been submitted
+Creating script step2-trim-example.paired_stranded
+qsub .step2-trim-example.paired_stranded.sh
+Your job-array 3881718.1-10:1 ("step2-trim-example.paired_stranded") has been submitted
+Creating script step3-hisat2-example.paired_stranded
+qsub .step3-hisat2-example.paired_stranded.sh
+Your job-array 3881719.1-10:1 ("step3-hisat2-example.paired_stranded") has been submitted
+Creating script step3b-infer-strandness-example.paired_stranded
+qsub .step3b-infer-strandness-example.paired_stranded.sh
+Your job 3881720 ("step3b-infer-strandness-example.paired_stranded") has been submitted
+Creating script step4-featCounts-example.paired_stranded
+qsub .step4-featCounts-example.paired_stranded.sh
+Your job-array 3881721.1-10:1 ("step4-featCounts-example.paired_stranded") has been submitted
+qsub .step4-featCounts-example.paired_stranded_clean.sh
+Your job 3881722 ("step4-featCounts-example.paired_stranded_clean") has been submitted
+Creating script step5-coverage-example.paired_stranded
+qsub .step5-coverage-example.paired_stranded.sh
+Your job-array 3881723.1-10:1 ("step5-coverage-example.paired_stranded") has been submitted
+Creating script step5b-meanCoverage-example.paired_stranded
+qsub .step5b-meanCoverage-example.paired_stranded.sh
+Your job 3881724 ("step5b-meanCoverage-example.paired_stranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.paired_stranded
+qsub .step6-txQuant-example.paired_stranded.sh
+Your job-array 3881725.1-10:1 ("step6-txQuant-example.paired_stranded") has been submitted
+Creating script step7-Rcounts-example.paired_stranded
+qsub .step7-Rcounts-example.paired_stranded.sh
+Your job 3881726 ("step7-Rcounts-example.paired_stranded") has been submitted
+Creating script step8-callVariants-example.paired_stranded
+qsub .step8-callVariants-example.paired_stranded.sh
+Your job-array 3881727.1-10:1 ("step8-callVariants-example.paired_stranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.paired_stranded
+qsub .step8b-mergeVariantCalls-example.paired_stranded.sh
+Your job 3881728 ("step8b-mergeVariantCalls-example.paired_stranded") has been submitted
+qsub .step9-findERs-example.paired_stranded.sh
+Your job 3881729 ("step9-findERs-example.paired_stranded") has been submitted
+**** Job ends ****
+Thu Nov  9 16:42:42 EST 2017
+**** Job starts ****
+Fri Nov 10 11:35:42 EST 2017
+**** JHPCE info ****
+User: lcollado
+Job id: 3891132
+Job name: pipeline_ex_simulated
+Hostname: compute-091
+Task id: 
+**** Cleaning job starts ****
+Fri Nov 10 11:35:43 EST 2017
+rm: cannot remove `*/.*.sh': No such file or directory
+rm: cannot remove `*/.*.R': No such file or directory
+rm: cannot remove `*/.paired_end': No such file or directory
+rm: cannot remove `*/.send_emails': No such file or directory
+rm: cannot remove `*/*.txt': No such file or directory
+rm: cannot remove `*/*.rda': No such file or directory
+rm: cannot remove `*/*.Rdata': No such file or directory
+rm: cannot remove `*/*.csv': No such file or directory
+rm: cannot remove `*/.queue': No such file or directory
+**** Cleaning job ends ****
+Fri Nov 10 11:35:43 EST 2017
+**************************
+Running single end unstranded example
+**************************
+**** checking that R packages are present ****
+Fri Nov 10 11:35:43 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Fri Nov 10 11:36:01 EST 2017
+**** checking that checksumdir is installed ****
+Fri Nov 10 11:36:03 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Fri Nov 10 11:36:04 EST 2017
+**** Finding the sample information ****
+Fri Nov 10 11:36:39 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-10 11:36:39 EST"
+   user  system elapsed 
+  0.505   0.055   0.616 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-10                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.single_unstranded
+qsub .step1-fastqc-example.single_unstranded.sh
+Your job-array 3891133.1-10:1 ("step1-fastqc-example.single_unstranded") has been submitted
+Creating script step2-trim-example.single_unstranded
+qsub .step2-trim-example.single_unstranded.sh
+Your job-array 3891134.1-10:1 ("step2-trim-example.single_unstranded") has been submitted
+Creating script step3-hisat2-example.single_unstranded
+qsub .step3-hisat2-example.single_unstranded.sh
+Your job-array 3891135.1-10:1 ("step3-hisat2-example.single_unstranded") has been submitted
+Creating script step3b-infer-strandness-example.single_unstranded
+qsub .step3b-infer-strandness-example.single_unstranded.sh
+Your job 3891136 ("step3b-infer-strandness-example.single_unstranded") has been submitted
+Creating script step4-featCounts-example.single_unstranded
+qsub .step4-featCounts-example.single_unstranded.sh
+Your job-array 3891137.1-10:1 ("step4-featCounts-example.single_unstranded") has been submitted
+qsub .step4-featCounts-example.single_unstranded_clean.sh
+Your job 3891138 ("step4-featCounts-example.single_unstranded_clean") has been submitted
+Creating script step5-coverage-example.single_unstranded
+qsub .step5-coverage-example.single_unstranded.sh
+Your job-array 3891139.1-10:1 ("step5-coverage-example.single_unstranded") has been submitted
+Creating script step5b-meanCoverage-example.single_unstranded
+qsub .step5b-meanCoverage-example.single_unstranded.sh
+Your job 3891140 ("step5b-meanCoverage-example.single_unstranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.single_unstranded
+qsub .step6-txQuant-example.single_unstranded.sh
+Your job-array 3891141.1-10:1 ("step6-txQuant-example.single_unstranded") has been submitted
+Creating script step7-Rcounts-example.single_unstranded
+qsub .step7-Rcounts-example.single_unstranded.sh
+Your job 3891142 ("step7-Rcounts-example.single_unstranded") has been submitted
+Creating script step8-callVariants-example.single_unstranded
+qsub .step8-callVariants-example.single_unstranded.sh
+Your job-array 3891143.1-10:1 ("step8-callVariants-example.single_unstranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.single_unstranded
+qsub .step8b-mergeVariantCalls-example.single_unstranded.sh
+Your job 3891144 ("step8b-mergeVariantCalls-example.single_unstranded") has been submitted
+qsub .step9-findERs-example.single_unstranded.sh
+Your job 3891145 ("step9-findERs-example.single_unstranded") has been submitted
+**************************
+Running paired end unstranded example
+**************************
+**** checking that R packages are present ****
+Fri Nov 10 11:36:41 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Fri Nov 10 11:36:52 EST 2017
+**** checking that checksumdir is installed ****
+Fri Nov 10 11:36:52 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Fri Nov 10 11:36:53 EST 2017
+**** Finding the sample information ****
+Fri Nov 10 11:36:58 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-10 11:36:58 EST"
+   user  system elapsed 
+  0.525   0.069   0.635 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-10                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.paired_unstranded
+qsub .step1-fastqc-example.paired_unstranded.sh
+Your job-array 3891146.1-10:1 ("step1-fastqc-example.paired_unstranded") has been submitted
+Creating script step2-trim-example.paired_unstranded
+qsub .step2-trim-example.paired_unstranded.sh
+Your job-array 3891147.1-10:1 ("step2-trim-example.paired_unstranded") has been submitted
+Creating script step3-hisat2-example.paired_unstranded
+qsub .step3-hisat2-example.paired_unstranded.sh
+Your job-array 3891148.1-10:1 ("step3-hisat2-example.paired_unstranded") has been submitted
+Creating script step3b-infer-strandness-example.paired_unstranded
+qsub .step3b-infer-strandness-example.paired_unstranded.sh
+Your job 3891149 ("step3b-infer-strandness-example.paired_unstranded") has been submitted
+Creating script step4-featCounts-example.paired_unstranded
+qsub .step4-featCounts-example.paired_unstranded.sh
+Your job-array 3891150.1-10:1 ("step4-featCounts-example.paired_unstranded") has been submitted
+qsub .step4-featCounts-example.paired_unstranded_clean.sh
+Your job 3891151 ("step4-featCounts-example.paired_unstranded_clean") has been submitted
+Creating script step5-coverage-example.paired_unstranded
+qsub .step5-coverage-example.paired_unstranded.sh
+Your job-array 3891152.1-10:1 ("step5-coverage-example.paired_unstranded") has been submitted
+Creating script step5b-meanCoverage-example.paired_unstranded
+qsub .step5b-meanCoverage-example.paired_unstranded.sh
+Your job 3891153 ("step5b-meanCoverage-example.paired_unstranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.paired_unstranded
+qsub .step6-txQuant-example.paired_unstranded.sh
+Your job-array 3891154.1-10:1 ("step6-txQuant-example.paired_unstranded") has been submitted
+Creating script step7-Rcounts-example.paired_unstranded
+qsub .step7-Rcounts-example.paired_unstranded.sh
+Your job 3891155 ("step7-Rcounts-example.paired_unstranded") has been submitted
+Creating script step8-callVariants-example.paired_unstranded
+qsub .step8-callVariants-example.paired_unstranded.sh
+Your job-array 3891156.1-10:1 ("step8-callVariants-example.paired_unstranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.paired_unstranded
+qsub .step8b-mergeVariantCalls-example.paired_unstranded.sh
+Your job 3891157 ("step8b-mergeVariantCalls-example.paired_unstranded") has been submitted
+qsub .step9-findERs-example.paired_unstranded.sh
+Your job 3891158 ("step9-findERs-example.paired_unstranded") has been submitted
+**************************
+Running single end stranded example
+**************************
+**** checking that R packages are present ****
+Fri Nov 10 11:36:59 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Fri Nov 10 11:37:11 EST 2017
+**** checking that checksumdir is installed ****
+Fri Nov 10 11:37:11 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Fri Nov 10 11:37:11 EST 2017
+**** Finding the sample information ****
+Fri Nov 10 11:37:16 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-10 11:37:17 EST"
+   user  system elapsed 
+  0.494   0.063   0.581 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-10                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.single_stranded
+qsub .step1-fastqc-example.single_stranded.sh
+Your job-array 3891159.1-10:1 ("step1-fastqc-example.single_stranded") has been submitted
+Creating script step2-trim-example.single_stranded
+qsub .step2-trim-example.single_stranded.sh
+Your job-array 3891160.1-10:1 ("step2-trim-example.single_stranded") has been submitted
+Creating script step3-hisat2-example.single_stranded
+qsub .step3-hisat2-example.single_stranded.sh
+Your job-array 3891161.1-10:1 ("step3-hisat2-example.single_stranded") has been submitted
+Creating script step3b-infer-strandness-example.single_stranded
+qsub .step3b-infer-strandness-example.single_stranded.sh
+Your job 3891162 ("step3b-infer-strandness-example.single_stranded") has been submitted
+Creating script step4-featCounts-example.single_stranded
+qsub .step4-featCounts-example.single_stranded.sh
+Your job-array 3891163.1-10:1 ("step4-featCounts-example.single_stranded") has been submitted
+qsub .step4-featCounts-example.single_stranded_clean.sh
+Your job 3891164 ("step4-featCounts-example.single_stranded_clean") has been submitted
+Creating script step5-coverage-example.single_stranded
+qsub .step5-coverage-example.single_stranded.sh
+Your job-array 3891165.1-10:1 ("step5-coverage-example.single_stranded") has been submitted
+Creating script step5b-meanCoverage-example.single_stranded
+qsub .step5b-meanCoverage-example.single_stranded.sh
+Your job 3891166 ("step5b-meanCoverage-example.single_stranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.single_stranded
+qsub .step6-txQuant-example.single_stranded.sh
+Your job-array 3891167.1-10:1 ("step6-txQuant-example.single_stranded") has been submitted
+Creating script step7-Rcounts-example.single_stranded
+qsub .step7-Rcounts-example.single_stranded.sh
+Your job 3891168 ("step7-Rcounts-example.single_stranded") has been submitted
+Creating script step8-callVariants-example.single_stranded
+qsub .step8-callVariants-example.single_stranded.sh
+Your job-array 3891169.1-10:1 ("step8-callVariants-example.single_stranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.single_stranded
+qsub .step8b-mergeVariantCalls-example.single_stranded.sh
+Your job 3891170 ("step8b-mergeVariantCalls-example.single_stranded") has been submitted
+qsub .step9-findERs-example.single_stranded.sh
+Your job 3891171 ("step9-findERs-example.single_stranded") has been submitted
+**************************
+Running paired end stranded example
+**************************
+**** checking that R packages are present ****
+Fri Nov 10 11:37:18 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+
+
+
+**** checking that RSeQC is installed ****
+Fri Nov 10 11:37:29 EST 2017
+**** checking that checksumdir is installed ****
+Fri Nov 10 11:37:29 EST 2017
+**** Saving the reproducibility information in logs/pipeline_information.txt ****
+Fri Nov 10 11:37:30 EST 2017
+**** Finding the sample information ****
+Fri Nov 10 11:37:35 EST 2017
+Using the following user library: ~/R/x86_64-pc-linux-gnu-library/3.3.x
+[1] "Reproducibility information:"
+[1] "2017-11-10 11:37:35 EST"
+   user  system elapsed 
+  0.524   0.059   0.601 
+Session info ----------------------------------------------------------------------------------------------------------
+ setting  value                                      
+ version  R version 3.3.3 Patched (2017-03-15 r72696)
+ system   x86_64, linux-gnu                          
+ ui       X11                                        
+ language (EN)                                       
+ collate  en_US.UTF-8                                
+ tz       <NA>                                       
+ date     2017-11-10                                 
+
+Packages --------------------------------------------------------------------------------------------------------------
+ package   * version date       source        
+ base      * 3.3.3   2017-05-18 local         
+ datasets  * 3.3.3   2017-05-18 local         
+ devtools  * 1.13.3  2017-08-02 CRAN (R 3.3.3)
+ digest      0.6.12  2017-01-27 CRAN (R 3.3.1)
+ getopt    * 1.20.0  2013-08-30 CRAN (R 3.3.1)
+ graphics  * 3.3.3   2017-05-18 local         
+ grDevices * 3.3.3   2017-05-18 local         
+ memoise     1.1.0   2017-04-21 CRAN (R 3.3.1)
+ methods     3.3.3   2017-05-18 local         
+ stats     * 3.3.3   2017-05-18 local         
+ utils     * 3.3.3   2017-05-18 local         
+ withr       2.0.0   2017-07-28 CRAN (R 3.3.3)
+**** Creating bash scripts for every step ****
+Creating script step1-fastqc-example.paired_stranded
+qsub .step1-fastqc-example.paired_stranded.sh
+Your job-array 3891172.1-10:1 ("step1-fastqc-example.paired_stranded") has been submitted
+Creating script step2-trim-example.paired_stranded
+qsub .step2-trim-example.paired_stranded.sh
+Your job-array 3891173.1-10:1 ("step2-trim-example.paired_stranded") has been submitted
+Creating script step3-hisat2-example.paired_stranded
+qsub .step3-hisat2-example.paired_stranded.sh
+Your job-array 3891174.1-10:1 ("step3-hisat2-example.paired_stranded") has been submitted
+Creating script step3b-infer-strandness-example.paired_stranded
+qsub .step3b-infer-strandness-example.paired_stranded.sh
+Your job 3891175 ("step3b-infer-strandness-example.paired_stranded") has been submitted
+Creating script step4-featCounts-example.paired_stranded
+qsub .step4-featCounts-example.paired_stranded.sh
+Your job-array 3891176.1-10:1 ("step4-featCounts-example.paired_stranded") has been submitted
+qsub .step4-featCounts-example.paired_stranded_clean.sh
+Your job 3891177 ("step4-featCounts-example.paired_stranded_clean") has been submitted
+Creating script step5-coverage-example.paired_stranded
+qsub .step5-coverage-example.paired_stranded.sh
+Your job-array 3891178.1-10:1 ("step5-coverage-example.paired_stranded") has been submitted
+Creating script step5b-meanCoverage-example.paired_stranded
+qsub .step5b-meanCoverage-example.paired_stranded.sh
+Your job 3891179 ("step5b-meanCoverage-example.paired_stranded") has been submitted
+Ignoring --cores 1 and will use 2 cores
+Creating script step6-txQuant-example.paired_stranded
+qsub .step6-txQuant-example.paired_stranded.sh
+Your job-array 3891180.1-10:1 ("step6-txQuant-example.paired_stranded") has been submitted
+Creating script step7-Rcounts-example.paired_stranded
+qsub .step7-Rcounts-example.paired_stranded.sh
+Your job 3891181 ("step7-Rcounts-example.paired_stranded") has been submitted
+Creating script step8-callVariants-example.paired_stranded
+qsub .step8-callVariants-example.paired_stranded.sh
+Your job-array 3891182.1-10:1 ("step8-callVariants-example.paired_stranded") has been submitted
+Creating script step8b-mergeVariantCalls-example.paired_stranded
+qsub .step8b-mergeVariantCalls-example.paired_stranded.sh
+Your job 3891183 ("step8b-mergeVariantCalls-example.paired_stranded") has been submitted
+qsub .step9-findERs-example.paired_stranded.sh
+Your job 3891184 ("step9-findERs-example.paired_stranded") has been submitted
+**** Job ends ****
+Fri Nov 10 11:37:36 EST 2017

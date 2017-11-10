@@ -27,6 +27,7 @@ merge/merged_fastq
 merge/.send_emails
 */*.txt
 */*.rda
+*/*.Rdata
 */*.csv
 */Salmon_tx
 */ERs
