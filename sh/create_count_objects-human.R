@@ -418,8 +418,6 @@ par_y = grep("PAR_Y",gencodeEXONS$gene_id)
 gencodeEXONS$exon_gencodeID[par_y] = paste0(gencodeEXONS$exon_gencodeID[par_y],"_PAR_Y")
 gencodeEXONS = gencodeEXONS[,-4]
 
-rm(gencodeGTF)
-
 ###############
 ### gene counts
 geneFn <- file.path(opt$maindir, 'Counts', 'gene', paste0(metrics$SAMPLE_ID, filename, '_Genes.counts'))
@@ -761,17 +759,18 @@ save(list=ls()[ls() %in% tosaveRpkm], compress=TRUE,
 
 	
 ## Create RangedSummarizedExperiment objects
-getRPM = function(rse, target = 80e6) {
-	require(SummarizedExperiment)
-	mapped <- colSums(assays(rse)$counts) 
-	bg = matrix(rep(mapped/target), 
-		nc = ncol(rse), nr = nrow(rse),	byrow=TRUE)
-	assays(rse)$counts/bg
-} 
 rse_jx <- SummarizedExperiment(assays = list('counts' = jCounts),
     rowRanges = jMap, colData = metrics)
-save(rse_jx, getRPM, file = paste0('rse_jx_', EXPNAME, '_n', N, '.Rdata'))
+save(rse_jx, file = paste0('rse_jx_', EXPNAME, '_n', N, '.Rdata'))
 
+## transcript
+tx = gencodeGTF[which(gencodeGTF$type == "transcript")]
+names(tx) = tx$transcript_id
+txMap = tx[rownames(txTpm)]
+rse_tx = SummarizedExperiment(
+	assays = list('tpm' = txTpm),
+    colData = metrics, rowRanges = txMap)
+save(rse_tx, file = paste0('rse_tx_', EXPNAME, '_n', N, '.Rdata'))
 
 ## Reproducibility information
 print('Reproducibility information:')
