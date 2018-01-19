@@ -70,32 +70,36 @@ save(inferred_strandness ,
 
 ## Explore visually the results
 pdf(file.path(opt$outdir, 'inferred_strandness.pdf'))
-lims <- round(with(inferred_strandness, range(c(infer_frac_pattern1,
-    infer_frac_pattern2), na.rm = TRUE)) + c(-0.05, 0.05), 1)
-lims[1] <- max(0, lims[1])
-lims[2] <- min(1, lims[2])
+plot(0.5,0.5, ylim = c(0,1), xlim = c(0,1), bty="n", xlab="", ylab="") ## Blank plot
+polygon(x=c(0,1,1), y=c(1,0,1), col="gray90")  ## not possible
+polygon(x=c(0,1,.75,.25), y=c(0,0,.25,.25), col="darkseagreen2")  ## pattern 1 (forward)
+polygon(x=c(0,0,.25,.25), y=c(0,1,.75,.25), col="lightcoral")  ## pattern 2 (reverse)
+polygon(x=c(.25,.25,.75), y=c(.75,.25,.25), col="moccasin")  ## unstranded
+segments(0,1,1,0, col = 'red', lwd = 2)
+par(new=TRUE) ## plot the points
 with(inferred_strandness, plot(infer_frac_pattern1, infer_frac_pattern2,
     xlab = paste('Fraction of reads with pattern 1:',
     names(sort(table(inferred_strandness$infer_pattern1)))[1]),
     ylab = paste('Fraction of reads with pattern 2:',
     names(sort(table(inferred_strandness$infer_pattern2)))[1]),
-    ylim = lims, xlim = lims
+    ylim = c(0,1), xlim = c(0,1), bty="n"
 ))
-abline(a = 1, b = -1, col = 'red', lwd = 2)
-abline(h = 0.5, col = 'grey', lty = 2)
-abline(v = 0.5, col = 'grey', lty = 2)
+legend(.7,.95, c("Pattern 1", "Pattern 2", "None"),
+	pch=15, col=c("darkseagreen2","lightcoral","moccasin"))
+
 boxplot(inferred_strandness[, grep('frac', colnames(inferred_strandness))],
     ylim = c(0, 1), col = 'light blue', ylab = 'Fraction of reads')
 dev.off()
 
 ## Determine which pattern to use
-observed <- mean(inferred_strandness$infer_frac_pattern1 >
-    inferred_strandness$infer_frac_pattern2, na.rm = TRUE)
-cutoff <- 0.2
-pattern <- ifelse(observed < 0 + cutoff, 
-    names(sort(table(inferred_strandness$infer_pattern2)))[1],
-    ifelse(observed > 1 - cutoff,
-        names(sort(table(inferred_strandness$infer_pattern1)))[1], 'none'))
+observed_pattern1 = mean(inferred_strandness$infer_frac_pattern1)
+observed_pattern2 = mean(inferred_strandness$infer_frac_pattern2)
+
+pattern <- ifelse(observed_pattern1 > 0.25 & observed_pattern2 < 0.25, 
+    names(sort(table(inferred_strandness$infer_pattern1)))[1],
+    ifelse(observed_pattern1 < 0.25 & observed_pattern2 > 0.25,
+        names(sort(table(inferred_strandness$infer_pattern2)))[1], 'none'))
+		
 message(paste(Sys.time(), 'will use the following pattern for bam2wig:',
     pattern))
 write.table(pattern, file = opt$pattern, row.names = FALSE, col.names = FALSE,
