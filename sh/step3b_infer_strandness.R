@@ -72,9 +72,9 @@ save(inferred_strandness ,
 pdf(file.path(opt$outdir, 'inferred_strandness.pdf'))
 plot(0.5,0.5, ylim = c(0,1), xlim = c(0,1), bty="n", xlab="", ylab="") ## Blank plot
 polygon(x=c(0,1,1), y=c(1,0,1), col="gray90")  ## not possible
-polygon(x=c(0,1,.75,.25), y=c(0,0,.25,.25), col="darkseagreen2")  ## pattern 1 (forward)
-polygon(x=c(0,0,.25,.25), y=c(0,1,.75,.25), col="lightcoral")  ## pattern 2 (reverse)
-polygon(x=c(.25,.25,.75), y=c(.75,.25,.25), col="moccasin")  ## unstranded
+polygon(x=c(0,1,.5), y=c(0,0,.5), col="darkseagreen2")  ## pattern 1 (forward)
+polygon(x=c(0,0,.5), y=c(0,1,.5), col="lightcoral")  ## pattern 2 (reverse)
+polygon(x=c(0,0,.4,.6,.2), y=c(0,.2,.6,.4,0), col="moccasin")  ## unstranded
 segments(0,1,1,0, col = 'red', lwd = 2)
 par(new=TRUE) ## plot the points
 with(inferred_strandness, plot(infer_frac_pattern1, infer_frac_pattern2,
@@ -92,12 +92,11 @@ boxplot(inferred_strandness[, grep('frac', colnames(inferred_strandness))],
 dev.off()
 
 ## Determine which pattern to use
-observed_pattern1 = mean(inferred_strandness$infer_frac_pattern1)
-observed_pattern2 = mean(inferred_strandness$infer_frac_pattern2)
+observed_diff = mean(inferred_strandness$infer_frac_pattern1 - inferred_strandness$infer_frac_pattern2)
 
-pattern <- ifelse(observed_pattern1 > 0.25 & observed_pattern2 < 0.25, 
+pattern <- ifelse(observed_diff > 0.2, 
     names(sort(table(inferred_strandness$infer_pattern1)))[1],
-    ifelse(observed_pattern1 < 0.25 & observed_pattern2 > 0.25,
+    ifelse(observed_diff < -0.2,
         names(sort(table(inferred_strandness$infer_pattern2)))[1], 'none'))
 		
 message(paste(Sys.time(), 'will use the following pattern for bam2wig:',
