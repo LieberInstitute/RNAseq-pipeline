@@ -141,6 +141,10 @@ echo "Job name: \${JOB_NAME}"
 echo "Hostname: \${HOSTNAME}"
 echo "****"
 
+## Force R 3.3.x in JHPCE (to avoid some issues with conda_R)
+module unload conda_R
+module load R/3.3.x
+
 Rscript ${MAINDIR}/.step7-create_count_objects-${SPEC}.R -o ${hgXX} -m ${MAINDIR} -e ${EXPERIMENT} -p ${PREFIX} -l ${PE} -c ${ERCC} -t ${CORES} -s ${STRANDED}
 
 echo "**** Job ends ****"

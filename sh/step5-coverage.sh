@@ -103,6 +103,10 @@ echo "****"
 echo "Sample id: \$(cat ${MAINDIR}/samples.manifest | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")"
 echo "****"
 
+## Force R 3.3.x in JHPCE (to avoid some issues with conda_R)
+module unload conda_R
+module load R/3.3.x
+
 if [ ! -f "inferred_strandness_pattern.txt" ]
 then
     echo "Missing the file inferred_strandness_pattern.txt"

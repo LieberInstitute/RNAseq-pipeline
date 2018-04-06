@@ -97,6 +97,10 @@ then
     exit 1
 fi
 
+## Force R 3.3.x in JHPCE (to avoid some issues with conda_R)
+module unload conda_R
+module load R/3.3.x
+
 ## Load required software
 module load wiggletools/default
 module load ucsctools
