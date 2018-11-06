@@ -4,12 +4,13 @@
 # bash step3-hisat2.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:i:b:l:s:u:h --long experiment:,prefix:,index:,bed:,large:,stranded:,unaligned:,help -n 'step3-hisat2' -- "$@")
+TEMP=$(getopt -o x:p:c:i:b:l:s:u:h --long experiment:,prefix:,cores:,index:,bed:,large:,stranded:,unaligned:,help -n 'step3-hisat2' -- "$@")
 eval set -- "$TEMP"
 
 LARGE="FALSE"
 STRANDED="FALSE"
 UNALIGNED="FALSE"
+CORES=8
 
 while true; do
     case "$1" in
@@ -23,6 +24,11 @@ while true; do
                 "") shift 2 ;;
                 *) PREFIX=$2 ; shift 2;;
             esac;;
+		-c|--cores)
+            case "$2" in
+                "") CORES="8" ; shift 2;;
+                *) CORES=$2; shift 2;;
+            esac ;;
         -i|--index)
             case "$2" in
                 "") shift 2 ;;
@@ -49,7 +55,7 @@ while true; do
                 *) UNALIGNED=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -i -b -l (default:FALSE) -s (default:FALSE) -u (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --index --bed --large (default:FALSE) --stranded (default:FALSE) --unaligned (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step3-hisat2.sh -x -p -c (default:8) -i -b -l (default:FALSE) -s (default:FALSE) -u (default:FALSE)\nLong options:\n  bash step3-hisat2.sh --experiment --prefix --cores (default:8)  --index --bed --large (default:FALSE) --stranded (default:FALSE) --unaligned (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -59,7 +65,6 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="hisat2-${EXPERIMENT}"
 sname="step3-${SHORT}.${PREFIX}"
-CORES=8
 
 if [[ $LARGE == "TRUE" ]]
 then

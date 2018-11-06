@@ -48,7 +48,6 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="findERs-${EXPERIMENT}"
 sname="step9-${SHORT}.${PREFIX}"
-CORES=10
 
 if [[ $LARGE == "TRUE" ]]
 then
@@ -80,7 +79,6 @@ cp ${BASH_FOLDER}/step9-find_expressed_regions.R ${MAINDIR}/.step9-find_expresse
 cat > ${MAINDIR}/.${sname}.sh <<EOF
 #!/bin/bash
 #$ -cwd
-#$ -pe local ${CORES}
 #$ -l ${SGEQUEUE}${MEM}
 #$ -N ${sname}
 #$ -o ./logs/${SHORT}.txt
@@ -103,7 +101,7 @@ do
     date
     echo "Initializing script for \${meanFile}"
     echo "************************************"
-    Rscript ${MAINDIR}/.step9-find_expressed_regions.R -m \${meanFile} -o ${MAINDIR}/ERs -i ${CHRSIZES} -c 10
+    Rscript ${MAINDIR}/.step9-find_expressed_regions.R -m \${meanFile} -o ${MAINDIR}/ERs -i ${CHRSIZES}
 done
 
 echo "**** Job ends ****"

@@ -14,7 +14,6 @@ spec <- matrix(c(
     'mean', 'm', 1, 'character', 'Path to the mean bigwig file',
 	'outdir', 'o', 1, 'character', 'Output directory',
     'chrinfo', 'i', 1, 'character', 'Path to the chromosome information file',
-    'cores', 'c', 1, 'integer', 'Number of cores to use. Use a small number',
 	'help' , 'h', 0, 'logical', 'Display help'
 ), byrow=TRUE, ncol=5)
 opt <- getopt(spec)
@@ -43,7 +42,7 @@ chrInfo <- subset(chrInfo, chr %in% seqnames(seqinfo(BigWigFile(opt$mean))))
 cuts <- seq(from = 0.2, to = 7, by = 0.1)
 
 ## Parallel environment to use
-bp <- SnowParam(workers = opt$cores, outfile = Sys.getenv('SGE_STDERR_PATH'))
+bp <- SnowParam(workers = 1, outfile = Sys.getenv('SGE_STDERR_PATH'))
 
 ## Find the regions for all the chromosomes given a specific cutoff
 getRegChr <- function(cutoff, chr, meanCov, strand) {

@@ -4,11 +4,12 @@
 # bash step4-featureCounts.sh --help
 
 # Define variables
-TEMP=$(getopt -o x:p:s:g:r:l:h --long experiment:,prefix:,stranded:,gtf:,reference:,large:,help -n 'step4-featureCounts' -- "$@")
+TEMP=$(getopt -o x:p:c:s:g:r:l:h --long experiment:,prefix:,cores:,stranded:,gtf:,reference:,large:,help -n 'step4-featureCounts' -- "$@")
 eval set -- "$TEMP"
 
 STRANDED="FALSE"
 LARGE="FALSE"
+CORES=8
 
 while true; do
     case "$1" in
@@ -22,6 +23,11 @@ while true; do
                 "") shift 2 ;;
                 *) PREFIX=$2 ; shift 2;;
             esac;;
+	    -c|--cores)
+            case "$2" in
+                "") CORES="8" ; shift 2;;
+                *) CORES=$2; shift 2;;
+            esac ;;
         -s|--stranded)
             case "$2" in
                 "") STRANDED="FALSE" ; shift 2;;
@@ -43,7 +49,7 @@ while true; do
                 *) LARGE=$2; shift 2;;
             esac ;;
         -h|--help)
-            echo -e "Usage:\nShort options:\n  bash step4-featureCounts.sh -x -p -s (default:FALSE) -g -r (hg38, hg19, mm10, rn6) -l (default:FALSE)\nLong options:\n  bash step4-featureCounts.sh --experiment --prefix --stranded (default:FALSE) --gtf --reference (hg38, hg19, mm10, rn6) --large (default:FALSE)"; exit 0; shift ;;
+            echo -e "Usage:\nShort options:\n  bash step4-featureCounts.sh -x -p -c (default:8) -s (default:FALSE) -g -r (hg38, hg19, mm10, rn6) -l (default:FALSE)\nLong options:\n  bash step4-featureCounts.sh --experiment --prefix --cores (default:8) --stranded (default:FALSE) --gtf --reference (hg38, hg19, mm10, rn6) --large (default:FALSE)"; exit 0; shift ;;
             --) shift; break ;;
         *) echo "Incorrect options!"; exit 1;;
     esac
@@ -53,7 +59,6 @@ SOFTWARE=/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Software
 MAINDIR=${PWD}
 SHORT="featCounts-${EXPERIMENT}"
 sname="step4-${SHORT}.${PREFIX}"
-CORES=8
 
 if [[ $LARGE == "TRUE" ]]
 then
