@@ -16,7 +16,6 @@ BASH_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/sh"
 ANNO_FOLDER="/dcl01/lieber/ajaffe/Emily/RNAseq-pipeline/Annotation"
 UNALIGNED="FALSE"
 
-
 while true; do
     case "$1" in
         -x|--experiment)
