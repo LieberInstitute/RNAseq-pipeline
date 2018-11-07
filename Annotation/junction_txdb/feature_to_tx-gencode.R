@@ -127,7 +127,8 @@ si = with(chrInfo, Seqinfo(as.character(chrom), length, isCircular, genome="hg38
 
 ##
 gencode_v25 = import(con = "../GENCODE/GRCh38_hg38/gencode.v25.annotationGRCh38.gtf", format = "gtf")
-seqlevels(gencode_v25,force=TRUE) = paste0("chr", c(1:22,"X","Y","M"))
+# seqlevels(gencode_v25,force=TRUE) = paste0("chr", c(1:22,"X","Y","M"))
+seqlevels(gencode_v25,pruning.mode="coarse") = paste0("chr", c(1:22,"X","Y","M"))
 seqinfo(gencode_v25) = si
 
 ensTxDb = makeTxDbFromGRanges(gencode_v25)
@@ -167,9 +168,21 @@ geneMap$Symbol = sym$hgnc_symbol[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 geneMap$EntrezID = sym$entrezgene[match(geneMap$ensemblID, sym$ensembl_gene_id)]
 exonMap$Symbol = sym$hgnc_symbol[match(exonMap$ensemblID, sym$ensembl_gene_id)]
 exonMap$EntrezID = sym$entrezgene[match(exonMap$ensemblID, sym$ensembl_gene_id)]
+
 eMap = GRanges(exonMap$Chr, IRanges(exonMap$Start, exonMap$End))
-keepIndex= which(!duplicated(eMap))
-exonMap = exonMap[keepIndex,]
+
+## drop runthrough exons with duplicated exons
+i = grepl('-', exonMap$Symbol)
+j = countOverlaps(eMap[i], eMap[!i], type = 'equal') > 0
+dropIndex = which(i)[j]
+exonMap = exonMap[-dropIndex,]
+exonMap$coord = paste0(exonMap$Chr,":",exonMap$Start,"-",exonMap$End,"(",exonMap$Strand,")")
+eMap = eMap[-dropIndex,]
+rm(eMap)
+
+# ## then drop duplicated exons				## don't do this anymore - save all exon info
+# keepIndex = which(!duplicated(eMap))
+# exonMap = exonMap[keepIndex,]
 
 
 ## add gene
@@ -212,3 +225,40 @@ save(allTx, file="feature_to_Tx_hg38_gencode_v25.rda")
 
 
 
+
+
+
+
+############################
+#### add exons maps ########
+
+## make GR of exonMap (use for eID map)
+exonMap$exon_libdID = rownames(exonMap)
+exonMapGR = makeGRangesFromDataFrame(exonMap, keep=TRUE)
+
+## ensExons (use for ENSE and ENST maps)
+par_y = grep("PAR_Y",ensExons$TxID)
+ensExons$exon_name[par_y] = paste0(ensExons$exon_name[par_y],"_PAR_Y")
+
+ensExons$coord = paste0(seqnames(ensExons),":",start(ensExons),"-",end(ensExons),"(",strand(ensExons),")")
+ensExons_uniqueENSE = ensExons[-which(duplicated(ensExons$exon_name))]
+
+## Make maps
+coordToENSE = CharacterList(split(ensExons_uniqueENSE$exon_name,
+	ensExons_uniqueENSE$coord))
+	
+coordToTX = CharacterList(split(ensExons$TxID,
+	ensExons$coord))
+	
+coordToEid = CharacterList(split(exonMapGR$exon_libdID,
+	exonMapGR$coord))
+
+
+	
+	
+save(coordToENSE,coordToTX,coordToEid, file="exonMaps_by_coord_hg38_gencode_v25.rda")
+	
+	
+	
+	
+	
