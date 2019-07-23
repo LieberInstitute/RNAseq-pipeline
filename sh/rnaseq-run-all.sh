@@ -163,7 +163,7 @@ then
     BED=${ANNO_FOLDER}/RSeQC/hg19.bed
 	SALMONIDX=${ANNO_FOLDER}/GENCODE/GRCh37_hg19/transcripts/salmon_0.8.2_index_gencode.v25lift37.transcripts
 	STEP6=TRUE
-	STEP8=FALSE
+	STEP8=TRUE
 elif [ $hgXX == "mm10" ]
 then 
 	GTF=${ANNO_FOLDER}/GENCODE/GRCm38_mm10/gencode.vM11.annotation.gtf
