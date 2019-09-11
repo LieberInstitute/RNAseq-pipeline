@@ -17,6 +17,8 @@ if (!is.null(opt$help)) {
 	q(status=1)
 }
 
+## For testing:
+# opt <- list()
 if(is.null(opt$outdir)) opt <- c(opt, list('outdir' = 'HISAT2_out/infer_strandness'))
 if(is.null(opt$pattern)) opt <- c(opt, list('pattern' = 'inferred_strandness_pattern.txt'))
 
@@ -92,7 +94,15 @@ boxplot(inferred_strandness[, grep('frac', colnames(inferred_strandness))],
 dev.off()
 
 ## Determine which pattern to use
-observed_diff = mean(inferred_strandness$infer_frac_pattern1 - inferred_strandness$infer_frac_pattern2)
+if(mean(inferred_strandness$infer_library == 'Unknown') > 0.5)
+    message(paste(Sys.time(),
+        'NOTE: More than half of your samples have undetermined library types!',
+        '\nProceed with caution! You might want to manually edit the file:',
+        opt$pattern,
+        '\nCheck https://jhu-genomics.slack.com/archives/G28PVLRQW/p1568225898019700 for more details.'
+    ))
+observed_diff <- mean(inferred_strandness$infer_frac_pattern1 - inferred_strandness$infer_frac_pattern2, na.rm = TRUE)
+if(!is.finite(observed_diff)) stop('Looks like all files returned an undetermined pattern!')
 
 pattern <- ifelse(observed_diff > 0.2, 
     names(sort(table(inferred_strandness$infer_pattern1)))[1],
