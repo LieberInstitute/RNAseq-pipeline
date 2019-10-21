@@ -139,6 +139,9 @@ echo "****"
 echo "Sample id: \$(cat ${MAINDIR}/samples.manifest | awk '{print \$NF}' | awk "NR==\${SGE_TASK_ID}")"
 echo "****"
 
+## remove to fix issues
+module unload conda_R 
+
 # Directories
 mkdir -p ${MAINDIR}/Counts/gene
 mkdir -p ${MAINDIR}/Counts/exon
