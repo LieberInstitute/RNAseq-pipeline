@@ -1,3 +1,9 @@
+**Outdated**
+
+Note that this pipeline is no longer under active development. You can find the latest version at https://github.com/LieberInstitute/SPEAQeasy which is described in the following pre-print: https://www.biorxiv.org/content/10.1101/2020.12.11.386789v1.
+
+
+
 RNAseq-pipeline
 ===============
 
